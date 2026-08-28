@@ -387,32 +387,36 @@ function CityPulse() {
           ))}
         </div>
 
-        <div className="relative bg-surface-elevated border border-border rounded-sm overflow-hidden">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h3 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Live dispatch map · {DISPATCHES.length} tracked batches
+          </h3>
+          <DisplayControls surface="city map" />
+        </div>
+
+        <div
+          className="relative bg-surface-elevated border border-border rounded-sm overflow-hidden"
+          role="group"
+          aria-label="Live city dispatch map. Use Tab to move between dispatch hotspots and Enter to open a ledger."
+        >
           <img
             src={cityMap}
             alt="Dark city heat map with glowing amber dots representing live meal distribution hubs"
-            className="w-full h-[420px] object-cover opacity-90"
+            className="w-full h-[420px] object-cover"
+            style={{ opacity: imageOpacity / 100 }}
             width={1920}
             height={640}
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          <div
+            className="absolute inset-0 bg-background"
+            style={{ opacity: scrim / 100 }}
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" aria-hidden="true" />
 
-          {/* Live pulses overlay */}
-          {[
-            { top: "32%", left: "44%" },
-            { top: "55%", left: "52%" },
-            { top: "40%", left: "60%" },
-            { top: "62%", left: "38%" },
-          ].map((pos, i) => (
-            <span
-              key={i}
-              className="absolute size-3"
-              style={pos}
-            >
-              <span className="absolute inset-0 rounded-full bg-ember animate-ember-ping" />
-              <span className="absolute inset-0 rounded-full bg-ember-glow shadow-[0_0_16px_var(--ember-glow)]" />
-            </span>
+          {DISPATCHES.map((d, i) => (
+            <MapHotspot key={d.id} dispatch={d} index={i} />
           ))}
 
           <div className="absolute bottom-6 left-6 right-6 flex flex-wrap justify-between items-end gap-4">
