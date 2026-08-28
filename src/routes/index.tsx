@@ -1,6 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import heroTable from "@/assets/hero-table.jpg";
 import cityMap from "@/assets/city-map.jpg";
+import { PhotoBackdrop } from "@/components/PhotoBackdrop";
+import { DisplayControls } from "@/components/DisplayControls";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { MapHotspot } from "@/components/MapHotspot";
+import { DISPATCHES } from "@/data/dispatches";
+import { useDisplaySettings } from "@/lib/display-settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -42,13 +48,15 @@ function Nav() {
             Table<span className="text-ember">Forward</span>
           </span>
           <div className="hidden md:flex gap-7 text-sm font-medium text-muted-foreground">
-            <a href="#engine" className="hover:text-ember transition-colors">The Engine</a>
-            <a href="#pulse" className="hover:text-ember transition-colors">City Pulse</a>
-            <a href="#network" className="hover:text-ember transition-colors">Network</a>
-            <a href="#transparency" className="hover:text-ember transition-colors">Transparency</a>
+            <a href="#engine" className="hover:text-ember-text transition-colors">The Engine</a>
+            <a href="#pulse" className="hover:text-ember-text transition-colors">City Pulse</a>
+            <a href="#network" className="hover:text-ember-text transition-colors">Network</a>
+            <a href="#transparency" className="hover:text-ember-text transition-colors">Transparency</a>
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <DisplayControls surface="site photography" className="hidden lg:inline-flex" />
+          <ThemeToggle />
           <button className="hidden sm:inline-flex px-4 py-2 text-sm font-semibold border border-border rounded-sm hover:bg-surface transition-all">
             Partner Login
           </button>
@@ -65,23 +73,23 @@ function Hero() {
   return (
     <header className="relative overflow-hidden">
       {/* Background hero image with overlay */}
-      <div className="absolute inset-0 -z-10">
-        <img
-          src={heroTable}
-          alt="A communal table at dusk lit by candles and string lights, families sharing a meal together"
-          className="w-full h-full object-cover opacity-40 animate-flicker"
-          width={1280}
-          height={960}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
-      </div>
+      <PhotoBackdrop
+        className="-z-10"
+        src={heroTable}
+        alt="A communal table at dusk lit by candles and string lights, families sharing a meal together"
+        imgClassName="animate-flicker"
+        width={1280}
+        height={960}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" aria-hidden="true" />
+      </PhotoBackdrop>
 
       <div className="relative px-6 pt-28 pb-40 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
         <div className="lg:col-span-7 flex flex-col justify-center animate-slide-up">
           <div className="inline-flex items-center gap-3 mb-8">
             <LiveDot />
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ember font-semibold">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ember-text font-semibold">
               Live Network Status — Operational in 128 Cities
             </span>
           </div>
@@ -99,20 +107,20 @@ function Hero() {
               Fund a Neighborhood
               <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
             </button>
-            <button className="px-8 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold text-base hover:border-ember hover:text-ember transition-all">
+            <button className="px-8 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold text-base hover:border-ember hover:text-ember-text transition-all">
               Corporate Sponsorships
             </button>
           </div>
 
           <div className="mt-14 flex items-center gap-8 text-xs font-mono text-muted-foreground">
             <div>
-              <div className="text-[10px] uppercase tracking-widest opacity-60 mb-1">Verified by</div>
-              <div className="text-foreground/80">Stripe Impact Ledger</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Verified by</div>
+              <div className="text-foreground">Stripe Impact Ledger</div>
             </div>
             <div className="h-8 w-px bg-border" />
             <div>
-              <div className="text-[10px] uppercase tracking-widest opacity-60 mb-1">Partnered with</div>
-              <div className="text-foreground/80">82 Local Nonprofits</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Partnered with</div>
+              <div className="text-foreground">82 Local Nonprofits</div>
             </div>
           </div>
         </div>
@@ -153,7 +161,7 @@ function Hero() {
           <div className="p-5 bg-surface/60 border border-border rounded-sm font-mono text-[11px] space-y-2 backdrop-blur">
             <div className="flex items-center justify-between text-muted-foreground mb-2">
               <span className="text-[10px] uppercase tracking-widest">Live Ledger</span>
-              <span className="text-[10px] opacity-60">streaming</span>
+              <span className="text-[10px] text-muted-foreground">streaming</span>
             </div>
             {[
               ["14:21", "Batch #982 → North Oak Family Center"],
@@ -162,7 +170,7 @@ function Hero() {
               ["14:11", "12 meals delivered · Riverside Seniors"],
             ].map(([t, msg]) => (
               <div key={t} className="flex gap-3 text-muted-foreground">
-                <span className="text-ember">{t}</span>
+                <span className="text-ember-text">{t}</span>
                 <span className="truncate">{msg}</span>
               </div>
             ))}
@@ -195,7 +203,7 @@ function HowItWorks() {
     <section className="border-y border-border bg-surface/40 py-28 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="max-w-2xl mb-20">
-          <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+          <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
             00 // How the Engine Works
           </span>
           <h2 className="text-4xl md:text-5xl font-display leading-[1.05]">
@@ -207,7 +215,7 @@ function HowItWorks() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
           {steps.map((s) => (
             <div key={s.n} className="bg-background p-10 group hover:bg-surface transition-colors">
-              <div className="font-mono text-xs text-ember mb-6">{s.n}</div>
+              <div className="font-mono text-xs text-ember-text mb-6">{s.n}</div>
               <h3 className="font-display text-2xl mb-4 italic">{s.title}</h3>
               <p className="text-muted-foreground leading-relaxed text-pretty">{s.body}</p>
             </div>
@@ -224,7 +232,7 @@ function StabilizationEngine() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
           <div className="max-w-xl">
-            <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+            <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
               01 // The Stabilization Engine
             </span>
             <h2 className="text-4xl md:text-5xl font-display leading-tight mb-5">
@@ -280,8 +288,8 @@ function StabilizationEngine() {
                   />
                 </div>
               ))}
-              <div className="absolute top-1/3 left-0 right-0 border-t border-dashed border-foreground/30 pointer-events-none">
-                <span className="absolute -top-4 right-0 text-[9px] text-foreground/60 bg-surface-elevated px-1">
+              <div className="absolute top-1/3 left-0 right-0 border-t border-dashed border-foreground/60 pointer-events-none">
+                <span className="absolute -top-4 right-0 text-[9px] text-foreground bg-surface-elevated px-1">
                   GUARANTEED_FLOOR
                 </span>
               </div>
@@ -298,7 +306,7 @@ function StabilizationEngine() {
               </div>
               <div>
                 <div className="text-muted-foreground mb-1 uppercase">Labor Subsidy</div>
-                <div className="text-base text-ember font-medium">+ $2,400.00</div>
+                <div className="text-base text-ember-text font-medium">+ $2,400.00</div>
               </div>
             </div>
           </div>
@@ -333,6 +341,7 @@ function StabilizationEngine() {
 }
 
 function CityPulse() {
+  const { imageOpacity, scrim } = useDisplaySettings();
   const metrics = [
     { label: "Neighborhoods Impacted", value: "42", note: "Coverage: 85% of city", pct: 85 },
     { label: "Families Supported", value: "8,201", note: "Active households this week", pct: 62 },
@@ -343,7 +352,7 @@ function CityPulse() {
     <section id="pulse" className="py-28 px-6 border-t border-border">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20 max-w-3xl mx-auto">
-          <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 inline-block">
+          <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 inline-block">
             02 // The City Pulse
           </span>
           <h2 className="text-5xl md:text-6xl font-display tracking-tight mb-5 leading-[1.05]">
@@ -364,7 +373,7 @@ function CityPulse() {
               <div className="text-[10px] font-mono text-muted-foreground mb-3 uppercase tracking-widest">
                 {m.label}
               </div>
-              <div className="text-5xl font-display mb-5 text-foreground group-hover:text-ember transition-colors">
+              <div className="text-5xl font-display mb-5 text-foreground group-hover:text-ember-text transition-colors">
                 {m.value}
               </div>
               <div className="h-[2px] bg-surface w-full overflow-hidden">
@@ -380,32 +389,36 @@ function CityPulse() {
           ))}
         </div>
 
-        <div className="relative bg-surface-elevated border border-border rounded-sm overflow-hidden">
+        <div className="mb-4 flex items-center justify-between gap-4">
+          <h3 className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
+            Live dispatch map · {DISPATCHES.length} tracked batches
+          </h3>
+          <DisplayControls surface="city map" />
+        </div>
+
+        <div
+          className="relative bg-surface-elevated border border-border rounded-sm overflow-hidden"
+          role="group"
+          aria-label="Live city dispatch map. Use Tab to move between dispatch hotspots and Enter to open a ledger."
+        >
           <img
             src={cityMap}
             alt="Dark city heat map with glowing amber dots representing live meal distribution hubs"
-            className="w-full h-[420px] object-cover opacity-90"
+            className="w-full h-[420px] object-cover"
+            style={{ opacity: imageOpacity / 100 }}
             width={1920}
             height={640}
             loading="lazy"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
+          <div
+            className="absolute inset-0 bg-background"
+            style={{ opacity: scrim / 100 }}
+            aria-hidden="true"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" aria-hidden="true" />
 
-          {/* Live pulses overlay */}
-          {[
-            { top: "32%", left: "44%" },
-            { top: "55%", left: "52%" },
-            { top: "40%", left: "60%" },
-            { top: "62%", left: "38%" },
-          ].map((pos, i) => (
-            <span
-              key={i}
-              className="absolute size-3"
-              style={pos}
-            >
-              <span className="absolute inset-0 rounded-full bg-ember animate-ember-ping" />
-              <span className="absolute inset-0 rounded-full bg-ember-glow shadow-[0_0_16px_var(--ember-glow)]" />
-            </span>
+          {DISPATCHES.map((d, i) => (
+            <MapHotspot key={d.id} dispatch={d} index={i} />
           ))}
 
           <div className="absolute bottom-6 left-6 right-6 flex flex-wrap justify-between items-end gap-4">
@@ -435,7 +448,7 @@ function Network() {
     <section id="network" className="bg-surface/40 border-t border-border py-28 px-6">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 items-center">
         <div className="lg:col-span-5">
-          <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+          <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
             03 // The Network
           </span>
           <h2 className="text-4xl md:text-5xl font-display leading-tight mb-6">
@@ -450,7 +463,7 @@ function Network() {
             <button className="px-6 py-3 bg-ember text-primary-foreground font-semibold text-sm hover:bg-ember-glow transition-colors">
               Join as a Kitchen
             </button>
-            <button className="px-6 py-3 border border-border font-semibold text-sm hover:border-ember hover:text-ember transition-colors">
+            <button className="px-6 py-3 border border-border font-semibold text-sm hover:border-ember hover:text-ember-text transition-colors">
               Volunteer
             </button>
           </div>
@@ -463,12 +476,12 @@ function Network() {
               className="bg-background p-6 flex items-center justify-between group hover:bg-surface transition-colors"
             >
               <div>
-                <div className="font-mono text-[10px] text-ember mb-2">
+                <div className="font-mono text-[10px] text-ember-text mb-2">
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="font-display text-xl">{p}</div>
               </div>
-              <span className="text-muted-foreground group-hover:text-ember group-hover:translate-x-1 transition-all">
+              <span className="text-muted-foreground group-hover:text-ember-text group-hover:translate-x-1 transition-all">
                 →
               </span>
             </div>
@@ -512,7 +525,7 @@ function Sponsorship() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div className="max-w-xl">
-            <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+            <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
               04 // Sponsorship & Cities
             </span>
             <h2 className="text-4xl md:text-5xl font-display leading-tight">
@@ -536,26 +549,26 @@ function Sponsorship() {
               }`}
             >
               {t.featured && (
-                <div className="absolute -top-3 left-8 px-3 py-1 bg-background text-ember text-[10px] font-mono uppercase tracking-widest border border-border">
+                <div className="absolute -top-3 left-8 px-3 py-1 bg-background text-ember-text text-[10px] font-mono uppercase tracking-widest border border-border">
                   Most Impact
                 </div>
               )}
               <div
                 className={`font-mono text-[10px] uppercase tracking-widest mb-4 ${
-                  t.featured ? "opacity-80" : "text-muted-foreground"
+                  t.featured ? "text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
                 {t.tag}
               </div>
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-5xl font-display italic">{t.price}</span>
-                <span className={t.featured ? "opacity-80 text-sm" : "text-muted-foreground text-sm"}>
+                <span className={t.featured ? "text-primary-foreground text-sm" : "text-muted-foreground text-sm"}>
                   {t.cadence}
                 </span>
               </div>
               <div
                 className={`text-sm mb-6 ${
-                  t.featured ? "opacity-80" : "text-muted-foreground"
+                  t.featured ? "text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
                 {t.meals}
@@ -582,8 +595,14 @@ function FinalCTA() {
   return (
     <section className="relative py-32 px-6 border-t border-border overflow-hidden">
       <div className="absolute inset-0 -z-10">
-        <img src={heroTable} alt="" className="w-full h-full object-cover opacity-20" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/70" />
+        <PhotoBackdrop
+          src={heroTable}
+          alt=""
+          intensity={0.5}
+          loading="lazy"
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/70" aria-hidden="true" />
+        </PhotoBackdrop>
       </div>
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-5xl md:text-7xl font-display leading-[1.05] mb-8 text-balance">
@@ -598,7 +617,7 @@ function FinalCTA() {
           <button className="px-10 py-4 bg-ember text-primary-foreground font-semibold hover:bg-ember-glow transition-colors shadow-[0_30px_80px_-20px_var(--ember-glow)]">
             Fund Your First Meal — $4
           </button>
-          <button className="px-10 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold hover:border-ember hover:text-ember transition-all">
+          <button className="px-10 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold hover:border-ember hover:text-ember-text transition-all">
             Talk to the Cities Team
           </button>
         </div>
@@ -646,7 +665,7 @@ function Footer() {
               <ul className="space-y-3 text-sm">
                 {col.items.map((i) => (
                   <li key={i}>
-                    <a href="#" className="hover:text-ember transition-colors">{i}</a>
+                    <a href="#" className="hover:text-ember-text transition-colors">{i}</a>
                   </li>
                 ))}
               </ul>
