@@ -65,13 +65,24 @@ function Details({ d }: { d: Dispatch }) {
 
 export function MapHotspot({ dispatch, index }: { dispatch: Dispatch; index: number }) {
   const [open, setOpen] = useState(false);
+  const [hover, setHover] = useState(false);
   const d = dispatch;
+  const descId = `dispatch-desc-${d.id}`;
 
   const trigger = (
     <button
       type="button"
       onClick={() => setOpen(true)}
-      aria-label={`${d.kitchen}, ${d.neighborhood} — ${d.meals} meals, ${d.status}. View dispatch ledger.`}
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          setHover(false);
+          e.currentTarget.blur();
+        }
+      }}
+      aria-haspopup="dialog"
+      aria-expanded={open}
+      aria-describedby={descId}
+      aria-label={`Dispatch ${d.id}: ${d.kitchen}, ${d.neighborhood}. Open full ledger.`}
       className="group absolute flex min-h-11 min-w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       style={{
         top: d.top,
@@ -79,6 +90,9 @@ export function MapHotspot({ dispatch, index }: { dispatch: Dispatch; index: num
         animation: `slideUp 0.6s cubic-bezier(0.16,1,0.3,1) ${index * 120}ms both`,
       }}
     >
+      <span id={descId} className="sr-only">
+        {`${d.meals} meals from ${d.kitchen}, a ${d.kitchenType.toLowerCase()} in ${d.neighborhood}. Status ${d.status}, estimated arrival ${d.eta}. Funded by ${d.fundedBy}. Recipients: ${d.recipients}.`}
+      </span>
       <span className="relative flex size-3.5 items-center justify-center">
         {d.status !== "delivered" && (
           <span className="absolute inset-0 rounded-full bg-ember animate-ember-ping" aria-hidden="true" />
