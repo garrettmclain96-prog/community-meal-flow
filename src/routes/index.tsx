@@ -113,13 +113,13 @@ function Hero() {
 
           <div className="mt-14 flex items-center gap-8 text-xs font-mono text-muted-foreground">
             <div>
-              <div className="text-[10px] uppercase tracking-widest opacity-60 mb-1">Verified by</div>
-              <div className="text-foreground/80">Stripe Impact Ledger</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Verified by</div>
+              <div className="text-foreground">Stripe Impact Ledger</div>
             </div>
             <div className="h-8 w-px bg-border" />
             <div>
-              <div className="text-[10px] uppercase tracking-widest opacity-60 mb-1">Partnered with</div>
-              <div className="text-foreground/80">82 Local Nonprofits</div>
+              <div className="text-[10px] uppercase tracking-widest text-muted-foreground mb-1">Partnered with</div>
+              <div className="text-foreground">82 Local Nonprofits</div>
             </div>
           </div>
         </div>
@@ -160,7 +160,7 @@ function Hero() {
           <div className="p-5 bg-surface/60 border border-border rounded-sm font-mono text-[11px] space-y-2 backdrop-blur">
             <div className="flex items-center justify-between text-muted-foreground mb-2">
               <span className="text-[10px] uppercase tracking-widest">Live Ledger</span>
-              <span className="text-[10px] opacity-60">streaming</span>
+              <span className="text-[10px] text-muted-foreground">streaming</span>
             </div>
             {[
               ["14:21", "Batch #982 → North Oak Family Center"],
@@ -169,7 +169,7 @@ function Hero() {
               ["14:11", "12 meals delivered · Riverside Seniors"],
             ].map(([t, msg]) => (
               <div key={t} className="flex gap-3 text-muted-foreground">
-                <span className="text-ember">{t}</span>
+                <span className="text-ember-text">{t}</span>
                 <span className="truncate">{msg}</span>
               </div>
             ))}
@@ -287,8 +287,8 @@ function StabilizationEngine() {
                   />
                 </div>
               ))}
-              <div className="absolute top-1/3 left-0 right-0 border-t border-dashed border-foreground/30 pointer-events-none">
-                <span className="absolute -top-4 right-0 text-[9px] text-foreground/60 bg-surface-elevated px-1">
+              <div className="absolute top-1/3 left-0 right-0 border-t border-dashed border-foreground/60 pointer-events-none">
+                <span className="absolute -top-4 right-0 text-[9px] text-foreground bg-surface-elevated px-1">
                   GUARANTEED_FLOOR
                 </span>
               </div>
@@ -549,20 +549,20 @@ function Sponsorship() {
               )}
               <div
                 className={`font-mono text-[10px] uppercase tracking-widest mb-4 ${
-                  t.featured ? "opacity-80" : "text-muted-foreground"
+                  t.featured ? "text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
                 {t.tag}
               </div>
               <div className="flex items-baseline gap-2 mb-2">
                 <span className="text-5xl font-display italic">{t.price}</span>
-                <span className={t.featured ? "opacity-80 text-sm" : "text-muted-foreground text-sm"}>
+                <span className={t.featured ? "text-primary-foreground text-sm" : "text-muted-foreground text-sm"}>
                   {t.cadence}
                 </span>
               </div>
               <div
                 className={`text-sm mb-6 ${
-                  t.featured ? "opacity-80" : "text-muted-foreground"
+                  t.featured ? "text-primary-foreground" : "text-muted-foreground"
                 }`}
               >
                 {t.meals}
