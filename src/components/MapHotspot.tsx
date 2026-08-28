@@ -113,15 +113,16 @@ export function MapHotspot({ dispatch, index }: { dispatch: Dispatch; index: num
 
   return (
     <>
-      <HoverCard openDelay={80} closeDelay={80}>
+      <HoverCard open={hover && !open} onOpenChange={setHover} openDelay={80} closeDelay={80}>
         <HoverCardTrigger asChild>{trigger}</HoverCardTrigger>
         <HoverCardContent
           side="top"
+          aria-hidden="true"
           className="w-72 border-border-strong bg-popover text-popover-foreground"
         >
           <Details d={d} />
           <p className="mt-3 border-t border-border pt-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
-            Click for full ledger
+            Press Enter for the full ledger
           </p>
         </HoverCardContent>
       </HoverCard>
