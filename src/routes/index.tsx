@@ -47,10 +47,10 @@ function Nav() {
             Table<span className="text-ember">Forward</span>
           </span>
           <div className="hidden md:flex gap-7 text-sm font-medium text-muted-foreground">
-            <a href="#engine" className="hover:text-ember transition-colors">The Engine</a>
-            <a href="#pulse" className="hover:text-ember transition-colors">City Pulse</a>
-            <a href="#network" className="hover:text-ember transition-colors">Network</a>
-            <a href="#transparency" className="hover:text-ember transition-colors">Transparency</a>
+            <a href="#engine" className="hover:text-ember-text transition-colors">The Engine</a>
+            <a href="#pulse" className="hover:text-ember-text transition-colors">City Pulse</a>
+            <a href="#network" className="hover:text-ember-text transition-colors">Network</a>
+            <a href="#transparency" className="hover:text-ember-text transition-colors">Transparency</a>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -88,7 +88,7 @@ function Hero() {
         <div className="lg:col-span-7 flex flex-col justify-center animate-slide-up">
           <div className="inline-flex items-center gap-3 mb-8">
             <LiveDot />
-            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ember font-semibold">
+            <span className="font-mono text-[10px] uppercase tracking-[0.2em] text-ember-text font-semibold">
               Live Network Status — Operational in 128 Cities
             </span>
           </div>
@@ -106,7 +106,7 @@ function Hero() {
               Fund a Neighborhood
               <span className="inline-block ml-2 group-hover:translate-x-1 transition-transform">→</span>
             </button>
-            <button className="px-8 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold text-base hover:border-ember hover:text-ember transition-all">
+            <button className="px-8 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold text-base hover:border-ember hover:text-ember-text transition-all">
               Corporate Sponsorships
             </button>
           </div>
@@ -202,7 +202,7 @@ function HowItWorks() {
     <section className="border-y border-border bg-surface/40 py-28 px-6">
       <div className="max-w-7xl mx-auto">
         <div className="max-w-2xl mb-20">
-          <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+          <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
             00 // How the Engine Works
           </span>
           <h2 className="text-4xl md:text-5xl font-display leading-[1.05]">
@@ -214,7 +214,7 @@ function HowItWorks() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-border">
           {steps.map((s) => (
             <div key={s.n} className="bg-background p-10 group hover:bg-surface transition-colors">
-              <div className="font-mono text-xs text-ember mb-6">{s.n}</div>
+              <div className="font-mono text-xs text-ember-text mb-6">{s.n}</div>
               <h3 className="font-display text-2xl mb-4 italic">{s.title}</h3>
               <p className="text-muted-foreground leading-relaxed text-pretty">{s.body}</p>
             </div>
@@ -231,7 +231,7 @@ function StabilizationEngine() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-end gap-8 mb-16">
           <div className="max-w-xl">
-            <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+            <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
               01 // The Stabilization Engine
             </span>
             <h2 className="text-4xl md:text-5xl font-display leading-tight mb-5">
@@ -305,7 +305,7 @@ function StabilizationEngine() {
               </div>
               <div>
                 <div className="text-muted-foreground mb-1 uppercase">Labor Subsidy</div>
-                <div className="text-base text-ember font-medium">+ $2,400.00</div>
+                <div className="text-base text-ember-text font-medium">+ $2,400.00</div>
               </div>
             </div>
           </div>
@@ -350,7 +350,7 @@ function CityPulse() {
     <section id="pulse" className="py-28 px-6 border-t border-border">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-20 max-w-3xl mx-auto">
-          <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 inline-block">
+          <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 inline-block">
             02 // The City Pulse
           </span>
           <h2 className="text-5xl md:text-6xl font-display tracking-tight mb-5 leading-[1.05]">
@@ -371,7 +371,7 @@ function CityPulse() {
               <div className="text-[10px] font-mono text-muted-foreground mb-3 uppercase tracking-widest">
                 {m.label}
               </div>
-              <div className="text-5xl font-display mb-5 text-foreground group-hover:text-ember transition-colors">
+              <div className="text-5xl font-display mb-5 text-foreground group-hover:text-ember-text transition-colors">
                 {m.value}
               </div>
               <div className="h-[2px] bg-surface w-full overflow-hidden">
@@ -442,7 +442,7 @@ function Network() {
     <section id="network" className="bg-surface/40 border-t border-border py-28 px-6">
       <div className="max-w-7xl mx-auto grid lg:grid-cols-12 gap-16 items-center">
         <div className="lg:col-span-5">
-          <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+          <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
             03 // The Network
           </span>
           <h2 className="text-4xl md:text-5xl font-display leading-tight mb-6">
@@ -457,7 +457,7 @@ function Network() {
             <button className="px-6 py-3 bg-ember text-primary-foreground font-semibold text-sm hover:bg-ember-glow transition-colors">
               Join as a Kitchen
             </button>
-            <button className="px-6 py-3 border border-border font-semibold text-sm hover:border-ember hover:text-ember transition-colors">
+            <button className="px-6 py-3 border border-border font-semibold text-sm hover:border-ember hover:text-ember-text transition-colors">
               Volunteer
             </button>
           </div>
@@ -470,12 +470,12 @@ function Network() {
               className="bg-background p-6 flex items-center justify-between group hover:bg-surface transition-colors"
             >
               <div>
-                <div className="font-mono text-[10px] text-ember mb-2">
+                <div className="font-mono text-[10px] text-ember-text mb-2">
                   {String(i + 1).padStart(2, "0")}
                 </div>
                 <div className="font-display text-xl">{p}</div>
               </div>
-              <span className="text-muted-foreground group-hover:text-ember group-hover:translate-x-1 transition-all">
+              <span className="text-muted-foreground group-hover:text-ember-text group-hover:translate-x-1 transition-all">
                 →
               </span>
             </div>
@@ -519,7 +519,7 @@ function Sponsorship() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
           <div className="max-w-xl">
-            <span className="font-mono text-[10px] text-ember font-bold uppercase tracking-[0.2em] mb-4 block">
+            <span className="font-mono text-[10px] text-ember-text font-bold uppercase tracking-[0.2em] mb-4 block">
               04 // Sponsorship & Cities
             </span>
             <h2 className="text-4xl md:text-5xl font-display leading-tight">
@@ -543,7 +543,7 @@ function Sponsorship() {
               }`}
             >
               {t.featured && (
-                <div className="absolute -top-3 left-8 px-3 py-1 bg-background text-ember text-[10px] font-mono uppercase tracking-widest border border-border">
+                <div className="absolute -top-3 left-8 px-3 py-1 bg-background text-ember-text text-[10px] font-mono uppercase tracking-widest border border-border">
                   Most Impact
                 </div>
               )}
@@ -605,7 +605,7 @@ function FinalCTA() {
           <button className="px-10 py-4 bg-ember text-primary-foreground font-semibold hover:bg-ember-glow transition-colors shadow-[0_30px_80px_-20px_var(--ember-glow)]">
             Fund Your First Meal — $4
           </button>
-          <button className="px-10 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold hover:border-ember hover:text-ember transition-all">
+          <button className="px-10 py-4 border border-border bg-surface/40 backdrop-blur-sm font-semibold hover:border-ember hover:text-ember-text transition-all">
             Talk to the Cities Team
           </button>
         </div>
@@ -653,7 +653,7 @@ function Footer() {
               <ul className="space-y-3 text-sm">
                 {col.items.map((i) => (
                   <li key={i}>
-                    <a href="#" className="hover:text-ember transition-colors">{i}</a>
+                    <a href="#" className="hover:text-ember-text transition-colors">{i}</a>
                   </li>
                 ))}
               </ul>
