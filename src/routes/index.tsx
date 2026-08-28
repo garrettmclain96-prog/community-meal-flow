@@ -54,6 +54,8 @@ function Nav() {
           </div>
         </div>
         <div className="flex items-center gap-3">
+          <DisplayControls surface="site photography" className="hidden lg:inline-flex" />
+          <ThemeToggle />
           <button className="hidden sm:inline-flex px-4 py-2 text-sm font-semibold border border-border rounded-sm hover:bg-surface transition-all">
             Partner Login
           </button>
@@ -70,17 +72,17 @@ function Hero() {
   return (
     <header className="relative overflow-hidden">
       {/* Background hero image with overlay */}
-      <div className="absolute inset-0 -z-10">
-        <img
-          src={heroTable}
-          alt="A communal table at dusk lit by candles and string lights, families sharing a meal together"
-          className="w-full h-full object-cover opacity-40 animate-flicker"
-          width={1280}
-          height={960}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/80 to-background" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" />
-      </div>
+      <PhotoBackdrop
+        className="-z-10"
+        src={heroTable}
+        alt="A communal table at dusk lit by candles and string lights, families sharing a meal together"
+        imgClassName="animate-flicker"
+        width={1280}
+        height={960}
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/70 to-background" aria-hidden="true" />
+        <div className="absolute inset-0 bg-gradient-to-r from-background via-background/40 to-transparent" aria-hidden="true" />
+      </PhotoBackdrop>
 
       <div className="relative px-6 pt-28 pb-40 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-16">
         <div className="lg:col-span-7 flex flex-col justify-center animate-slide-up">
