@@ -1,6 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import heroTable from "@/assets/hero-table.jpg";
 import cityMap from "@/assets/city-map.jpg";
+import { PhotoBackdrop } from "@/components/PhotoBackdrop";
+import { DisplayControls } from "@/components/DisplayControls";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { MapHotspot } from "@/components/MapHotspot";
+import { DISPATCHES } from "@/data/dispatches";
 
 export const Route = createFileRoute("/")({
   head: () => ({
