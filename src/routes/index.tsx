@@ -6,6 +6,7 @@ import { DisplayControls } from "@/components/DisplayControls";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MapHotspot } from "@/components/MapHotspot";
 import { DISPATCHES } from "@/data/dispatches";
+import { useDisplaySettings } from "@/lib/display-settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -340,6 +341,7 @@ function StabilizationEngine() {
 }
 
 function CityPulse() {
+  const { imageOpacity, scrim } = useDisplaySettings();
   const metrics = [
     { label: "Neighborhoods Impacted", value: "42", note: "Coverage: 85% of city", pct: 85 },
     { label: "Families Supported", value: "8,201", note: "Active households this week", pct: 62 },
@@ -593,8 +595,14 @@ function FinalCTA() {
   return (
     <section className="relative py-32 px-6 border-t border-border overflow-hidden">
       <div className="absolute inset-0 -z-10">
-        <img src={heroTable} alt="" className="w-full h-full object-cover opacity-20" loading="lazy" />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/70" />
+        <PhotoBackdrop
+          src={heroTable}
+          alt=""
+          intensity={0.5}
+          loading="lazy"
+        >
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/90 to-background/70" aria-hidden="true" />
+        </PhotoBackdrop>
       </div>
       <div className="max-w-4xl mx-auto text-center">
         <h2 className="text-5xl md:text-7xl font-display leading-[1.05] mb-8 text-balance">
