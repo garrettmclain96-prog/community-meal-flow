@@ -6,7 +6,6 @@ import { DisplayControls } from "@/components/DisplayControls";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { MapHotspot } from "@/components/MapHotspot";
 import { DISPATCHES } from "@/data/dispatches";
-import { useDisplaySettings } from "@/lib/display-settings";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -341,7 +340,6 @@ function StabilizationEngine() {
 }
 
 function CityPulse() {
-  const { imageOpacity, scrim } = useDisplaySettings();
   const metrics = [
     { label: "Neighborhoods Impacted", value: "42", note: "Coverage: 85% of city", pct: 85 },
     { label: "Families Supported", value: "8,201", note: "Active households this week", pct: 62 },
@@ -405,14 +403,14 @@ function CityPulse() {
             src={cityMap}
             alt="Dark city heat map with glowing amber dots representing live meal distribution hubs"
             className="w-full h-[420px] object-cover"
-            style={{ opacity: imageOpacity / 100 }}
+            style={{ opacity: "var(--tf-img-opacity, 0.42)" }}
             width={1920}
             height={640}
             loading="lazy"
           />
           <div
             className="absolute inset-0 bg-background"
-            style={{ opacity: scrim / 100 }}
+            style={{ opacity: "var(--tf-scrim, 0.62)" }}
             aria-hidden="true"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" aria-hidden="true" />
@@ -686,7 +684,7 @@ function Footer() {
 
 function Index() {
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-dvh bg-background text-foreground">
       <Nav />
       <Hero />
       <HowItWorks />

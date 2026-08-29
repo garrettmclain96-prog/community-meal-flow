@@ -1,5 +1,3 @@
-import { useDisplaySettings } from "@/lib/display-settings";
-
 interface Props {
   src: string;
   alt: string;
@@ -15,7 +13,12 @@ interface Props {
 
 /**
  * Renders a dusk photograph behind content, honouring the user's saved
- * opacity + contrast-scrim preferences from DisplayProvider.
+ * opacity + contrast-scrim preferences.
+ *
+ * Reads the CSS custom properties `--tf-img-opacity` / `--tf-scrim`, which are
+ * set by the inline boot script in <head> before first paint and updated live
+ * by DisplayProvider. Using variables (rather than React state) keeps the SSR
+ * and client markup identical while still applying saved prefs immediately.
  */
 export function PhotoBackdrop({
   src,
@@ -28,8 +31,6 @@ export function PhotoBackdrop({
   intensity = 1,
   children,
 }: Props) {
-  const { imageOpacity, scrim } = useDisplaySettings();
-
   return (
     <div className={`absolute inset-0 ${className}`}>
       <img
@@ -39,11 +40,11 @@ export function PhotoBackdrop({
         height={height}
         loading={loading}
         className={`size-full object-cover ${imgClassName}`}
-        style={{ opacity: (imageOpacity / 100) * intensity }}
+        style={{ opacity: `calc(var(--tf-img-opacity, 0.42) * ${intensity})` }}
       />
       <div
         className="absolute inset-0 bg-background"
-        style={{ opacity: scrim / 100 }}
+        style={{ opacity: "var(--tf-scrim, 0.62)" }}
         aria-hidden="true"
       />
       {children}
