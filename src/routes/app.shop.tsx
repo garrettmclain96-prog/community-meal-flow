@@ -22,8 +22,6 @@ export const Route = createFileRoute("/app/shop")({
   component: ShopPage,
 });
 
-export default function noop() {}
-
 function ShopPage() {
   const { state, ready, groceryList, stockRemainders, toggleChecked } = useMealForge();
 
