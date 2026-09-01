@@ -228,6 +228,162 @@ export const SEED_RECIPES: Recipe[] = [
       "Crisp them in a hot skillet with oil, onion and paprika.",
       "Wilt in the spinach, make wells and fry the eggs on top.",
     ]),
+
+  seed("chicken_rice_soup", "Chicken, rice and carrot soup", 6, 45,
+    ["dinner", "soup", "budget", "batch"], ["pot"],
+    [
+      ri("chicken_thigh", 1.5, "lb"), ri("rice", 1, "cup"), ri("carrot", 0.75, "lb"),
+      ri("celery", 3, "stalk"), ri("onion", 1, "each"), ri("chicken_broth", 32, "floz"),
+      ri("olive_oil", 2, "tbsp"), ri("salt", 1.5, "tsp"), ri("black_pepper", 0.5, "tsp"),
+    ],
+    [
+      "Sweat onion, carrot and celery in oil until soft.",
+      "Add chicken, broth and 4 cups water; simmer 20 minutes.",
+      "Shred the chicken, add rice and simmer 15 minutes more; season.",
+    ]),
+
+  seed("beans_and_rice", "Pinto beans and rice with cumin", 6, 35,
+    ["dinner", "vegetarian", "budget", "pantry"], ["pot", "skillet"],
+    [
+      ri("pinto_beans", 3, "can"), ri("rice", 2, "cup"), ri("onion", 1, "each"),
+      ri("garlic", 3, "clove"), ri("cumin", 2, "tsp"), ri("chili_powder", 1, "tsp"),
+      ri("vegetable_oil", 2, "tbsp"), ri("lime", 1, "each"), ri("cilantro", 0.5, "bunch", { optional: true }),
+    ],
+    [
+      "Cook the rice with a pinch of salt.",
+      "Fry onion and garlic, add spices, then the beans with their liquid.",
+      "Simmer 15 minutes, mash lightly, finish with lime and cilantro.",
+    ]),
+
+  seed("baked_ziti", "Baked pasta with tomato and cheddar", 6, 50,
+    ["dinner", "vegetarian", "batch", "oven"], ["oven", "pot"],
+    [
+      ri("pasta", 16, "oz"), ri("canned_tomatoes", 28, "oz"), ri("onion", 1, "each"),
+      ri("garlic", 4, "clove"), ri("cheddar", 8, "oz"), ri("olive_oil", 2, "tbsp"),
+      ri("oregano", 2, "tsp"), ri("parmesan", 2, "oz", { optional: true }),
+    ],
+    [
+      "Boil the pasta two minutes short of al dente.",
+      "Build a quick sauce with oil, onion, garlic, tomatoes and oregano.",
+      "Combine, top with cheese and bake 25 minutes at 400°F.",
+    ]),
+
+  seed("peanut_noodles", "Peanut noodles with cabbage and carrot", 4, 25,
+    ["dinner", "vegetarian", "fast", "budget"], ["pot", "skillet"],
+    [
+      ri("pasta", 12, "oz"), ri("peanut_butter", 0.5, "cup"), ri("soy_sauce", 3, "tbsp"),
+      ri("cabbage", 0.5, "each"), ri("carrot", 0.5, "lb"), ri("garlic", 3, "clove"),
+      ri("ginger", 1, "tbsp"), ri("scallion", 0.5, "bunch"),
+    ],
+    [
+      "Boil the noodles and reserve a cup of cooking water.",
+      "Whisk peanut butter, soy sauce, garlic, ginger and hot water into a sauce.",
+      "Toss noodles with shredded cabbage, carrot, sauce and scallions.",
+    ]),
+
+  seed("shepherds_pie", "Turkey and potato shepherd's pie", 6, 60,
+    ["dinner", "oven", "batch"], ["oven", "skillet", "pot"],
+    [
+      ri("ground_turkey", 1.5, "lb"), ri("potato", 2.5, "lb"), ri("frozen_peas", 10, "oz"),
+      ri("carrot", 0.5, "lb"), ri("onion", 1, "each"), ri("butter", 3, "tbsp"),
+      ri("milk", 0.5, "cup"), ri("chicken_broth", 8, "floz"), ri("salt", 1.5, "tsp"),
+    ],
+    [
+      "Boil and mash the potatoes with butter and milk.",
+      "Brown the turkey with onion and carrot, add broth and peas, simmer to thicken.",
+      "Top with mash and bake 25 minutes at 400°F until browned.",
+    ]),
+
+  seed("egg_curry", "Egg and chickpea curry", 4, 30,
+    ["dinner", "vegetarian", "fast", "budget"], ["skillet", "pot"],
+    [
+      ri("eggs", 8, "each"), ri("chickpeas", 2, "can"), ri("coconut_milk", 13.5, "oz"),
+      ri("onion", 1, "each"), ri("garlic", 3, "clove"), ri("ginger", 1, "tbsp"),
+      ri("curry_powder", 1, "tbsp"), ri("canned_tomatoes", 15, "oz"), ri("rice", 1.5, "cup"),
+    ],
+    [
+      "Hard-boil the eggs and cook the rice.",
+      "Fry onion, garlic, ginger and curry powder; add tomatoes and coconut milk.",
+      "Add chickpeas, simmer 10 minutes, halve the eggs into the sauce.",
+    ]),
+
+  seed("beef_stirfry", "Beef and pepper stir-fry", 4, 25,
+    ["dinner", "fast"], ["skillet"],
+    [
+      ri("ground_beef", 1, "lb"), ri("bell_pepper", 2, "each"), ri("onion", 1, "each"),
+      ri("soy_sauce", 3, "tbsp"), ri("garlic", 3, "clove"), ri("ginger", 1, "tbsp"),
+      ri("rice", 1.5, "cup"), ri("vegetable_oil", 2, "tbsp"), ri("scallion", 0.5, "bunch"),
+    ],
+    [
+      "Start the rice.",
+      "Sear the beef hard in a hot skillet, then add peppers and onion.",
+      "Add garlic, ginger and soy sauce, toss one minute, finish with scallion.",
+    ]),
+
+  seed("tuna_free_pasta_salad", "Chickpea pasta salad", 6, 20,
+    ["lunch", "vegetarian", "fast", "no-cook"], ["pot"],
+    [
+      ri("pasta", 12, "oz"), ri("chickpeas", 2, "can"), ri("tomato", 1, "lb"),
+      ri("zucchini", 1, "lb"), ri("olive_oil", 4, "tbsp"), ri("lemon", 2, "each"),
+      ri("oregano", 2, "tsp"), ri("parmesan", 2, "oz", { optional: true }),
+    ],
+    [
+      "Boil the pasta, rinse cool.",
+      "Toss with chickpeas, diced tomato and raw zucchini ribbons.",
+      "Dress with oil, lemon, oregano, salt and pepper.",
+    ]),
+
+  seed("potato_leek_chowder", "Potato, corn and cheddar chowder", 6, 40,
+    ["dinner", "vegetarian", "soup", "batch"], ["pot"],
+    [
+      ri("potato", 2.5, "lb"), ri("frozen_corn", 16, "oz"), ri("onion", 1, "each"),
+      ri("celery", 3, "stalk"), ri("milk", 3, "cup"), ri("butter", 3, "tbsp"),
+      ri("flour", 3, "tbsp"), ri("veg_broth", 32, "floz"), ri("cheddar", 4, "oz"),
+    ],
+    [
+      "Cook onion and celery in butter, stir in flour for one minute.",
+      "Add broth and diced potato, simmer until tender.",
+      "Add milk and corn, warm through, melt in the cheddar off heat.",
+    ]),
+
+  seed("chicken_tortilla_bake", "Chicken tortilla bake", 6, 50,
+    ["dinner", "oven", "batch"], ["oven", "skillet"],
+    [
+      ri("chicken_breast", 1.5, "lb"), ri("corn_tortillas", 12, "each"), ri("black_beans", 2, "can"),
+      ri("canned_tomatoes", 15, "oz"), ri("cheddar", 6, "oz"), ri("onion", 1, "each"),
+      ri("cumin", 2, "tsp"), ri("chili_powder", 1, "tbsp"), ri("sour_cream", 4, "oz", { optional: true }),
+    ],
+    [
+      "Poach and shred the chicken; mix with beans, tomatoes, onion and spices.",
+      "Layer tortillas, filling and cheese twice in a baking dish.",
+      "Bake 25 minutes at 375°F until bubbling.",
+    ]),
+
+  seed("lentil_bolognese", "Lentil bolognese", 6, 45,
+    ["dinner", "vegetarian", "budget", "batch"], ["pot"],
+    [
+      ri("lentils", 1.5, "cup"), ri("pasta", 16, "oz"), ri("canned_tomatoes", 28, "oz"),
+      ri("carrot", 0.5, "lb"), ri("celery", 3, "stalk"), ri("onion", 1, "each"),
+      ri("garlic", 4, "clove"), ri("olive_oil", 3, "tbsp"), ri("oregano", 2, "tsp"),
+    ],
+    [
+      "Finely dice the vegetables and soften them in oil.",
+      "Add lentils, tomatoes and 3 cups water; simmer 30 minutes.",
+      "Boil the pasta and toss with the sauce.",
+    ]),
+
+  seed("breakfast_for_dinner", "Oat pancakes with eggs and greens", 4, 30,
+    ["dinner", "vegetarian", "fast", "budget"], ["skillet"],
+    [
+      ri("oats", 2, "cup"), ri("eggs", 6, "each"), ri("milk", 1.5, "cup"),
+      ri("flour", 1, "cup"), ri("butter", 3, "tbsp"), ri("sugar", 2, "tbsp"),
+      ri("spinach", 5, "oz"),
+    ],
+    [
+      "Blend oats, flour, milk, two eggs and sugar into a batter; rest 10 minutes.",
+      "Griddle the pancakes in butter.",
+      "Fry the remaining eggs and wilt the spinach alongside.",
+    ]),
 ];
 
 export const RECIPE_BY_ID: Record<string, Recipe> = Object.fromEntries(

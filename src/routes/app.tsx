@@ -1,7 +1,9 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { ChefHat, CookingPot, Home, ShoppingBasket, CalendarRange } from "lucide-react";
 
+import { AccountButton } from "@/components/AccountButton";
 import { MealForgeProvider } from "@/lib/food/store";
+
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -42,12 +44,16 @@ function MealForgeShell() {
             <Link to="/app" className="font-display text-xl font-bold italic tracking-tight">
               Meal<span className="text-ember">Forge</span>
             </Link>
-            <Link
-              to="/"
-              className="text-xs font-medium text-muted-foreground transition-colors hover:text-ember-text"
-            >
-              TableForward ↗
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link
+                to="/"
+                className="text-xs font-medium text-muted-foreground transition-colors hover:text-ember-text"
+              >
+                TableForward ↗
+              </Link>
+              <AccountButton />
+            </div>
+
           </div>
         </header>
 

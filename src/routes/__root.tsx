@@ -8,8 +8,11 @@ import {
   Scripts,
 } from "@tanstack/react-router";
 
+import { Toaster } from "@/components/ui/sonner";
+import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider, THEME_BOOT_SCRIPT } from "@/lib/theme";
 import { DisplayProvider, DISPLAY_BOOT_SCRIPT } from "@/lib/display-settings";
+
 
 import appCss from "../styles.css?url";
 
@@ -124,11 +127,15 @@ function RootComponent() {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <DisplayProvider>
-          <main>
-            <Outlet />
-          </main>
+          <AuthProvider>
+            <main>
+              <Outlet />
+            </main>
+            <Toaster position="top-center" richColors />
+          </AuthProvider>
         </DisplayProvider>
       </ThemeProvider>
     </QueryClientProvider>
   );
 }
+
