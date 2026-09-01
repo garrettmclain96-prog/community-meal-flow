@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.fund_meals(uuid, uuid, integer, text) FROM PUBLIC, anon, authenticated;
