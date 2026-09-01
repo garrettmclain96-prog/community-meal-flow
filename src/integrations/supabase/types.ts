@@ -14,16 +14,320 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      household_members: {
+        Row: {
+          age_group: string
+          appetite: number
+          created_at: string
+          household_id: string
+          id: string
+          name: string
+        }
+        Insert: {
+          age_group?: string
+          appetite?: number
+          created_at?: string
+          household_id: string
+          id?: string
+          name: string
+        }
+        Update: {
+          age_group?: string
+          appetite?: number
+          created_at?: string
+          household_id?: string
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "household_members_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      households: {
+        Row: {
+          allergies: string[]
+          avoid_tags: string[]
+          created_at: string
+          dietary_preferences: string[]
+          dinners_per_week: number
+          equipment: string[]
+          id: string
+          max_cook_minutes: number
+          name: string
+          onboarded: boolean
+          owner_id: string
+          store_ids: string[]
+          updated_at: string
+          weekly_budget: number
+        }
+        Insert: {
+          allergies?: string[]
+          avoid_tags?: string[]
+          created_at?: string
+          dietary_preferences?: string[]
+          dinners_per_week?: number
+          equipment?: string[]
+          id?: string
+          max_cook_minutes?: number
+          name?: string
+          onboarded?: boolean
+          owner_id: string
+          store_ids?: string[]
+          updated_at?: string
+          weekly_budget?: number
+        }
+        Update: {
+          allergies?: string[]
+          avoid_tags?: string[]
+          created_at?: string
+          dietary_preferences?: string[]
+          dinners_per_week?: number
+          equipment?: string[]
+          id?: string
+          max_cook_minutes?: number
+          name?: string
+          onboarded?: boolean
+          owner_id?: string
+          store_ids?: string[]
+          updated_at?: string
+          weekly_budget?: number
+        }
+        Relationships: []
+      }
+      meal_plans: {
+        Row: {
+          checked: string[]
+          created_at: string
+          household_id: string
+          id: string
+          plan: Json
+        }
+        Insert: {
+          checked?: string[]
+          created_at?: string
+          household_id: string
+          id?: string
+          plan: Json
+        }
+        Update: {
+          checked?: string[]
+          created_at?: string
+          household_id?: string
+          id?: string
+          plan?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_plans_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      pantry_items: {
+        Row: {
+          added_at: string
+          amount: number
+          expires_at: string | null
+          household_id: string
+          id: string
+          ingredient_id: string
+          origin: string
+          unit: string
+        }
+        Insert: {
+          added_at?: string
+          amount: number
+          expires_at?: string | null
+          household_id: string
+          id?: string
+          ingredient_id: string
+          origin?: string
+          unit: string
+        }
+        Update: {
+          added_at?: string
+          amount?: number
+          expires_at?: string | null
+          household_id?: string
+          id?: string
+          ingredient_id?: string
+          origin?: string
+          unit?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pantry_items_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      price_observations: {
+        Row: {
+          household_id: string
+          id: string
+          ingredient_id: string
+          observed_at: string
+          package_label: string | null
+          price: number
+          store_id: string
+        }
+        Insert: {
+          household_id: string
+          id?: string
+          ingredient_id: string
+          observed_at?: string
+          package_label?: string | null
+          price: number
+          store_id: string
+        }
+        Update: {
+          household_id?: string
+          id?: string
+          ingredient_id?: string
+          observed_at?: string
+          package_label?: string | null
+          price?: number
+          store_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_observations_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          email: string | null
+          id: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          email?: string | null
+          id?: string
+        }
+        Relationships: []
+      }
+      recipes: {
+        Row: {
+          created_at: string
+          equipment: string[]
+          household_id: string
+          id: string
+          ingredients: Json
+          servings: number
+          slug: string
+          source: Json
+          steps: Json
+          tags: string[]
+          title: string
+          total_time_minutes: number
+        }
+        Insert: {
+          created_at?: string
+          equipment?: string[]
+          household_id: string
+          id?: string
+          ingredients?: Json
+          servings?: number
+          slug: string
+          source?: Json
+          steps?: Json
+          tags?: string[]
+          title: string
+          total_time_minutes?: number
+        }
+        Update: {
+          created_at?: string
+          equipment?: string[]
+          household_id?: string
+          id?: string
+          ingredients?: Json
+          servings?: number
+          slug?: string
+          source?: Json
+          steps?: Json
+          tags?: string[]
+          title?: string
+          total_time_minutes?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recipes_household_id_fkey"
+            columns: ["household_id"]
+            isOneToOne: false
+            referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      owns_household: { Args: { _household_id: string }; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role:
+        | "household"
+        | "kitchen"
+        | "nonprofit"
+        | "sponsor"
+        | "city_admin"
+        | "platform_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +454,15 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: [
+        "household",
+        "kitchen",
+        "nonprofit",
+        "sponsor",
+        "city_admin",
+        "platform_admin",
+      ],
+    },
   },
 } as const
