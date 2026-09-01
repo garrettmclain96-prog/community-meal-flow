@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import heroTable from "@/assets/hero-table.jpg";
 import cityMap from "@/assets/city-map.jpg";
 import { PhotoBackdrop } from "@/components/PhotoBackdrop";
@@ -46,22 +46,30 @@ function Nav() {
           <span className="font-display text-2xl font-bold tracking-tight italic">
             Table<span className="text-ember">Forward</span>
           </span>
-          <div className="hidden md:flex gap-7 text-sm font-medium text-muted-foreground">
-            <a href="#engine" className="hover:text-ember-text transition-colors">The Engine</a>
-            <a href="#pulse" className="hover:text-ember-text transition-colors">City Pulse</a>
-            <a href="#network" className="hover:text-ember-text transition-colors">Network</a>
-            <a href="#transparency" className="hover:text-ember-text transition-colors">Transparency</a>
+          <div className="hidden md:flex gap-6 text-sm font-medium text-muted-foreground">
+            <Link to="/app" className="hover:text-ember-text transition-colors">Plan My Meals</Link>
+            <Link to="/impact" className="hover:text-ember-text transition-colors">Fund Meals</Link>
+            <Link to="/kitchen" className="hover:text-ember-text transition-colors">Join as a Kitchen</Link>
+            <Link to="/partners" className="hover:text-ember-text transition-colors">Partner With Us</Link>
+            <Link to="/civic" className="hover:text-ember-text transition-colors">Civic</Link>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <DisplayControls surface="site photography" className="hidden lg:inline-flex" />
           <ThemeToggle />
-          <button className="hidden sm:inline-flex px-4 py-2 text-sm font-semibold border border-border rounded-sm hover:bg-surface transition-all">
-            Partner Login
-          </button>
-          <button className="px-5 py-2 text-sm font-semibold bg-ember text-primary-foreground rounded-sm shadow-[0_10px_40px_-10px_var(--ember-glow)] hover:shadow-[0_15px_60px_-10px_var(--ember-glow)] hover:scale-[1.02] transition-all">
+          <Link
+            to="/app"
+            className="hidden sm:inline-flex px-4 py-2 text-sm font-semibold border border-border rounded-sm hover:bg-surface transition-all"
+          >
+            Plan My Meals
+          </Link>
+          <Link
+            to="/impact"
+            className="px-5 py-2 text-sm font-semibold bg-ember text-primary-foreground rounded-sm shadow-[0_10px_40px_-10px_var(--ember-glow)] hover:shadow-[0_15px_60px_-10px_var(--ember-glow)] hover:scale-[1.02] transition-all"
+          >
             Fund a Meal
-          </button>
+          </Link>
+
         </div>
       </div>
     </nav>
