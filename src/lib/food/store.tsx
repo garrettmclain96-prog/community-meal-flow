@@ -1,10 +1,14 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
+import { useAuth } from "@/hooks/useAuth";
+
+import { loadCloudState, pushCloudState } from "./cloud";
 import { buildGroceryList, remaindersToPantry, type GroceryList } from "./grocery";
 import { buildMealPlan, type MealPlan } from "./planner";
 import type { PriceObservation } from "./pricing";
 import { SEED_RECIPES } from "./recipes";
 import type { Household, PantryItem, Recipe } from "./types";
+
 
 /**
  * Local-first persistence layer.
