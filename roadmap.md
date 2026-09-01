@@ -7,14 +7,21 @@
 - Portal surfaces /impact /kitchen /partners /civic
 - Lovable Cloud enabled
 
-## In progress
-- [x] Auth + role tables (profiles, user_roles, has_role)
+## Done (backend + product)
+- [x] Auth + role tables (profiles, user_roles, has_role); role chosen at sign-up
 - [x] Household schema (households, members, pantry, recipes, meal_plans, price_observations)
-- [ ] Fix security-definer linter warnings
-- [ ] Platform schema: kitchens, meal_templates, funded_orders, payouts, impact_events,
+- [x] Platform schema: kitchens, meal_templates, funded_orders, payouts, impact_events,
       ingredient_prices, public_recipes
-- [ ] Seed real grocery prices + wider recipe set
-- [ ] /auth login flow with role selection (household, kitchen, sponsor, civic)
-- [ ] Wire MealForge repository to the database (household, pantry, plan persistence)
-- [ ] /kitchen portal: capacity, meal templates, funded orders, payouts
-- [ ] /impact: sponsors fund meals; replace SAMPLE DATA with real aggregates
+- [x] Seeded 365 store prices (5 banners) + 26 recipes into the shared library
+- [x] /auth email + Google sign-in with role selection; session-aware header everywhere
+- [x] MealForge syncs household, pantry, recipes and plan to the database when signed in
+- [x] /kitchen: register kitchen, publish meals, work funded orders, payouts queue on delivery
+- [x] /impact: live fund-meals flow + real ledger aggregates
+- [x] /civic: live neighborhood totals
+
+## Next
+- [ ] Payment settlement for sponsor commitments (currently recorded as pledges)
+- [ ] Nonprofit intake + dispatch routing on /partners
+- [ ] Recipe ingestion from URLs, photos and PDFs (text paste ships today)
+- [ ] Live store price feeds to promote ESTIMATED prices to VERIFIED LIVE
+
