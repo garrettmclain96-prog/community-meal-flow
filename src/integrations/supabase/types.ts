@@ -14,6 +14,63 @@ export type Database = {
   }
   public: {
     Tables: {
+      funded_orders: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          delivered_at: string | null
+          id: string
+          kitchen_id: string
+          meals_funded: number
+          neighborhood: string | null
+          sponsor_id: string | null
+          sponsor_name: string | null
+          status: string
+          template_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          kitchen_id: string
+          meals_funded: number
+          neighborhood?: string | null
+          sponsor_id?: string | null
+          sponsor_name?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          kitchen_id?: string
+          meals_funded?: number
+          neighborhood?: string | null
+          sponsor_id?: string | null
+          sponsor_name?: string | null
+          status?: string
+          template_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "funded_orders_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "funded_orders_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "meal_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       household_members: {
         Row: {
           age_group: string
@@ -100,6 +157,129 @@ export type Database = {
         }
         Relationships: []
       }
+      impact_events: {
+        Row: {
+          id: string
+          kind: string
+          kitchen_id: string | null
+          meals: number
+          neighborhood: string | null
+          occurred_at: string
+          order_id: string | null
+        }
+        Insert: {
+          id?: string
+          kind: string
+          kitchen_id?: string | null
+          meals?: number
+          neighborhood?: string | null
+          occurred_at?: string
+          order_id?: string | null
+        }
+        Update: {
+          id?: string
+          kind?: string
+          kitchen_id?: string | null
+          meals?: number
+          neighborhood?: string | null
+          occurred_at?: string
+          order_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "impact_events_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "impact_events_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "funded_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ingredient_prices: {
+        Row: {
+          id: string
+          ingredient_id: string
+          observed_at: string
+          package_label: string
+          package_size: number
+          package_unit: string
+          price: number
+          provenance: string
+          store_id: string
+        }
+        Insert: {
+          id?: string
+          ingredient_id: string
+          observed_at?: string
+          package_label: string
+          package_size: number
+          package_unit: string
+          price: number
+          provenance?: string
+          store_id: string
+        }
+        Update: {
+          id?: string
+          ingredient_id?: string
+          observed_at?: string
+          package_label?: string
+          package_size?: number
+          package_unit?: string
+          price?: number
+          provenance?: string
+          store_id?: string
+        }
+        Relationships: []
+      }
+      kitchens: {
+        Row: {
+          active: boolean
+          approved: boolean
+          city: string
+          cost_per_meal: number
+          created_at: string
+          daily_capacity_meals: number
+          id: string
+          kind: string
+          name: string
+          neighborhood: string | null
+          owner_id: string
+        }
+        Insert: {
+          active?: boolean
+          approved?: boolean
+          city?: string
+          cost_per_meal?: number
+          created_at?: string
+          daily_capacity_meals?: number
+          id?: string
+          kind?: string
+          name: string
+          neighborhood?: string | null
+          owner_id: string
+        }
+        Update: {
+          active?: boolean
+          approved?: boolean
+          city?: string
+          cost_per_meal?: number
+          created_at?: string
+          daily_capacity_meals?: number
+          id?: string
+          kind?: string
+          name?: string
+          neighborhood?: string | null
+          owner_id?: string
+        }
+        Relationships: []
+      }
       meal_plans: {
         Row: {
           checked: string[]
@@ -128,6 +308,50 @@ export type Database = {
             columns: ["household_id"]
             isOneToOne: false
             referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meal_templates: {
+        Row: {
+          active: boolean
+          cost_per_meal: number
+          created_at: string
+          description: string | null
+          dietary_tags: string[]
+          id: string
+          kitchen_id: string
+          name: string
+          servings_per_batch: number
+        }
+        Insert: {
+          active?: boolean
+          cost_per_meal?: number
+          created_at?: string
+          description?: string | null
+          dietary_tags?: string[]
+          id?: string
+          kitchen_id: string
+          name: string
+          servings_per_batch?: number
+        }
+        Update: {
+          active?: boolean
+          cost_per_meal?: number
+          created_at?: string
+          description?: string | null
+          dietary_tags?: string[]
+          id?: string
+          kitchen_id?: string
+          name?: string
+          servings_per_batch?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meal_templates_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
             referencedColumns: ["id"]
           },
         ]
@@ -169,6 +393,44 @@ export type Database = {
             columns: ["household_id"]
             isOneToOne: false
             referencedRelation: "households"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      payouts: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          id: string
+          kitchen_id: string
+          period_end: string
+          period_start: string
+          status: string
+        }
+        Insert: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          kitchen_id: string
+          period_end?: string
+          period_start?: string
+          status?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          id?: string
+          kitchen_id?: string
+          period_end?: string
+          period_start?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payouts_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
             referencedColumns: ["id"]
           },
         ]
@@ -229,6 +491,48 @@ export type Database = {
           display_name?: string | null
           email?: string | null
           id?: string
+        }
+        Relationships: []
+      }
+      public_recipes: {
+        Row: {
+          created_at: string
+          equipment: string[]
+          id: string
+          ingredients: Json
+          servings: number
+          slug: string
+          source: Json
+          steps: Json
+          tags: string[]
+          title: string
+          total_time_minutes: number
+        }
+        Insert: {
+          created_at?: string
+          equipment?: string[]
+          id?: string
+          ingredients?: Json
+          servings?: number
+          slug: string
+          source?: Json
+          steps?: Json
+          tags?: string[]
+          title: string
+          total_time_minutes?: number
+        }
+        Update: {
+          created_at?: string
+          equipment?: string[]
+          id?: string
+          ingredients?: Json
+          servings?: number
+          slug?: string
+          source?: Json
+          steps?: Json
+          tags?: string[]
+          title?: string
+          total_time_minutes?: number
         }
         Relationships: []
       }
@@ -319,6 +623,7 @@ export type Database = {
         Returns: boolean
       }
       owns_household: { Args: { _household_id: string }; Returns: boolean }
+      owns_kitchen: { Args: { _kitchen_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:
