@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import heroTable from "@/assets/hero-table.jpg";
 import cityMap from "@/assets/city-map.jpg";
 import { PhotoBackdrop } from "@/components/PhotoBackdrop";
