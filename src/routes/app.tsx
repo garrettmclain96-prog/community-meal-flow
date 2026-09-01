@@ -1,7 +1,9 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 import { ChefHat, CookingPot, Home, ShoppingBasket, CalendarRange } from "lucide-react";
 
+import { AccountButton } from "@/components/AccountButton";
 import { MealForgeProvider } from "@/lib/food/store";
+
 
 export const Route = createFileRoute("/app")({
   head: () => ({
