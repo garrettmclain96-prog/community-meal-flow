@@ -1,5 +1,8 @@
 import { Link } from "@tanstack/react-router";
 
+import { AccountButton } from "@/components/AccountButton";
+
+
 export function SampleTag({ kind = "SAMPLE DATA" }: { kind?: string }) {
   return (
     <span className="ml-2 rounded-sm border border-ember/50 px-1.5 py-0.5 align-middle text-[9px] font-semibold uppercase tracking-[0.18em] text-ember-text">
