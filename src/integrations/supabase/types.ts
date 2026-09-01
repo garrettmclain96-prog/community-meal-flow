@@ -615,6 +615,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      advance_order: {
+        Args: { _order_id: string; _status: string }
+        Returns: undefined
+      }
+      fund_meals: {
+        Args: {
+          _kitchen_id: string
+          _meals: number
+          _sponsor_name?: string
+          _template_id: string
+        }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
