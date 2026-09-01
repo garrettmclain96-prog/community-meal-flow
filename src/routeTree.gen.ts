@@ -13,6 +13,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppShopRouteImport } from './routes/app.shop'
+import { Route as AppSetupRouteImport } from './routes/app.setup'
 import { Route as AppPlanRouteImport } from './routes/app.plan'
 import { Route as AppKitchenRouteImport } from './routes/app.kitchen'
 import { Route as AppCookRouteImport } from './routes/app.cook'
@@ -37,6 +38,11 @@ const AppShopRoute = AppShopRouteImport.update({
   path: '/shop',
   getParentRoute: () => AppRoute,
 } as any)
+const AppSetupRoute = AppSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppPlanRoute = AppPlanRouteImport.update({
   id: '/plan',
   path: '/plan',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/app/cook': typeof AppCookRoute
   '/app/kitchen': typeof AppKitchenRoute
   '/app/plan': typeof AppPlanRoute
+  '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/app/': typeof AppIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/app/cook': typeof AppCookRoute
   '/app/kitchen': typeof AppKitchenRoute
   '/app/plan': typeof AppPlanRoute
+  '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/app': typeof AppIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/app/cook': typeof AppCookRoute
   '/app/kitchen': typeof AppKitchenRoute
   '/app/plan': typeof AppPlanRoute
+  '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/app/': typeof AppIndexRoute
 }
@@ -88,10 +97,18 @@ export interface FileRouteTypes {
     | '/app/cook'
     | '/app/kitchen'
     | '/app/plan'
+    | '/app/setup'
     | '/app/shop'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/app/cook' | '/app/kitchen' | '/app/plan' | '/app/shop' | '/app'
+  to:
+    | '/'
+    | '/app/cook'
+    | '/app/kitchen'
+    | '/app/plan'
+    | '/app/setup'
+    | '/app/shop'
+    | '/app'
   id:
     | '__root__'
     | '/'
@@ -99,6 +116,7 @@ export interface FileRouteTypes {
     | '/app/cook'
     | '/app/kitchen'
     | '/app/plan'
+    | '/app/setup'
     | '/app/shop'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -138,6 +156,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppShopRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/setup': {
+      id: '/app/setup'
+      path: '/setup'
+      fullPath: '/app/setup'
+      preLoaderRoute: typeof AppSetupRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/plan': {
       id: '/app/plan'
       path: '/plan'
@@ -166,6 +191,7 @@ interface AppRouteChildren {
   AppCookRoute: typeof AppCookRoute
   AppKitchenRoute: typeof AppKitchenRoute
   AppPlanRoute: typeof AppPlanRoute
+  AppSetupRoute: typeof AppSetupRoute
   AppShopRoute: typeof AppShopRoute
   AppIndexRoute: typeof AppIndexRoute
 }
@@ -174,6 +200,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppCookRoute: AppCookRoute,
   AppKitchenRoute: AppKitchenRoute,
   AppPlanRoute: AppPlanRoute,
+  AppSetupRoute: AppSetupRoute,
   AppShopRoute: AppShopRoute,
   AppIndexRoute: AppIndexRoute,
 }
