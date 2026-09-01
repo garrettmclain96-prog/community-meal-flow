@@ -20,16 +20,43 @@ export const Route = createFileRoute("/civic")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: () => (
+  component: CivicPage,
+});
+
+function CivicPage() {
+  const totals = useQuery({ queryKey: ["impact-totals"], queryFn: loadImpactTotals });
+  const live = totals.data;
+
+  return (
     <PortalPage
       eyebrow="TableForward Civic"
       title="Demand, capacity and funding gap — by neighborhood, never by household."
       lede="Civic reads only aggregates computed with minimum-cohort thresholds. If a neighborhood is too small to anonymize, it is suppressed rather than shown. No individual household appears on a public map, ever."
       stats={[
-        { label: "Neighborhoods covered", value: "31" },
-        { label: "Weekly demand signal", value: "8,400 meals" },
-        { label: "Kitchen capacity", value: "6,100 meals" },
-        { label: "Unfunded gap", value: "2,300 meals" },
+        {
+          label: "Neighborhoods with funded meals",
+          value: String(live?.neighborhoods.length ?? 0),
+          note: "live ledger read",
+          sample: false,
+        },
+        {
+          label: "Meals funded",
+          value: (live?.mealsFunded ?? 0).toLocaleString(),
+          note: "live ledger read",
+          sample: false,
+        },
+        {
+          label: "Meals delivered",
+          value: (live?.mealsDelivered ?? 0).toLocaleString(),
+          note: "live ledger read",
+          sample: false,
+        },
+        {
+          label: "Awaiting delivery",
+          value: Math.max(0, (live?.mealsFunded ?? 0) - (live?.mealsDelivered ?? 0)).toLocaleString(),
+          note: "live ledger read",
+          sample: false,
+        },
       ]}
       capabilities={[
         { h: "Aggregate demand", body: "Privacy-preserving demand signals derived from planning activity and partner intake." },
@@ -37,7 +64,30 @@ export const Route = createFileRoute("/civic")({
         { h: "Funding gap analysis", body: "The dollar distance between demand and committed sponsorship, by area." },
         { h: "Disaster response", body: "Surge routing that reuses the same capacity and dispatch infrastructure." },
       ]}
-      status="Civic aggregates are computed from database views with cohort thresholds once the platform database is provisioned. The numbers on this page are sample data and are labeled as such until those views are live."
-    />
-  ),
-});
+      status="Neighborhood totals below are live ledger reads. Demand forecasting and cohort-suppressed intake views arrive with nonprofit intake data; nothing here exposes a household."
+    >
+      <section className="mt-14">
+        <h2 className="text-[11px] uppercase tracking-[0.3em] text-muted-foreground">
+          Funded meals by neighborhood
+        </h2>
+        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+          {(live?.neighborhoods ?? []).map((n) => (
+            <li
+              key={n.neighborhood}
+              className="flex justify-between rounded-lg border border-border bg-surface px-5 py-3 text-sm"
+            >
+              <span>{n.neighborhood}</span>
+              <span className="font-semibold">{n.meals.toLocaleString()} meals</span>
+            </li>
+          ))}
+          {(live?.neighborhoods.length ?? 0) === 0 && (
+            <li className="text-sm text-muted-foreground">
+              No funded meals recorded yet in this city.
+            </li>
+          )}
+        </ul>
+      </section>
+    </PortalPage>
+  );
+}
+
