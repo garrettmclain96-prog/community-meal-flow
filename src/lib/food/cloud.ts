@@ -80,7 +80,7 @@ export async function loadCloudState(
     weeklyBudget: Number(hh.weekly_budget),
     dinnersPerWeek: hh.dinners_per_week,
     dietaryPreferences: hh.dietary_preferences as unknown as Household["dietaryPreferences"],
-    avoidTags: hh.avoid_tags,
+    avoidTags: hh.avoid_tags as unknown as Household["avoidTags"],
     allergies: hh.allergies as unknown as Household["allergies"],
     equipment: hh.equipment,
     storeIds: hh.store_ids,
