@@ -104,6 +104,10 @@ const MealForgeContext = createContext<Ctx | null>(null);
 export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<MealForgeState>(initialState);
   const [ready, setReady] = useState(false);
+  const { user } = useAuth();
+  const [cloudId, setCloudId] = useState<string | null>(null);
+  const hydrating = useRef(false);
+  const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setState(load());
@@ -118,6 +122,51 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
       /* storage full or unavailable — the session still works in memory */
     }
   }, [state, ready]);
+
+  // Sign-in: adopt the cloud household, unless this device has a set-up
+  // household and the cloud one is still empty — then the device wins.
+  useEffect(() => {
+    if (!ready) return;
+    if (!user) {
+      setCloudId(null);
+      return;
+    }
+    let cancelled = false;
+    hydrating.current = true;
+    loadCloudState(user.id, DEFAULT_HOUSEHOLD)
+      .then(({ householdId, state: remote }) => {
+        if (cancelled) return;
+        setCloudId(householdId);
+        setState((s) => {
+          if (!remote.onboarded && s.onboarded) return { ...s, household: { ...s.household, id: householdId } };
+          return { ...s, ...remote, household: remote.household ?? s.household };
+        });
+      })
+      .catch(() => {
+        /* offline or blocked — the local copy keeps working */
+      })
+      .finally(() => {
+        hydrating.current = false;
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [ready, user?.id]);
+
+  // Mirror every change back to the household's own rows.
+  useEffect(() => {
+    if (!ready || !cloudId || hydrating.current) return;
+    if (pushTimer.current) clearTimeout(pushTimer.current);
+    pushTimer.current = setTimeout(() => {
+      void pushCloudState(cloudId, state).catch(() => {
+        /* retried on the next change */
+      });
+    }, 800);
+    return () => {
+      if (pushTimer.current) clearTimeout(pushTimer.current);
+    };
+  }, [state, ready, cloudId]);
+
 
   const update = useCallback((patch: Partial<MealForgeState>) => {
     setState((s) => ({ ...s, ...patch }));
