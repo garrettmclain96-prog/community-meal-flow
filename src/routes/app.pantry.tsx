@@ -47,7 +47,7 @@ function PantryPage() {
   const chosen = ingredientId ? INGREDIENT_BY_ID[ingredientId] : null;
 
   const add = () => {
-    const id = ingredientId || matchIngredient(query)?.ingredient.id;
+    const id = ingredientId || matchIngredient(query)?.ingredientId;
     const qty = Number(amount);
     if (!id || !Number.isFinite(qty) || qty <= 0) return;
     addPantryItem({
