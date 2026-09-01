@@ -90,22 +90,10 @@ export async function loadImpactTotals(): Promise<ImpactTotals> {
   };
 }
 
-export async function fundMeals(input: {
-  kitchenId: string;
-  templateId: string | null;
-  meals: number;
-  sponsorName?: string;
-}) {
-  const { data, error } = await supabase.rpc("fund_meals", {
-    _kitchen_id: input.kitchenId,
-    _template_id: input.templateId,
-    _meals: input.meals,
-    _sponsor_name: input.sponsorName ?? null,
-  } as never);
+// Funding now happens exclusively through paid checkout
+// (see src/lib/payments.functions.ts). The old unpaid RPC path is revoked.
 
-  if (error) throw error;
-  return data as string;
-}
+
 
 export async function advanceOrder(orderId: string, status: "accepted" | "prepared" | "delivered") {
   const { error } = await supabase.rpc("advance_order", { _order_id: orderId, _status: status });
