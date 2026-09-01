@@ -39,3 +39,13 @@
 - [ ] Live store price feeds to promote ESTIMATED prices to VERIFIED LIVE
 
 
+
+## Payments (shipped this pass)
+- [x] Product catalog: Funded Meals (dynamic per-kitchen unit price) + 4 recurring sponsorship tiers
+- [x] Embedded checkout for meal funding and sponsorships (no redirect)
+- [x] `sponsor_checkouts` + `subscriptions` tables, signed webhook, ledger only credits paid meals
+- [x] Kitchen connected-account payout onboarding, status refresh, per-order payout send
+- [x] Billing portal for sponsorship upgrade/downgrade/cancel
+- [ ] Automatic tax (needs Stripe tax origin address configured)
+- [ ] Auto-send payouts on delivery (currently kitchen presses "Send payout")
+- [ ] Sponsorship tiers auto-allocating meals to kitchens each period

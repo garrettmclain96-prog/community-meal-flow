@@ -1,11 +1,44 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { AccountButton } from "@/components/AccountButton";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
-import { fundMeals, listKitchens, listTemplates, loadImpactTotals } from "@/lib/community";
+import { supabase } from "@/integrations/supabase/client";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { createSponsorPortalSession } from "@/lib/payments.functions";
+import { listKitchens, listTemplates, loadImpactTotals } from "@/lib/community";
+
+const SPONSORSHIP_TIERS = [
+  {
+    priceId: "sponsor_restaurant_monthly",
+    name: "Sponsor a restaurant",
+    price: "$900 / mo",
+    blurb: "Guarantees one small kitchen a daily minimum of funded meals.",
+  },
+  {
+    priceId: "sponsor_school_monthly",
+    name: "Sponsor a school",
+    price: "$1,500 / mo",
+    blurb: "After-hours meals for students and their families at one school.",
+  },
+  {
+    priceId: "sponsor_100_meals_monthly",
+    name: "100 meals a week",
+    price: "$2,600 / mo",
+    blurb: "Steady weekly volume routed wherever demand is highest.",
+  },
+  {
+    priceId: "sponsor_neighborhood_monthly",
+    name: "Sponsor a neighborhood",
+    price: "$5,000 / mo",
+    blurb: "Sustained coverage across every kitchen in one neighborhood.",
+  },
+] as const;
+
 
 export const Route = createFileRoute("/impact")({
   head: () => ({
@@ -32,11 +65,11 @@ const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
 function ImpactPage() {
   const { user } = useAuth();
-  const queryClient = useQueryClient();
   const [kitchenId, setKitchenId] = useState<string>("");
   const [templateId, setTemplateId] = useState<string>("");
   const [meals, setMeals] = useState(10);
   const [busy, setBusy] = useState(false);
+  const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
 
   const totals = useQuery({ queryKey: ["impact-totals"], queryFn: loadImpactTotals });
   const kitchens = useQuery({ queryKey: ["kitchens"], queryFn: listKitchens });
@@ -45,29 +78,57 @@ function ImpactPage() {
     queryFn: () => listTemplates(kitchenId),
     enabled: Boolean(kitchenId),
   });
+  const sponsorship = useQuery({
+    queryKey: ["my-sponsorship", user?.id],
+    enabled: Boolean(user),
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("subscriptions")
+        .select("status, price_id, current_period_end, cancel_at_period_end")
+        .eq("environment", getStripeEnvironment())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle();
+      return data;
+    },
+  });
 
   const kitchen = kitchens.data?.find((k) => k.id === kitchenId) ?? null;
   const template = templates.data?.find((t) => t.id === templateId) ?? null;
   const perMeal = template?.cost_per_meal ?? kitchen?.cost_per_meal ?? 0;
   const amount = useMemo(() => Math.round(perMeal * meals * 100), [perMeal, meals]);
 
-  async function fund() {
+  function fund() {
     if (!kitchenId) return;
+    openCheckout({
+      kind: "meal_funding",
+      kitchenId,
+      templateId: templateId || null,
+      meals,
+    });
+  }
+
+  async function manageSponsorship() {
     setBusy(true);
     try {
-      await fundMeals({ kitchenId, templateId: templateId || null, meals });
-      toast.success(`Funded ${meals} meals — ${money(amount)}`);
-      await queryClient.invalidateQueries({ queryKey: ["impact-totals"] });
+      const result = await createSponsorPortalSession({
+        data: { returnUrl: window.location.href, environment: getStripeEnvironment() },
+      });
+      if ("error" in result) throw new Error(result.error);
+      window.open(result.url, "_blank");
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Could not fund those meals");
+      toast.error(err instanceof Error ? err.message : "Could not open billing");
     } finally {
       setBusy(false);
     }
   }
 
+
   return (
     <div className="min-h-dvh bg-background text-foreground">
+      <PaymentTestModeBanner />
       <header className="border-b border-border">
+
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link to="/" className="font-display text-xl font-bold italic tracking-tight">
             Table<span className="text-ember">Forward</span>
@@ -189,7 +250,7 @@ function ImpactPage() {
                     disabled={!kitchenId || busy}
                     className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60"
                   >
-                    {busy ? "Recording…" : `Fund ${meals} meals`}
+                    {isOpen ? "Checkout open below" : `Fund ${meals} meals — ${money(amount)}`}
                   </button>
                 ) : (
                   <Link
@@ -200,12 +261,20 @@ function ImpactPage() {
                   </Link>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Funding is recorded in the ledger now; card payment settlement is not connected yet, so
-                  treat commitments as pledges until a payment provider is enabled.
+                  Meals only enter the public ledger once the payment clears. The kitchen is paid out
+                  from that payment after the meals are delivered.
                 </p>
+
+                {isOpen && (
+                  <p className="text-xs text-ember-text">
+                    Secure checkout is open at the bottom of this page.
+                  </p>
+                )}
+
               </div>
             )}
           </div>
+
 
           <div className="space-y-8">
             <div className="rounded-xl border border-border bg-surface p-6">
@@ -250,7 +319,80 @@ function ImpactPage() {
             </div>
           </div>
         </section>
+
+        <section className="mt-16">
+          <div className="flex flex-wrap items-end justify-between gap-4">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.3em] text-ember-text">
+                Standing sponsorships
+              </p>
+              <h2 className="mt-2 font-display text-3xl font-bold tracking-tight">
+                Commit monthly, and kitchens can staff against it.
+              </h2>
+            </div>
+            {sponsorship.data && (
+              <button
+                type="button"
+                onClick={manageSponsorship}
+                disabled={busy}
+                className="rounded-full border border-border px-4 py-2 text-sm disabled:opacity-60"
+              >
+                Manage sponsorship
+              </button>
+            )}
+          </div>
+
+          {sponsorship.data && (
+            <p className="mt-3 text-sm text-muted-foreground">
+              Active plan: <span className="text-foreground">{sponsorship.data.price_id}</span> ·{" "}
+              {sponsorship.data.status}
+              {sponsorship.data.current_period_end
+                ? ` · renews ${new Date(sponsorship.data.current_period_end).toLocaleDateString()}`
+                : ""}
+              {sponsorship.data.cancel_at_period_end ? " · cancels at period end" : ""}
+            </p>
+          )}
+
+          <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            {SPONSORSHIP_TIERS.map((tier) => (
+              <div key={tier.priceId} className="flex flex-col rounded-xl border border-border bg-surface p-6">
+                <p className="font-display text-xl font-bold">{tier.name}</p>
+                <p className="mt-1 text-ember-text">{tier.price}</p>
+                <p className="mt-3 flex-1 text-sm text-muted-foreground">{tier.blurb}</p>
+                {user ? (
+                  <button
+                    type="button"
+                    onClick={() => openCheckout({ kind: "sponsorship", priceId: tier.priceId })}
+                    className="mt-5 rounded-xl border border-primary px-4 py-2.5 text-sm font-semibold"
+                  >
+                    Start sponsorship
+                  </button>
+                ) : (
+                  <Link
+                    to="/auth"
+                    className="mt-5 rounded-xl border border-primary px-4 py-2.5 text-center text-sm font-semibold"
+                  >
+                    Sign in to sponsor
+                  </Link>
+                )}
+              </div>
+            ))}
+          </div>
+
+          {isOpen && (
+            <div className="mt-8 rounded-xl border border-border bg-surface p-4">
+              <div className="mb-3 flex items-center justify-between">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Secure checkout</p>
+                <button type="button" onClick={closeCheckout} className="text-xs underline underline-offset-4">
+                  Cancel
+                </button>
+              </div>
+              {checkoutElement}
+            </div>
+          )}
+        </section>
       </main>
+
     </div>
   );
 }

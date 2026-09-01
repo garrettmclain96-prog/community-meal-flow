@@ -7,6 +7,13 @@ import { AccountButton } from "@/components/AccountButton";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { advanceOrder, listTemplates } from "@/lib/community";
+import { getStripeEnvironment } from "@/lib/stripe";
+import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import {
+  createKitchenPayoutOnboarding,
+  refreshKitchenPayoutStatus,
+  submitKitchenPayout,
+} from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/kitchen")({
   head: () => ({
@@ -93,6 +100,7 @@ function KitchenPage() {
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
+      <PaymentTestModeBanner />
       <header className="border-b border-border">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link to="/" className="font-display text-xl font-bold italic tracking-tight">
@@ -201,12 +209,25 @@ function KitchenPage() {
                 </ul>
               </div>
 
-              <MealTemplates
-                kitchenId={kitchenId}
-                templates={templates.data ?? []}
-                onChanged={() => void qc.invalidateQueries({ queryKey: ["templates"] })}
-              />
+              <div className="space-y-8">
+                <PayoutPanel
+                  kitchenId={kitchenId}
+                  payoutStatus={mine.data.payout_status ?? "not_started"}
+                  payouts={payouts.data ?? []}
+                  onChanged={async () => {
+                    await qc.invalidateQueries({ queryKey: ["my-kitchen"] });
+                    await qc.invalidateQueries({ queryKey: ["kitchen-payouts"] });
+                  }}
+                />
+
+                <MealTemplates
+                  kitchenId={kitchenId}
+                  templates={templates.data ?? []}
+                  onChanged={() => void qc.invalidateQueries({ queryKey: ["templates"] })}
+                />
+              </div>
             </section>
+
           </>
         )}
       </main>
@@ -405,5 +426,152 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
       <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">{label}</span>
       <div className="mt-1">{children}</div>
     </label>
+  );
+}
+
+type PayoutRow = {
+  id: string;
+  amount_cents: number;
+  status: string;
+  created_at: string;
+  failure_reason?: string | null;
+};
+
+function PayoutPanel({
+  kitchenId,
+  payoutStatus,
+  payouts,
+  onChanged,
+}: {
+  kitchenId: string;
+  payoutStatus: string;
+  payouts: PayoutRow[];
+  onChanged: () => Promise<void> | void;
+}) {
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function onboard() {
+    setBusy("onboard");
+    try {
+      const result = await createKitchenPayoutOnboarding({
+        data: {
+          kitchenId,
+          returnUrl: window.location.href,
+          environment: getStripeEnvironment(),
+        },
+      });
+      if ("error" in result) throw new Error(result.error);
+      window.open(result.url, "_blank");
+      toast.success("Payout onboarding opened in a new tab");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not start payout onboarding");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function refresh() {
+    setBusy("refresh");
+    try {
+      const result = await refreshKitchenPayoutStatus({
+        data: { kitchenId, environment: getStripeEnvironment() },
+      });
+      if ("error" in result) throw new Error(result.error);
+      await onChanged();
+      toast.success(`Payout status: ${result.status}`);
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Could not refresh payout status");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  async function send(payoutId: string) {
+    setBusy(payoutId);
+    try {
+      const result = await submitKitchenPayout({
+        data: { payoutId, environment: getStripeEnvironment() },
+      });
+      if ("error" in result) throw new Error(result.error);
+      await onChanged();
+      toast.success("Payout sent");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Payout failed");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  const label =
+    payoutStatus === "ready"
+      ? "Ready to receive payouts"
+      : payoutStatus === "onboarding"
+        ? "Onboarding incomplete"
+        : "Not set up";
+
+  return (
+    <div className="rounded-xl border border-border bg-surface p-6">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="font-display text-2xl font-bold">Payouts</h2>
+        <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-ember-text">
+          {label}
+        </span>
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Sponsors pay by card. Once you mark an order delivered, its payout is queued here and sent to
+        your bank through your connected payout account.
+      </p>
+
+      <div className="mt-4 flex flex-wrap gap-2">
+        <button
+          type="button"
+          onClick={onboard}
+          disabled={busy !== null}
+          className="rounded-xl bg-primary px-4 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+        >
+          {payoutStatus === "not_started" ? "Set up payouts" : "Continue payout setup"}
+        </button>
+        <button
+          type="button"
+          onClick={refresh}
+          disabled={busy !== null}
+          className="rounded-xl border border-border px-4 py-2.5 text-sm disabled:opacity-60"
+        >
+          Refresh status
+        </button>
+      </div>
+
+      <ul className="mt-6 space-y-3">
+        {payouts.map((p) => (
+          <li key={p.id} className="rounded-lg border border-border bg-card p-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm font-semibold">{money(p.amount_cents)}</p>
+              <span className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                {p.status}
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {new Date(p.created_at).toLocaleString()}
+              {p.failure_reason ? ` · ${p.failure_reason}` : ""}
+            </p>
+            {p.status !== "paid" && (
+              <button
+                type="button"
+                onClick={() => send(p.id)}
+                disabled={busy !== null || payoutStatus !== "ready"}
+                className="mt-3 rounded-full border border-primary px-3 py-1 text-xs disabled:opacity-40"
+              >
+                {busy === p.id ? "Sending…" : "Send payout"}
+              </button>
+            )}
+          </li>
+        ))}
+        {payouts.length === 0 && (
+          <li className="text-sm text-muted-foreground">
+            No payouts queued yet — deliver a funded order and one appears here.
+          </li>
+        )}
+      </ul>
+    </div>
   );
 }
