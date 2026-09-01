@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 
 import { PortalPage } from "@/components/PortalPage";
+import { loadImpactTotals } from "@/lib/community";
+
 
 export const Route = createFileRoute("/civic")({
   head: () => ({
