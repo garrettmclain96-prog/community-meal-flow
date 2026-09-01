@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -20,6 +21,11 @@ import { Route as AppKitchenRouteImport } from './routes/app.kitchen'
 import { Route as AppImportRouteImport } from './routes/app.import'
 import { Route as AppCookRouteImport } from './routes/app.cook'
 
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
@@ -74,6 +80,7 @@ const AppCookRoute = AppCookRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/impact': typeof ImpactRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
   '/app/kitchen': typeof AppKitchenRoute
@@ -85,6 +92,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/impact': typeof ImpactRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
   '/app/kitchen': typeof AppKitchenRoute
@@ -98,6 +106,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
+  '/impact': typeof ImpactRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
   '/app/kitchen': typeof AppKitchenRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/app'
+    | '/impact'
     | '/app/cook'
     | '/app/import'
     | '/app/kitchen'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/impact'
     | '/app/cook'
     | '/app/import'
     | '/app/kitchen'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/app'
+    | '/impact'
     | '/app/cook'
     | '/app/import'
     | '/app/kitchen'
@@ -148,10 +160,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
+  ImpactRoute: typeof ImpactRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app': {
       id: '/app'
       path: '/app'
@@ -252,6 +272,7 @@ const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
+  ImpactRoute: ImpactRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
