@@ -17,12 +17,14 @@ export type Database = {
       funded_orders: {
         Row: {
           amount_cents: number
+          checkout_id: string | null
           created_at: string
           delivered_at: string | null
           id: string
           kitchen_id: string
           meals_funded: number
           neighborhood: string | null
+          paid: boolean
           sponsor_id: string | null
           sponsor_name: string | null
           status: string
@@ -30,12 +32,14 @@ export type Database = {
         }
         Insert: {
           amount_cents: number
+          checkout_id?: string | null
           created_at?: string
           delivered_at?: string | null
           id?: string
           kitchen_id: string
           meals_funded: number
           neighborhood?: string | null
+          paid?: boolean
           sponsor_id?: string | null
           sponsor_name?: string | null
           status?: string
@@ -43,18 +47,27 @@ export type Database = {
         }
         Update: {
           amount_cents?: number
+          checkout_id?: string | null
           created_at?: string
           delivered_at?: string | null
           id?: string
           kitchen_id?: string
           meals_funded?: number
           neighborhood?: string | null
+          paid?: boolean
           sponsor_id?: string | null
           sponsor_name?: string | null
           status?: string
           template_id?: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "funded_orders_checkout_id_fkey"
+            columns: ["checkout_id"]
+            isOneToOne: false
+            referencedRelation: "sponsor_checkouts"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "funded_orders_kitchen_id_fkey"
             columns: ["kitchen_id"]
@@ -248,9 +261,12 @@ export type Database = {
           daily_capacity_meals: number
           id: string
           kind: string
+          kind_detail: string | null
           name: string
           neighborhood: string | null
           owner_id: string
+          payout_account_id: string | null
+          payout_status: string
         }
         Insert: {
           active?: boolean
@@ -261,9 +277,12 @@ export type Database = {
           daily_capacity_meals?: number
           id?: string
           kind?: string
+          kind_detail?: string | null
           name: string
           neighborhood?: string | null
           owner_id: string
+          payout_account_id?: string | null
+          payout_status?: string
         }
         Update: {
           active?: boolean
@@ -274,9 +293,12 @@ export type Database = {
           daily_capacity_meals?: number
           id?: string
           kind?: string
+          kind_detail?: string | null
           name?: string
           neighborhood?: string | null
           owner_id?: string
+          payout_account_id?: string | null
+          payout_status?: string
         }
         Relationships: []
       }
@@ -401,29 +423,41 @@ export type Database = {
         Row: {
           amount_cents: number
           created_at: string
+          failure_reason: string | null
           id: string
           kitchen_id: string
+          order_id: string | null
+          paid_at: string | null
           period_end: string
           period_start: string
           status: string
+          stripe_transfer_id: string | null
         }
         Insert: {
           amount_cents?: number
           created_at?: string
+          failure_reason?: string | null
           id?: string
           kitchen_id: string
+          order_id?: string | null
+          paid_at?: string | null
           period_end?: string
           period_start?: string
           status?: string
+          stripe_transfer_id?: string | null
         }
         Update: {
           amount_cents?: number
           created_at?: string
+          failure_reason?: string | null
           id?: string
           kitchen_id?: string
+          order_id?: string | null
+          paid_at?: string | null
           period_end?: string
           period_start?: string
           status?: string
+          stripe_transfer_id?: string | null
         }
         Relationships: [
           {
@@ -431,6 +465,13 @@ export type Database = {
             columns: ["kitchen_id"]
             isOneToOne: false
             referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "payouts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "funded_orders"
             referencedColumns: ["id"]
           },
         ]
@@ -589,6 +630,130 @@ export type Database = {
           },
         ]
       }
+      sponsor_checkouts: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          environment: string
+          id: string
+          kitchen_id: string
+          meals: number
+          neighborhood: string | null
+          order_id: string | null
+          sponsor_id: string | null
+          sponsor_name: string | null
+          status: string
+          stripe_payment_intent_id: string | null
+          stripe_session_id: string | null
+          template_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          environment?: string
+          id?: string
+          kitchen_id: string
+          meals: number
+          neighborhood?: string | null
+          order_id?: string | null
+          sponsor_id?: string | null
+          sponsor_name?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          template_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          environment?: string
+          id?: string
+          kitchen_id?: string
+          meals?: number
+          neighborhood?: string | null
+          order_id?: string | null
+          sponsor_id?: string | null
+          sponsor_name?: string | null
+          status?: string
+          stripe_payment_intent_id?: string | null
+          stripe_session_id?: string | null
+          template_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sponsor_checkouts_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sponsor_checkouts_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "funded_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sponsor_checkouts_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "meal_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      subscriptions: {
+        Row: {
+          cancel_at_period_end: boolean
+          created_at: string
+          current_period_end: string | null
+          current_period_start: string | null
+          environment: string
+          id: string
+          price_id: string | null
+          product_id: string | null
+          status: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          price_id?: string | null
+          product_id?: string | null
+          status?: string
+          stripe_customer_id: string
+          stripe_subscription_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          cancel_at_period_end?: boolean
+          created_at?: string
+          current_period_end?: string | null
+          current_period_start?: string | null
+          environment?: string
+          id?: string
+          price_id?: string | null
+          product_id?: string | null
+          status?: string
+          stripe_customer_id?: string
+          stripe_subscription_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -618,6 +783,10 @@ export type Database = {
       advance_order: {
         Args: { _order_id: string; _status: string }
         Returns: undefined
+      }
+      confirm_sponsor_checkout: {
+        Args: { _checkout_id: string; _payment_intent: string }
+        Returns: string
       }
       fund_meals: {
         Args: {

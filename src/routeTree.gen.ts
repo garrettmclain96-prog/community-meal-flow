@@ -17,6 +17,7 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSetupRouteImport } from './routes/app.setup'
 import { Route as AppPlanRouteImport } from './routes/app.plan'
@@ -24,6 +25,7 @@ import { Route as AppPantryRouteImport } from './routes/app.pantry'
 import { Route as AppKitchenRouteImport } from './routes/app.kitchen'
 import { Route as AppImportRouteImport } from './routes/app.import'
 import { Route as AppCookRouteImport } from './routes/app.cook'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const PartnersRoute = PartnersRouteImport.update({
   id: '/partners',
@@ -65,6 +67,11 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AppShopRoute = AppShopRouteImport.update({
   id: '/shop',
   path: '/shop',
@@ -100,6 +107,12 @@ const AppCookRoute = AppCookRouteImport.update({
   path: '/cook',
   getParentRoute: () => AppRoute,
 } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,7 +129,9 @@ export interface FileRoutesByFullPath {
   '/app/plan': typeof AppPlanRoute
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -132,7 +147,9 @@ export interface FileRoutesByTo {
   '/app/plan': typeof AppPlanRoute
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/app': typeof AppIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -150,7 +167,9 @@ export interface FileRoutesById {
   '/app/plan': typeof AppPlanRoute
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
+  '/checkout/return': typeof CheckoutReturnRoute
   '/app/': typeof AppIndexRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -169,7 +188,9 @@ export interface FileRouteTypes {
     | '/app/plan'
     | '/app/setup'
     | '/app/shop'
+    | '/checkout/return'
     | '/app/'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -185,7 +206,9 @@ export interface FileRouteTypes {
     | '/app/plan'
     | '/app/setup'
     | '/app/shop'
+    | '/checkout/return'
     | '/app'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -202,7 +225,9 @@ export interface FileRouteTypes {
     | '/app/plan'
     | '/app/setup'
     | '/app/shop'
+    | '/checkout/return'
     | '/app/'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -213,6 +238,8 @@ export interface RootRouteChildren {
   ImpactRoute: typeof ImpactRoute
   KitchenRoute: typeof KitchenRoute
   PartnersRoute: typeof PartnersRoute
+  CheckoutReturnRoute: typeof CheckoutReturnRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -273,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/app/shop': {
       id: '/app/shop'
       path: '/shop'
@@ -322,6 +356,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppCookRouteImport
       parentRoute: typeof AppRoute
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -357,6 +398,8 @@ const rootRouteChildren: RootRouteChildren = {
   ImpactRoute: ImpactRoute,
   KitchenRoute: KitchenRoute,
   PartnersRoute: PartnersRoute,
+  CheckoutReturnRoute: CheckoutReturnRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
