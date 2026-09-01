@@ -101,7 +101,8 @@ export async function fundMeals(input: {
     _template_id: input.templateId,
     _meals: input.meals,
     _sponsor_name: input.sponsorName ?? null,
-  });
+  } as never);
+
   if (error) throw error;
   return data as string;
 }
