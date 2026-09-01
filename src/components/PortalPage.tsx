@@ -42,12 +42,16 @@ export function PortalPage({
           <Link to="/" className="font-display text-xl font-bold italic tracking-tight">
             Table<span className="text-ember">Forward</span>
           </Link>
-          <Link
-            to="/app"
-            className="text-xs font-medium text-muted-foreground transition-colors hover:text-ember-text"
-          >
-            MealForge ↗
-          </Link>
+          <div className="flex items-center gap-4">
+            <Link
+              to="/app"
+              className="text-xs font-medium text-muted-foreground transition-colors hover:text-ember-text"
+            >
+              MealForge ↗
+            </Link>
+            <AccountButton />
+          </div>
+
         </div>
       </header>
 
