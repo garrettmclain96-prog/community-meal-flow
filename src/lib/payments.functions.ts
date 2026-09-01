@@ -38,6 +38,32 @@ async function resolveOrCreateCustomer(
   return created.id;
 }
 
+
+/**
+ * Creates a Checkout Session with automatic tax enabled. If the account has
+ * no tax origin address configured yet, Stripe rejects the request — in that
+ * case we retry without automatic tax so checkout keeps working.
+ */
+async function createSessionWithTax(
+  stripe: ReturnType<typeof createStripeClient>,
+  params: Record<string, any>,
+) {
+  try {
+    return await stripe.checkout.sessions.create({
+      ...params,
+      automatic_tax: { enabled: true },
+    } as any);
+  } catch (error) {
+    const message = getStripeErrorMessage(error).toLowerCase();
+    const taxConfigProblem =
+      message.includes("tax") &&
+      (message.includes("origin") || message.includes("not active") || message.includes("address"));
+    if (!taxConfigProblem) throw error;
+    console.warn("Automatic tax unavailable, falling back to untaxed checkout:", message);
+    return await stripe.checkout.sessions.create(params as any);
+  }
+}
+
 /**
  * Fund meals at a kitchen. The per-meal price is read server-side from the
  * kitchen / meal template so a client cannot choose its own price.
@@ -115,7 +141,7 @@ export const createMealFundingCheckout = createServerFn({ method: "POST" })
       });
 
       const description = `${data.meals} meals — ${kitchen.name} (${mealName})`;
-      const session = await stripe.checkout.sessions.create({
+      const session = await createSessionWithTax(stripe, {
         line_items: [
           {
             price_data: {
@@ -167,7 +193,7 @@ export const createSponsorshipCheckout = createServerFn({ method: "POST" })
         userId,
       });
 
-      const session = await stripe.checkout.sessions.create({
+      const session = await createSessionWithTax(stripe, {
         line_items: [{ price: price.id, quantity: 1 }],
         mode: "subscription",
         ui_mode: "embedded_page",
@@ -321,6 +347,49 @@ export const submitKitchenPayout = createServerFn({ method: "POST" })
         .from("payouts")
         .update({ status: "failed", failure_reason: message })
         .eq("id", payout.id);
+      return { error: message };
+    }
+  });
+
+/** Automatically settle the payout queued for a delivered order. */
+export const settleOrderPayout = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { orderId: string; environment: StripeEnv }) => data)
+  .handler(async ({ data, context }): Promise<{ status: string } | { error: string }> => {
+    const { supabase } = context;
+    const { data: payout } = await supabase
+      .from("payouts")
+      .select("id, kitchen_id, amount_cents, status")
+      .eq("order_id", data.orderId)
+      .maybeSingle();
+    if (!payout) return { status: "none" };
+    if (payout.status === "paid") return { status: "paid" };
+
+    const { data: kitchen } = await supabase
+      .from("kitchens")
+      .select("payout_account_id, payout_status")
+      .eq("id", payout.kitchen_id)
+      .maybeSingle();
+    if (!kitchen?.payout_account_id || kitchen.payout_status !== "ready") {
+      return { status: "awaiting_onboarding" };
+    }
+
+    try {
+      const stripe = createStripeClient(data.environment);
+      const transfer = await stripe.transfers.create({
+        amount: payout.amount_cents,
+        currency: "usd",
+        destination: kitchen.payout_account_id,
+        metadata: { payoutId: payout.id, orderId: data.orderId },
+      });
+      await supabase
+        .from("payouts")
+        .update({ status: "paid", stripe_transfer_id: transfer.id, paid_at: new Date().toISOString() })
+        .eq("id", payout.id);
+      return { status: "paid" };
+    } catch (error) {
+      const message = getStripeErrorMessage(error);
+      await supabase.from("payouts").update({ status: "failed", failure_reason: message }).eq("id", payout.id);
       return { error: message };
     }
   });

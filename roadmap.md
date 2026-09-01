@@ -46,6 +46,7 @@
 - [x] `sponsor_checkouts` + `subscriptions` tables, signed webhook, ledger only credits paid meals
 - [x] Kitchen connected-account payout onboarding, status refresh, per-order payout send
 - [x] Billing portal for sponsorship upgrade/downgrade/cancel
-- [ ] Automatic tax (needs Stripe tax origin address configured)
-- [ ] Auto-send payouts on delivery (currently kitchen presses "Send payout")
-- [ ] Sponsorship tiers auto-allocating meals to kitchens each period
+- [x] Automatic tax on checkout (falls back to untaxed if origin address is missing)
+- [x] Auto-send payouts the moment an order is marked delivered (manual button remains as fallback)
+- [x] Sponsorship renewals auto-fund the kitchens with the largest unmet demand
+- [ ] Refunds handled manually by policy (no self-serve refund path)

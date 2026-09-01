@@ -13,6 +13,7 @@ import {
   createKitchenPayoutOnboarding,
   refreshKitchenPayoutStatus,
   submitKitchenPayout,
+  settleOrderPayout,
 } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/kitchen")({
@@ -181,10 +182,23 @@ function KitchenPage() {
                             onClick={async () => {
                               try {
                                 await advanceOrder(o.id, s);
+                                if (s === "delivered") {
+                                  const result = await settleOrderPayout({
+                                    data: { orderId: o.id, environment: getStripeEnvironment() },
+                                  });
+                                  if ("error" in result) {
+                                    toast.error(`Delivered, but payout failed: ${result.error}`);
+                                  } else if (result.status === "paid") {
+                                    toast.success("Delivered — payout sent to your account");
+                                  } else if (result.status === "awaiting_onboarding") {
+                                    toast.message("Delivered — finish payout setup to release the funds");
+                                  }
+                                } else {
+                                  toast.success(`Marked ${s}`);
+                                }
                                 await qc.invalidateQueries({ queryKey: ["kitchen-orders"] });
                                 await qc.invalidateQueries({ queryKey: ["kitchen-payouts"] });
                                 await qc.invalidateQueries({ queryKey: ["impact-totals"] });
-                                toast.success(`Marked ${s}`);
                               } catch (err) {
                                 toast.error(err instanceof Error ? err.message : "Update failed");
                               }

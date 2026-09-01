@@ -706,6 +706,39 @@ export type Database = {
           },
         ]
       }
+      sponsorship_allocations: {
+        Row: {
+          amount_cents: number
+          created_at: string
+          environment: string
+          id: string
+          meals_allocated: number
+          stripe_invoice_id: string
+          stripe_subscription_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          amount_cents: number
+          created_at?: string
+          environment?: string
+          id?: string
+          meals_allocated?: number
+          stripe_invoice_id: string
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          amount_cents?: number
+          created_at?: string
+          environment?: string
+          id?: string
+          meals_allocated?: number
+          stripe_invoice_id?: string
+          stripe_subscription_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       subscriptions: {
         Row: {
           cancel_at_period_end: boolean
@@ -783,6 +816,14 @@ export type Database = {
       advance_order: {
         Args: { _order_id: string; _status: string }
         Returns: undefined
+      }
+      allocate_sponsorship_funding: {
+        Args: {
+          _amount_cents: number
+          _sponsor_name?: string
+          _user_id: string
+        }
+        Returns: number
       }
       confirm_sponsor_checkout: {
         Args: { _checkout_id: string; _payment_intent: string }

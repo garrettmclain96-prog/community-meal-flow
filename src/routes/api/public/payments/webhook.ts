@@ -67,6 +67,50 @@ async function failCheckout(session: any, status: string) {
     .neq("status", "paid");
 }
 
+/**
+ * A sponsorship invoice settled — turn the money into funded meals at the
+ * kitchens with the largest unmet demand. Idempotent per invoice.
+ */
+async function allocateSponsorship(invoice: any, env: StripeEnv) {
+  if (!invoice.subscription) return;
+  const amount = invoice.amount_paid ?? 0;
+  if (amount < 100) return;
+
+  const db = getSupabase();
+  const { data: sub } = await db
+    .from("subscriptions")
+    .select("user_id")
+    .eq("stripe_subscription_id", invoice.subscription)
+    .maybeSingle();
+  const userId = (sub as any)?.user_id ?? null;
+
+  const { data: existing } = await db
+    .from("sponsorship_allocations")
+    .select("id")
+    .eq("stripe_invoice_id", invoice.id)
+    .maybeSingle();
+  if (existing) return;
+
+  const { data: meals, error } = await db.rpc("allocate_sponsorship_funding", {
+    _user_id: userId,
+    _amount_cents: amount,
+    _sponsor_name: invoice.customer_name ?? null,
+  });
+  if (error) {
+    console.error("allocate_sponsorship_funding failed", error);
+    return;
+  }
+
+  await db.from("sponsorship_allocations").insert({
+    user_id: userId,
+    stripe_invoice_id: invoice.id,
+    stripe_subscription_id: invoice.subscription,
+    amount_cents: amount,
+    meals_allocated: Number(meals ?? 0),
+    environment: env,
+  });
+}
+
 async function handleWebhook(req: Request, env: StripeEnv) {
   const event = await verifyWebhook(req, env);
 
@@ -95,6 +139,9 @@ async function handleWebhook(req: Request, env: StripeEnv) {
       break;
     case "checkout.session.expired":
       await failCheckout(event.data.object, "expired");
+      break;
+    case "invoice.paid":
+      await allocateSponsorship(event.data.object, env);
       break;
     default:
       console.log("Unhandled event:", event.type);
