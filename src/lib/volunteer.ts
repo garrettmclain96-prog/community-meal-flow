@@ -173,8 +173,8 @@ export async function advanceRun(runId: string, status: "picked_up" | "delivered
 export async function claimKitchen(kitchenId: string, role: string, note: string) {
   const { error } = await supabase.rpc("claim_kitchen", {
     _kitchen_id: kitchenId,
-    _role: role || null,
-    _note: note || null,
+    _role: role || undefined,
+    _note: note || undefined,
   });
   if (error) throw error;
 }
