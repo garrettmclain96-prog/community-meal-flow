@@ -138,12 +138,20 @@ function KitchenPage() {
         {user && mine.isLoading && <p className="mt-10 text-sm text-muted-foreground">Loading…</p>}
 
         {user && !mine.isLoading && !mine.data && (
-          <RegisterKitchen
-            onCreated={() => {
-              void qc.invalidateQueries({ queryKey: ["my-kitchen"] });
-              void qc.invalidateQueries({ queryKey: ["kitchens"] });
-            }}
-          />
+          <>
+            <ClaimListings
+              onClaimed={() => {
+                void qc.invalidateQueries({ queryKey: ["my-kitchen"] });
+                void qc.invalidateQueries({ queryKey: ["kitchens"] });
+              }}
+            />
+            <RegisterKitchen
+              onCreated={() => {
+                void qc.invalidateQueries({ queryKey: ["my-kitchen"] });
+                void qc.invalidateQueries({ queryKey: ["kitchens"] });
+              }}
+            />
+          </>
         )}
 
         {mine.data && (

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as ImpactRouteImport } from './routes/impact'
@@ -27,6 +28,11 @@ import { Route as AppImportRouteImport } from './routes/app.import'
 import { Route as AppCookRouteImport } from './routes/app.cook'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
+const VolunteerRoute = VolunteerRouteImport.update({
+  id: '/volunteer',
+  path: '/volunteer',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PartnersRoute = PartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
   '/app/kitchen': typeof AppKitchenRoute
@@ -140,6 +147,7 @@ export interface FileRoutesByTo {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
   '/app/kitchen': typeof AppKitchenRoute
@@ -160,6 +168,7 @@ export interface FileRoutesById {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
   '/app/kitchen': typeof AppKitchenRoute
@@ -181,6 +190,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/volunteer'
     | '/app/cook'
     | '/app/import'
     | '/app/kitchen'
@@ -199,6 +209,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/volunteer'
     | '/app/cook'
     | '/app/import'
     | '/app/kitchen'
@@ -218,6 +229,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/volunteer'
     | '/app/cook'
     | '/app/import'
     | '/app/kitchen'
@@ -238,12 +250,20 @@ export interface RootRouteChildren {
   ImpactRoute: typeof ImpactRoute
   KitchenRoute: typeof KitchenRoute
   PartnersRoute: typeof PartnersRoute
+  VolunteerRoute: typeof VolunteerRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/volunteer': {
+      id: '/volunteer'
+      path: '/volunteer'
+      fullPath: '/volunteer'
+      preLoaderRoute: typeof VolunteerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/partners': {
       id: '/partners'
       path: '/partners'
@@ -398,6 +418,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImpactRoute: ImpactRoute,
   KitchenRoute: KitchenRoute,
   PartnersRoute: PartnersRoute,
+  VolunteerRoute: VolunteerRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
