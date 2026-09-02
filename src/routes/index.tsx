@@ -50,6 +50,7 @@ function Nav() {
             <Link to="/app" className="hover:text-ember-text transition-colors">Plan My Meals</Link>
             <Link to="/impact" className="hover:text-ember-text transition-colors">Fund Meals</Link>
             <Link to="/kitchen" className="hover:text-ember-text transition-colors">Join as a Kitchen</Link>
+            <Link to="/volunteer" className="hover:text-ember-text transition-colors">Volunteer</Link>
             <Link to="/partners" className="hover:text-ember-text transition-colors">Partner With Us</Link>
             <Link to="/civic" className="hover:text-ember-text transition-colors">Civic</Link>
           </div>
