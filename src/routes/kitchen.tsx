@@ -250,6 +250,8 @@ function KitchenPage() {
               </div>
             </section>
 
+            <ShiftsPanel kitchenId={kitchenId} defaultNeighborhood={mine.data.neighborhood ?? ""} />
+
           </>
         )}
       </main>
