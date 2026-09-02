@@ -14,6 +14,79 @@ export type Database = {
   }
   public: {
     Tables: {
+      delivery_runs: {
+        Row: {
+          claimed_at: string | null
+          created_at: string
+          delivered_at: string | null
+          dropoff_area: string | null
+          id: string
+          kitchen_id: string
+          meals: number
+          order_id: string
+          picked_up_at: string | null
+          status: string
+          updated_at: string
+          volunteer_id: string | null
+          window_end: string
+          window_start: string
+        }
+        Insert: {
+          claimed_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          dropoff_area?: string | null
+          id?: string
+          kitchen_id: string
+          meals?: number
+          order_id: string
+          picked_up_at?: string | null
+          status?: string
+          updated_at?: string
+          volunteer_id?: string | null
+          window_end?: string
+          window_start?: string
+        }
+        Update: {
+          claimed_at?: string | null
+          created_at?: string
+          delivered_at?: string | null
+          dropoff_area?: string | null
+          id?: string
+          kitchen_id?: string
+          meals?: number
+          order_id?: string
+          picked_up_at?: string | null
+          status?: string
+          updated_at?: string
+          volunteer_id?: string | null
+          window_end?: string
+          window_start?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "delivery_runs_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_runs_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: true
+            referencedRelation: "funded_orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "delivery_runs_volunteer_id_fkey"
+            columns: ["volunteer_id"]
+            isOneToOne: false
+            referencedRelation: "volunteers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       funded_orders: {
         Row: {
           amount_cents: number
@@ -251,54 +324,122 @@ export type Database = {
         }
         Relationships: []
       }
+      kitchen_claims: {
+        Row: {
+          created_at: string
+          id: string
+          kitchen_id: string
+          note: string | null
+          role_at_kitchen: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          kitchen_id: string
+          note?: string | null
+          role_at_kitchen?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          kitchen_id?: string
+          note?: string | null
+          role_at_kitchen?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kitchen_claims_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kitchens: {
         Row: {
           active: boolean
+          address: string | null
           approved: boolean
           city: string
+          claimed: boolean
+          claimed_at: string | null
           cost_per_meal: number
           created_at: string
           daily_capacity_meals: number
           id: string
           kind: string
           kind_detail: string | null
+          latitude: number | null
+          longitude: number | null
           name: string
           neighborhood: string | null
-          owner_id: string
+          owner_id: string | null
           payout_account_id: string | null
           payout_status: string
+          postal_code: string | null
+          source: string
+          summary: string | null
+          website: string | null
         }
         Insert: {
           active?: boolean
+          address?: string | null
           approved?: boolean
           city?: string
+          claimed?: boolean
+          claimed_at?: string | null
           cost_per_meal?: number
           created_at?: string
           daily_capacity_meals?: number
           id?: string
           kind?: string
           kind_detail?: string | null
+          latitude?: number | null
+          longitude?: number | null
           name: string
           neighborhood?: string | null
-          owner_id: string
+          owner_id?: string | null
           payout_account_id?: string | null
           payout_status?: string
+          postal_code?: string | null
+          source?: string
+          summary?: string | null
+          website?: string | null
         }
         Update: {
           active?: boolean
+          address?: string | null
           approved?: boolean
           city?: string
+          claimed?: boolean
+          claimed_at?: string | null
           cost_per_meal?: number
           created_at?: string
           daily_capacity_meals?: number
           id?: string
           kind?: string
           kind_detail?: string | null
+          latitude?: number | null
+          longitude?: number | null
           name?: string
           neighborhood?: string | null
-          owner_id?: string
+          owner_id?: string | null
           payout_account_id?: string | null
           payout_status?: string
+          postal_code?: string | null
+          source?: string
+          summary?: string | null
+          website?: string | null
         }
         Relationships: []
       }
@@ -630,6 +771,51 @@ export type Database = {
           },
         ]
       }
+      shift_signups: {
+        Row: {
+          created_at: string
+          hours: number
+          id: string
+          shift_id: string
+          status: string
+          updated_at: string
+          volunteer_id: string
+        }
+        Insert: {
+          created_at?: string
+          hours?: number
+          id?: string
+          shift_id: string
+          status?: string
+          updated_at?: string
+          volunteer_id: string
+        }
+        Update: {
+          created_at?: string
+          hours?: number
+          id?: string
+          shift_id?: string
+          status?: string
+          updated_at?: string
+          volunteer_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "shift_signups_shift_id_fkey"
+            columns: ["shift_id"]
+            isOneToOne: false
+            referencedRelation: "volunteer_shifts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "shift_signups_volunteer_id_fkey"
+            columns: ["volunteer_id"]
+            isOneToOne: false
+            referencedRelation: "volunteers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       sponsor_checkouts: {
         Row: {
           amount_cents: number
@@ -808,11 +994,116 @@ export type Database = {
         }
         Relationships: []
       }
+      volunteer_shifts: {
+        Row: {
+          created_at: string
+          ends_at: string
+          id: string
+          kitchen_id: string
+          neighborhood: string | null
+          notes: string | null
+          role: string
+          slots: number
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          ends_at: string
+          id?: string
+          kitchen_id: string
+          neighborhood?: string | null
+          notes?: string | null
+          role?: string
+          slots?: number
+          starts_at: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          ends_at?: string
+          id?: string
+          kitchen_id?: string
+          neighborhood?: string | null
+          notes?: string | null
+          role?: string
+          slots?: number
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "volunteer_shifts_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      volunteers: {
+        Row: {
+          active: boolean
+          agreement_accepted_at: string | null
+          availability: string[]
+          can_drive: boolean
+          city: string
+          created_at: string
+          email: string | null
+          full_name: string
+          id: string
+          neighborhoods: string[]
+          phone: string | null
+          skills: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          active?: boolean
+          agreement_accepted_at?: string | null
+          availability?: string[]
+          can_drive?: boolean
+          city?: string
+          created_at?: string
+          email?: string | null
+          full_name: string
+          id?: string
+          neighborhoods?: string[]
+          phone?: string | null
+          skills?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          active?: boolean
+          agreement_accepted_at?: string | null
+          availability?: string[]
+          can_drive?: boolean
+          city?: string
+          created_at?: string
+          email?: string | null
+          full_name?: string
+          id?: string
+          neighborhoods?: string[]
+          phone?: string | null
+          skills?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      advance_delivery_run: {
+        Args: { _run_id: string; _status: string }
+        Returns: undefined
+      }
       advance_order: {
         Args: { _order_id: string; _status: string }
         Returns: undefined
@@ -824,6 +1115,11 @@ export type Database = {
           _user_id: string
         }
         Returns: number
+      }
+      claim_delivery_run: { Args: { _run_id: string }; Returns: string }
+      claim_kitchen: {
+        Args: { _kitchen_id: string; _note?: string; _role?: string }
+        Returns: string
       }
       confirm_sponsor_checkout: {
         Args: { _checkout_id: string; _payment_intent: string }
@@ -845,6 +1141,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      my_volunteer_id: { Args: never; Returns: string }
       owns_household: { Args: { _household_id: string }; Returns: boolean }
       owns_kitchen: { Args: { _kitchen_id: string }; Returns: boolean }
     }

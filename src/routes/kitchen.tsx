@@ -7,6 +7,12 @@ import { AccountButton } from "@/components/AccountButton";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { advanceOrder, listTemplates } from "@/lib/community";
+import {
+  SHIFT_ROLES,
+  claimKitchen,
+  listShiftsForKitchen,
+  listSignups,
+} from "@/lib/volunteer";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import {
@@ -138,12 +144,20 @@ function KitchenPage() {
         {user && mine.isLoading && <p className="mt-10 text-sm text-muted-foreground">Loading…</p>}
 
         {user && !mine.isLoading && !mine.data && (
-          <RegisterKitchen
-            onCreated={() => {
-              void qc.invalidateQueries({ queryKey: ["my-kitchen"] });
-              void qc.invalidateQueries({ queryKey: ["kitchens"] });
-            }}
-          />
+          <>
+            <ClaimListings
+              onClaimed={() => {
+                void qc.invalidateQueries({ queryKey: ["my-kitchen"] });
+                void qc.invalidateQueries({ queryKey: ["kitchens"] });
+              }}
+            />
+            <RegisterKitchen
+              onCreated={() => {
+                void qc.invalidateQueries({ queryKey: ["my-kitchen"] });
+                void qc.invalidateQueries({ queryKey: ["kitchens"] });
+              }}
+            />
+          </>
         )}
 
         {mine.data && (
@@ -241,6 +255,8 @@ function KitchenPage() {
                 />
               </div>
             </section>
+
+            <ShiftsPanel kitchenId={kitchenId} defaultNeighborhood={mine.data.neighborhood ?? ""} />
 
           </>
         )}
@@ -587,5 +603,297 @@ function PayoutPanel({
         )}
       </ul>
     </div>
+  );
+}
+
+function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
+  const [openId, setOpenId] = useState<string | null>(null);
+  const [role, setRole] = useState("");
+  const [note, setNote] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const listings = useQuery({
+    queryKey: ["unclaimed-kitchens"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("kitchens")
+        .select("id, name, kind_detail, city, neighborhood, address, daily_capacity_meals, cost_per_meal, summary, website")
+        .eq("claimed", false)
+        .eq("active", true)
+        .order("name");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  if ((listings.data?.length ?? 0) === 0) return null;
+
+  return (
+    <section className="mt-10 rounded-xl border border-border bg-surface p-6">
+      <h2 className="font-display text-2xl font-bold">Already feeding people here?</h2>
+      <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
+        These Galveston-area programs are listed on TableForward from public information and have not
+        been claimed yet. If you run one, claim it — the listing becomes your account, with capacity,
+        pricing, funded orders and payouts under your control.
+      </p>
+
+      <ul className="mt-5 grid gap-3 md:grid-cols-2">
+        {(listings.data ?? []).map((k) => (
+          <li key={k.id} className="rounded-lg border border-border bg-card p-4">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold">{k.name}</p>
+              <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
+                unclaimed
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-muted-foreground">
+              {[k.address, k.neighborhood, k.city].filter(Boolean).join(" · ")}
+            </p>
+            {k.summary && <p className="mt-2 text-xs text-muted-foreground">{k.summary}</p>}
+            <p className="mt-2 text-xs text-muted-foreground">
+              Listed at {k.daily_capacity_meals} meals/day · ${Number(k.cost_per_meal).toFixed(2)} per meal
+            </p>
+
+            {openId === k.id ? (
+              <form
+                className="mt-3 space-y-2"
+                onSubmit={async (e) => {
+                  e.preventDefault();
+                  setBusy(true);
+                  try {
+                    await claimKitchen(k.id, role, note);
+                    toast.success(`${k.name} is yours — check your capacity and pricing`);
+                    onClaimed();
+                  } catch (err) {
+                    toast.error(err instanceof Error ? err.message : "Could not claim this listing");
+                  } finally {
+                    setBusy(false);
+                  }
+                }}
+              >
+                <input
+                  required
+                  placeholder="Your role (owner, kitchen manager, pastor…)"
+                  value={role}
+                  onChange={(e) => setRole(e.target.value)}
+                  className={inputCls}
+                />
+                <textarea
+                  placeholder="Anything we should know about your program"
+                  value={note}
+                  onChange={(e) => setNote(e.target.value)}
+                  className={`${inputCls} min-h-16`}
+                />
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    disabled={busy}
+                    className="rounded-full bg-ember px-4 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50"
+                  >
+                    {busy ? "Claiming…" : "Confirm claim"}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setOpenId(null)}
+                    className="rounded-full border border-border px-4 py-1.5 text-xs"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setOpenId(k.id);
+                  setRole("");
+                  setNote("");
+                }}
+                className="mt-3 rounded-full border border-border px-4 py-1.5 text-xs font-semibold hover:border-ember/50"
+              >
+                Claim this listing
+              </button>
+            )}
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function ShiftsPanel({
+  kitchenId,
+  defaultNeighborhood,
+}: {
+  kitchenId: string;
+  defaultNeighborhood: string;
+}) {
+  const qc = useQueryClient();
+  const [title, setTitle] = useState("");
+  const [role, setRole] = useState<string>("prep");
+  const [start, setStart] = useState("");
+  const [hours, setHours] = useState(3);
+  const [slots, setSlots] = useState(4);
+  const [notes, setNotes] = useState("");
+
+  const shifts = useQuery({
+    queryKey: ["kitchen-shifts", kitchenId],
+    enabled: Boolean(kitchenId),
+    queryFn: () => listShiftsForKitchen(kitchenId),
+  });
+  const signups = useQuery({
+    queryKey: ["kitchen-signups", kitchenId],
+    enabled: Boolean(kitchenId),
+    queryFn: listSignups,
+  });
+  const roster = useQuery({
+    queryKey: ["kitchen-volunteers", kitchenId],
+    enabled: Boolean(kitchenId),
+    queryFn: async () => {
+      const { data, error } = await supabase.from("volunteers").select("id, full_name, phone, can_drive, skills");
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const volunteerById = new Map((roster.data ?? []).map((v) => [v.id, v]));
+
+  async function post(e: React.FormEvent) {
+    e.preventDefault();
+    if (!start) {
+      toast.error("Pick a start time");
+      return;
+    }
+    const startsAt = new Date(start);
+    const { error } = await supabase.from("volunteer_shifts").insert({
+      kitchen_id: kitchenId,
+      title,
+      role,
+      starts_at: startsAt.toISOString(),
+      ends_at: new Date(startsAt.getTime() + hours * 3_600_000).toISOString(),
+      slots,
+      notes: notes || null,
+      neighborhood: defaultNeighborhood || null,
+    });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+    setTitle("");
+    setNotes("");
+    toast.success("Shift posted to the volunteer board");
+    void qc.invalidateQueries({ queryKey: ["kitchen-shifts"] });
+    void qc.invalidateQueries({ queryKey: ["shifts"] });
+  }
+
+  return (
+    <section className="mt-10 grid gap-8 lg:grid-cols-[1fr_1fr]">
+      <div className="rounded-xl border border-border bg-surface p-6">
+        <h2 className="font-display text-2xl font-bold">Post a volunteer shift</h2>
+        <p className="mt-1 text-sm text-muted-foreground">
+          Prep, cook, serve, pack, clean or drive. Posted shifts appear instantly on the volunteer
+          board.
+        </p>
+        <form onSubmit={post} className="mt-5 grid gap-3 sm:grid-cols-2">
+          <div className="sm:col-span-2">
+            <input
+              required
+              placeholder="Saturday lunch service line"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className={inputCls}
+            />
+          </div>
+          <select value={role} onChange={(e) => setRole(e.target.value)} className={inputCls} aria-label="Role">
+            {SHIFT_ROLES.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+          <input
+            type="datetime-local"
+            value={start}
+            onChange={(e) => setStart(e.target.value)}
+            className={inputCls}
+            aria-label="Starts at"
+          />
+          <input
+            type="number"
+            min={1}
+            max={12}
+            value={hours}
+            onChange={(e) => setHours(Number(e.target.value) || 1)}
+            className={inputCls}
+            aria-label="Length in hours"
+          />
+          <input
+            type="number"
+            min={1}
+            value={slots}
+            onChange={(e) => setSlots(Number(e.target.value) || 1)}
+            className={inputCls}
+            aria-label="Slots"
+          />
+          <textarea
+            placeholder="Where to park, what to wear, who to ask for"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            className={`${inputCls} sm:col-span-2 min-h-16`}
+          />
+          <button
+            type="submit"
+            className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground sm:col-span-2"
+          >
+            Post shift
+          </button>
+        </form>
+      </div>
+
+      <div className="rounded-xl border border-border bg-surface p-6">
+        <h2 className="font-display text-2xl font-bold">Your roster</h2>
+        <ul className="mt-4 space-y-3">
+          {(shifts.data ?? []).map((s) => {
+            const joined = (signups.data ?? []).filter((g) => g.shift_id === s.id);
+            return (
+              <li key={s.id} className="rounded-lg border border-border bg-card p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <p className="text-sm font-semibold">{s.title}</p>
+                  <span className="text-xs text-muted-foreground">
+                    {joined.length}/{s.slots} filled
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  {s.role} ·{" "}
+                  {new Date(s.starts_at).toLocaleString([], {
+                    weekday: "short",
+                    month: "short",
+                    day: "numeric",
+                    hour: "numeric",
+                    minute: "2-digit",
+                  })}
+                </p>
+                <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                  {joined.map((g) => {
+                    const v = volunteerById.get(g.volunteer_id);
+                    return (
+                      <li key={g.id}>
+                        {v?.full_name ?? "Volunteer"}
+                        {v?.phone ? ` · ${v.phone}` : ""}
+                        {v?.can_drive ? " · can drive" : ""} · {g.status}
+                      </li>
+                    );
+                  })}
+                  {joined.length === 0 && <li>No signups yet.</li>}
+                </ul>
+              </li>
+            );
+          })}
+          {(shifts.data?.length ?? 0) === 0 && (
+            <li className="text-sm text-muted-foreground">Nothing posted yet.</li>
+          )}
+        </ul>
+      </div>
+    </section>
   );
 }

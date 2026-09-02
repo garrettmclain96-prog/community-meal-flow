@@ -24,11 +24,13 @@
 - [ ] Price depth: expanded seed prices + in-app observation capture with freshness decay
 - [ ] Recipe depth: wider public library across budget/veg/protein/batch/quick/allergy tracks
 - [ ] /partners: assistance requests + partner referrals, verification, dispatches, outcomes
-- [ ] /civic: geographic demand, kitchen capacity vs demand, sponsor allocation, CSV export
+- [x] /civic: area demand vs weekly capacity, coverage, unmet gap, sponsor dollars, 7/30/90 windows,
+      daily trend, drill-down and CSV export
 - [ ] /app: budget, preferences, pantry, planner, shop screens fully built out
 
 ## Vision alignment (TableForward 2.0 brief)
-- [ ] Volunteer integration: sign up to deliver, prep, distribute, host events; volunteer portal
+- [x] Volunteer integration: /volunteer profiles, skills/availability, kitchen shifts, signups,
+      hours logging, delivery-run dispatch (claim → picked up → delivered → payout queued)
 - [ ] Kitchen types beyond restaurants: food trucks, caterers, meal prep, churches, school cafeterias
 - [ ] Restaurant stabilization: guaranteed daily minimum, micro-grants, discounted supplies, volunteer labor
 - [ ] Smart matching: route funded meals to family/senior/homeless/student/veteran cohorts via partners
@@ -50,3 +52,12 @@
 - [x] Auto-send payouts the moment an order is marked delivered (manual button remains as fallback)
 - [x] Sponsorship renewals auto-fund the kitchens with the largest unmet demand
 - [ ] Refunds handled manually by policy (no self-serve refund path)
+
+
+## Galveston launch (this pass)
+- [x] 10 real Galveston-county food programs seeded as unclaimed listings with address, coordinates,
+      area, website and program summary
+- [x] Operator claim flow: claiming a listing transfers ownership and grants the kitchen role
+- [x] Volunteer schema (volunteers, volunteer_shifts, shift_signups, delivery_runs) with RLS —
+      volunteers never see recipient identity, kitchens see only their own roster
+- [ ] End-to-end sandbox sponsorship → delivery → payout: NOT yet run (no signed-in preview session)
