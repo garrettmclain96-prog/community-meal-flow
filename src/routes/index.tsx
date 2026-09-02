@@ -267,7 +267,7 @@ function StabilizationBento() {
             <div className="relative mt-8 flex h-56 items-end gap-2.5">
               {[[55, 38], [70, 42], [60, 30], [78, 50], [55, 48], [82, 60], [65, 45], [90, 70], [72, 55]].map(
                 ([organic, floor], i) => (
-                  <div key={i} className="relative flex flex-1 flex-col justify-end">
+                  <div key={i} className="relative flex h-full flex-1 flex-col justify-end">
                     <div
                       className="rounded-t-md bg-violet/40"
                       style={{ height: `${organic}%` }}
