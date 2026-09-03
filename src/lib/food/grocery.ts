@@ -65,7 +65,8 @@ export function buildGroceryList(
     const available = pantry
       .filter((p) => p.ingredientId === ingredientId)
       .reduce(
-        (s, p) => s + (normalizeToPackageUnit(p.quantity.amount, p.quantity.unit, ingredientId) ?? 0),
+        (s, p) =>
+          s + (normalizeToPackageUnit(p.quantity.amount, p.quantity.unit, ingredientId) ?? 0),
         0,
       );
     const fromPantry = Math.min(available, entry.base);

@@ -15,6 +15,10 @@ export interface KitchenRow {
   neighborhood: string | null;
   daily_capacity_meals: number;
   cost_per_meal: number;
+  address: string | null;
+  website: string | null;
+  summary: string | null;
+  claimed: boolean;
 }
 
 export interface TemplateRow {
@@ -31,7 +35,9 @@ export interface TemplateRow {
 export async function listKitchens(): Promise<KitchenRow[]> {
   const { data, error } = await supabase
     .from("kitchens")
-    .select("id, name, kind, city, neighborhood, daily_capacity_meals, cost_per_meal")
+    .select(
+      "id, name, kind, city, neighborhood, daily_capacity_meals, cost_per_meal, address, website, summary, claimed",
+    )
     .eq("approved", true)
     .eq("active", true)
     .order("name");
@@ -52,7 +58,13 @@ export interface ImpactTotals {
   mealsDelivered: number;
   kitchens: number;
   neighborhoods: Array<{ neighborhood: string; meals: number }>;
-  recent: Array<{ id: string; kind: string; meals: number; neighborhood: string | null; occurred_at: string }>;
+  recent: Array<{
+    id: string;
+    kind: string;
+    meals: number;
+    neighborhood: string | null;
+    occurred_at: string;
+  }>;
 }
 
 export async function loadImpactTotals(): Promise<ImpactTotals> {
@@ -92,8 +104,6 @@ export async function loadImpactTotals(): Promise<ImpactTotals> {
 
 // Funding now happens exclusively through paid checkout
 // (see src/lib/payments.functions.ts). The old unpaid RPC path is revoked.
-
-
 
 export async function advanceOrder(orderId: string, status: "accepted" | "prepared" | "delivered") {
   const { error } = await supabase.rpc("advance_order", { _order_id: orderId, _status: status });

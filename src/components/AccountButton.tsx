@@ -24,6 +24,7 @@ export function AccountButton() {
     return (
       <Link
         to="/auth"
+        search={{ redirect: "/" }}
         className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted"
       >
         Sign in
@@ -37,7 +38,7 @@ export function AccountButton() {
     await queryClient.cancelQueries();
     queryClient.clear();
     await signOut();
-    void navigate({ to: "/auth", replace: true });
+    void navigate({ to: "/auth", search: { redirect: "/" }, replace: true });
   }
 
   return (

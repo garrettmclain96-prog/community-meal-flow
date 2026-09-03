@@ -4,7 +4,7 @@ export type Theme = "dark" | "light";
 
 const STORAGE_KEY = "tf:theme";
 
-export const THEME_BOOT_SCRIPT = `(function(){try{var t=localStorage.getItem("${STORAGE_KEY}");if(t!=="light"&&t!=="dark"){t="dark";}document.documentElement.classList.toggle("dark",t==="dark");document.documentElement.style.colorScheme=t;}catch(e){document.documentElement.classList.add("dark");}})();`;
+export const THEME_BOOT_SCRIPT = `(function(){try{var t=localStorage.getItem("${STORAGE_KEY}");if(t!=="light"&&t!=="dark"){t="light";}document.documentElement.classList.toggle("dark",t==="dark");document.documentElement.style.colorScheme=t;}catch(e){document.documentElement.classList.remove("dark");}})();`;
 
 interface ThemeContextValue {
   theme: Theme;
@@ -21,7 +21,7 @@ function applyTheme(theme: Theme) {
 }
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("dark");
+  const [theme, setThemeState] = useState<Theme>("light");
 
   useEffect(() => {
     let stored: string | null = null;
@@ -30,7 +30,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       stored = null;
     }
-    const next: Theme = stored === "light" || stored === "dark" ? stored : "dark";
+    const next: Theme = stored === "light" || stored === "dark" ? stored : "light";
     setThemeState(next);
     applyTheme(next);
   }, []);

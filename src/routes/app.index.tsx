@@ -100,7 +100,11 @@ function MealForgeHome() {
           title="Pantry & recipes"
           body={`${pantry.length} pantry items · ${recipes.length} recipes in your library.`}
         />
-        <Tile to="/app/setup" title="Household settings" body="Members, allergies, stores, budget." />
+        <Tile
+          to="/app/setup"
+          title="Household settings"
+          body="Members, allergies, stores, budget."
+        />
       </div>
     </div>
   );

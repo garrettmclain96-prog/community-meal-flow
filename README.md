@@ -82,8 +82,6 @@ They get:
 
 • Access to micro‑grants
 
-
-
 • Access to volunteer labor
 
 • Access to discounted supplies

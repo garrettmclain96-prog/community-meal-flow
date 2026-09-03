@@ -1,12 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
+import type Stripe from "stripe";
 
+import type { Database } from "@/integrations/supabase/types";
 import { type StripeEnv, verifyWebhook } from "@/lib/stripe.server";
 
-let _supabase: ReturnType<typeof createClient<any, any, any>> | null = null;
+let _supabase: ReturnType<typeof createClient<Database>> | null = null;
 function getSupabase() {
   if (!_supabase) {
-    _supabase = createClient<any, any, any>(
+    _supabase = createClient<Database>(
       process.env["SUPABASE_URL"]!,
       process.env["SUPABASE_SERVICE_ROLE_KEY"]!,
     );
@@ -14,7 +16,7 @@ function getSupabase() {
   return _supabase;
 }
 
-async function upsertSubscription(subscription: any, env: StripeEnv) {
+async function upsertSubscription(subscription: Stripe.Subscription, env: StripeEnv) {
   const userId = subscription.metadata?.userId;
   if (!userId) {
     console.error("Subscription without userId metadata", subscription.id);
@@ -23,9 +25,12 @@ async function upsertSubscription(subscription: any, env: StripeEnv) {
   const item = subscription.items?.data?.[0];
   const priceId =
     item?.price?.lookup_key || item?.price?.metadata?.lovable_external_id || item?.price?.id;
-  const productId = item?.price?.product;
-  const periodStart = item?.current_period_start ?? subscription.current_period_start;
-  const periodEnd = item?.current_period_end ?? subscription.current_period_end;
+  const product = item?.price?.product;
+  const productId = typeof product === "string" ? product : product?.id;
+  const periodStart = item?.current_period_start;
+  const periodEnd = item?.current_period_end;
+  const customerId =
+    typeof subscription.customer === "string" ? subscription.customer : subscription.customer.id;
 
   await getSupabase()
     .from("subscriptions")
@@ -33,7 +38,7 @@ async function upsertSubscription(subscription: any, env: StripeEnv) {
       {
         user_id: userId,
         stripe_subscription_id: subscription.id,
-        stripe_customer_id: subscription.customer,
+        stripe_customer_id: customerId,
         product_id: productId,
         price_id: priceId,
         status: subscription.status,
@@ -47,17 +52,17 @@ async function upsertSubscription(subscription: any, env: StripeEnv) {
     );
 }
 
-async function confirmCheckout(session: any) {
+async function confirmCheckout(session: Stripe.Checkout.Session) {
   const checkoutId = session.metadata?.checkoutId;
   if (!checkoutId) return;
   const { error } = await getSupabase().rpc("confirm_sponsor_checkout", {
     _checkout_id: checkoutId,
-    _payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : null,
+    _payment_intent: typeof session.payment_intent === "string" ? session.payment_intent : "",
   });
   if (error) console.error("confirm_sponsor_checkout failed", error);
 }
 
-async function failCheckout(session: any, status: string) {
+async function failCheckout(session: Stripe.Checkout.Session, status: string) {
   const checkoutId = session.metadata?.checkoutId;
   if (!checkoutId) return;
   await getSupabase()
@@ -71,8 +76,10 @@ async function failCheckout(session: any, status: string) {
  * A sponsorship invoice settled — turn the money into funded meals at the
  * kitchens with the largest unmet demand. Idempotent per invoice.
  */
-async function allocateSponsorship(invoice: any, env: StripeEnv) {
-  if (!invoice.subscription) return;
+async function allocateSponsorship(invoice: Stripe.Invoice, env: StripeEnv) {
+  const subscription = invoice.parent?.subscription_details?.subscription;
+  const subscriptionId = typeof subscription === "string" ? subscription : subscription?.id;
+  if (!subscriptionId) return;
   const amount = invoice.amount_paid ?? 0;
   if (amount < 100) return;
 
@@ -80,9 +87,9 @@ async function allocateSponsorship(invoice: any, env: StripeEnv) {
   const { data: sub } = await db
     .from("subscriptions")
     .select("user_id")
-    .eq("stripe_subscription_id", invoice.subscription)
+    .eq("stripe_subscription_id", subscriptionId)
     .maybeSingle();
-  const userId = (sub as any)?.user_id ?? null;
+  const userId = sub?.user_id ?? null;
 
   const { data: existing } = await db
     .from("sponsorship_allocations")
@@ -92,9 +99,9 @@ async function allocateSponsorship(invoice: any, env: StripeEnv) {
   if (existing) return;
 
   const { data: meals, error } = await db.rpc("allocate_sponsorship_funding", {
-    _user_id: userId,
+    _user_id: userId ?? "",
     _amount_cents: amount,
-    _sponsor_name: invoice.customer_name ?? null,
+    _sponsor_name: invoice.customer_name ?? "",
   });
   if (error) {
     console.error("allocate_sponsorship_funding failed", error);
@@ -104,7 +111,7 @@ async function allocateSponsorship(invoice: any, env: StripeEnv) {
   await db.from("sponsorship_allocations").insert({
     user_id: userId,
     stripe_invoice_id: invoice.id,
-    stripe_subscription_id: invoice.subscription,
+    stripe_subscription_id: subscriptionId,
     amount_cents: amount,
     meals_allocated: Number(meals ?? 0),
     environment: env,

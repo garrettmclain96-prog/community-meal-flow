@@ -1,4 +1,12 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -8,7 +16,6 @@ import { buildMealPlan, type MealPlan } from "./planner";
 import type { PriceObservation } from "./pricing";
 import { SEED_RECIPES } from "./recipes";
 import type { Household, PantryItem, Recipe } from "./types";
-
 
 /**
  * Local-first persistence layer.
@@ -138,7 +145,8 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
         if (cancelled) return;
         setCloudId(householdId);
         setState((s) => {
-          if (!remote.onboarded && s.onboarded) return { ...s, household: { ...s.household, id: householdId } };
+          if (!remote.onboarded && s.onboarded)
+            return { ...s, household: { ...s.household, id: householdId } };
           return { ...s, ...remote, household: remote.household ?? s.household };
         });
       })
@@ -166,7 +174,6 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
       if (pushTimer.current) clearTimeout(pushTimer.current);
     };
   }, [state, ready, cloudId]);
-
 
   const update = useCallback((patch: Partial<MealForgeState>) => {
     setState((s) => ({ ...s, ...patch }));

@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { AccountButton } from "@/components/AccountButton";
+import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { listKitchens } from "@/lib/community";
 import {
@@ -34,7 +34,8 @@ export const Route = createFileRoute("/volunteer")({
       { property: "og:title", content: "Volunteer — TableForward" },
       {
         property: "og:description",
-        content: "Claim a delivery run or a kitchen shift near you and see exactly how many meals you moved.",
+        content:
+          "Claim a delivery run or a kitchen shift near you and see exactly how many meals you moved.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -43,7 +44,8 @@ export const Route = createFileRoute("/volunteer")({
   component: VolunteerPage,
 });
 
-const inputCls = "w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground";
+const inputCls =
+  "w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm text-foreground";
 
 function VolunteerPage() {
   const { user } = useAuth();
@@ -94,19 +96,12 @@ function VolunteerPage() {
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="font-display text-xl font-bold italic tracking-tight">
-            Table<span className="text-ember">Forward</span>
-          </Link>
-          <AccountButton />
-        </div>
-      </header>
+      <SiteHeader />
 
-      <main className="mx-auto max-w-6xl px-6 py-14">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-ember-text">TableForward Volunteers</p>
-        <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold tracking-tight">
-          Two hours of your week is a hundred meals on someone's table.
+      <main className="site-shell py-14 md:py-20">
+        <p className="kicker text-primary">TableForward volunteers</p>
+        <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
+          GIVE TWO HOURS. MOVE A HUNDRED MEALS.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
           Kitchens post the shifts they actually need filled. Funded orders that are cooked and
@@ -115,17 +110,52 @@ function VolunteerPage() {
         </p>
 
         {!user && (
-          <div className="mt-10 rounded-xl border border-border bg-surface p-6">
+          <div className="editorial-card mt-10 p-6">
             <p className="text-sm text-muted-foreground">
               Create an account to build a volunteer profile, claim shifts and take delivery runs.
             </p>
-            <Link
-              to="/auth"
-              className="mt-4 inline-block rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
-            >
+            <Link to="/auth" search={{ redirect: "/volunteer" }} className="button-primary mt-4">
               Sign in to volunteer
             </Link>
           </div>
+        )}
+
+        {!user && (
+          <section className="mt-12">
+            <p className="kicker text-primary">Open nearby</p>
+            <h2 className="mt-2 font-display text-3xl font-black">Browse before you commit.</h2>
+            <div className="mt-6 grid gap-3 md:grid-cols-2">
+              {(shifts.data ?? []).slice(0, 6).map((shift) => {
+                const kitchen = kitchenName.get(shift.kitchen_id);
+                return (
+                  <article key={shift.id} className="editorial-card p-5">
+                    <div className="flex justify-between gap-3">
+                      <h3 className="font-display text-lg font-black">{shift.title}</h3>
+                      <span className="kicker text-primary">{shift.role}</span>
+                    </div>
+                    <p className="mt-3 text-sm text-muted-foreground">
+                      {kitchen?.name ?? "Local kitchen"} ·{" "}
+                      {shift.neighborhood ?? kitchen?.neighborhood ?? "Galveston"}
+                    </p>
+                    <p className="mt-1 text-sm font-bold">
+                      {new Date(shift.starts_at).toLocaleString([], {
+                        weekday: "short",
+                        month: "short",
+                        day: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </article>
+                );
+              })}
+              {!shifts.isLoading && (shifts.data?.length ?? 0) === 0 && (
+                <p className="border border-border p-5 text-sm text-muted-foreground">
+                  No open shifts are posted right now. Check back as kitchens receive funded orders.
+                </p>
+              )}
+            </div>
+          </section>
         )}
 
         {user && (
@@ -170,7 +200,8 @@ function VolunteerPage() {
                               </span>
                             </div>
                             <p className="mt-1 text-xs text-muted-foreground">
-                              Drop-off area: {r.dropoff_area ?? k?.neighborhood ?? "Galveston"} · window{" "}
+                              Drop-off area: {r.dropoff_area ?? k?.neighborhood ?? "Galveston"} ·
+                              window{" "}
                               {new Date(r.window_start).toLocaleTimeString([], {
                                 hour: "numeric",
                                 minute: "2-digit",
@@ -252,7 +283,8 @@ function VolunteerPage() {
                             </span>
                           </div>
                           <p className="mt-1 text-xs text-muted-foreground">
-                            {k?.name ?? "Kitchen"} · {s.neighborhood ?? k?.neighborhood ?? k?.city} ·{" "}
+                            {k?.name ?? "Kitchen"} · {s.neighborhood ?? k?.neighborhood ?? k?.city}{" "}
+                            ·{" "}
                             {new Date(s.starts_at).toLocaleString([], {
                               weekday: "short",
                               month: "short",
@@ -262,7 +294,9 @@ function VolunteerPage() {
                             })}{" "}
                             · {s.slots} slots
                           </p>
-                          {s.notes && <p className="mt-2 text-xs text-muted-foreground">{s.notes}</p>}
+                          {s.notes && (
+                            <p className="mt-2 text-xs text-muted-foreground">{s.notes}</p>
+                          )}
                           <div className="mt-3 flex flex-wrap items-center gap-2">
                             {!signup && (
                               <ActionButton
@@ -284,7 +318,10 @@ function VolunteerPage() {
                                       (new Date(s.ends_at).getTime() -
                                         new Date(s.starts_at).getTime()) /
                                       3_600_000;
-                                    await completeShift(signup.id, Math.max(0.5, Math.round(h * 2) / 2));
+                                    await completeShift(
+                                      signup.id,
+                                      Math.max(0.5, Math.round(h * 2) / 2),
+                                    );
                                     await refresh();
                                     toast.success("Hours logged");
                                   }}
@@ -325,6 +362,7 @@ function VolunteerPage() {
           </>
         )}
       </main>
+      <SiteFooter />
     </div>
   );
 }
@@ -432,7 +470,12 @@ function VolunteerProfileForm({
       </h2>
       <div className="mt-5 grid gap-4">
         <Field label="Full name">
-          <input required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
+          <input
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={inputCls}
+          />
         </Field>
         <div className="grid gap-4 sm:grid-cols-2">
           <Field label="Phone">
@@ -518,15 +561,7 @@ function VolunteerProfileForm({
   );
 }
 
-function Chip({
-  label,
-  active,
-  onClick,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-}) {
+function Chip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
   return (
     <button
       type="button"

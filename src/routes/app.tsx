@@ -1,9 +1,8 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { ChefHat, CookingPot, Home, ShoppingBasket, CalendarRange } from "lucide-react";
+import { BookOpen, CookingPot, Home, ShoppingBasket, CalendarRange } from "lucide-react";
 
 import { AccountButton } from "@/components/AccountButton";
 import { MealForgeProvider } from "@/lib/food/store";
-
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -32,17 +31,17 @@ const TABS = [
   { to: "/app/plan", label: "Plan", icon: CalendarRange, exact: false },
   { to: "/app/shop", label: "Shop", icon: ShoppingBasket, exact: false },
   { to: "/app/cook", label: "Cook", icon: CookingPot, exact: false },
-  { to: "/app/kitchen", label: "Kitchen", icon: ChefHat, exact: false },
+  { to: "/app/kitchen", label: "Library", icon: BookOpen, exact: false },
 ] as const;
 
 function MealForgeShell() {
   return (
     <MealForgeProvider>
       <div className="min-h-dvh bg-background text-foreground">
-        <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-xl">
+        <header className="sticky top-0 z-40 border-b-2 border-foreground bg-background/95 backdrop-blur-xl">
           <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-3">
-            <Link to="/app" className="font-display text-xl font-bold italic tracking-tight">
-              Meal<span className="text-ember">Forge</span>
+            <Link to="/app" className="font-display text-xl font-black tracking-[-0.05em]">
+              MEAL<span className="text-primary">FORGE</span>
             </Link>
             <div className="flex items-center gap-3">
               <Link
@@ -53,7 +52,6 @@ function MealForgeShell() {
               </Link>
               <AccountButton />
             </div>
-
           </div>
         </header>
 
@@ -61,7 +59,10 @@ function MealForgeShell() {
           <Outlet />
         </main>
 
-        <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-background/90 backdrop-blur-xl">
+        <nav
+          className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-foreground bg-background/95 backdrop-blur-xl"
+          aria-label="MealForge"
+        >
           <div className="mx-auto grid max-w-3xl grid-cols-5">
             {TABS.map(({ to, label, icon: Icon, exact }) => (
               <Link
@@ -70,7 +71,7 @@ function MealForgeShell() {
                 activeOptions={{ exact }}
                 activeProps={{ className: "text-ember-text" }}
                 inactiveProps={{ className: "text-muted-foreground" }}
-                className="flex flex-col items-center gap-1 py-3 text-[11px] font-medium transition-colors hover:text-ember-text"
+                className="flex min-h-[66px] flex-col items-center justify-center gap-1 py-2 text-xs font-bold transition-colors hover:text-ember-text"
               >
                 <Icon className="size-5" aria-hidden="true" />
                 {label}

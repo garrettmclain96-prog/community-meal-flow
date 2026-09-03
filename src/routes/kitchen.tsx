@@ -3,16 +3,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { AccountButton } from "@/components/AccountButton";
+import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { advanceOrder, listTemplates } from "@/lib/community";
-import {
-  SHIFT_ROLES,
-  claimKitchen,
-  listShiftsForKitchen,
-  listSignups,
-} from "@/lib/volunteer";
+import { SHIFT_ROLES, claimKitchen, listShiftsForKitchen, listSignups } from "@/lib/volunteer";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import {
@@ -99,6 +94,25 @@ function KitchenPage() {
     },
   });
 
+  const support = useQuery({
+    queryKey: ["kitchen-support", kitchenId],
+    enabled: Boolean(kitchenId),
+    queryFn: async () => {
+      const { data, error } = await supabase.rpc("get_my_kitchen_support", {
+        _kitchen_id: kitchenId,
+      });
+      if (error) throw error;
+      return (data ?? []) as unknown as Array<{
+        id: string;
+        kind: string;
+        title: string;
+        amount_cents: number;
+        status: string;
+        details: string | null;
+      }>;
+    },
+  });
+
   const funded = (orders.data ?? []).reduce((n, o) => n + o.meals_funded, 0);
   const pipeline = (orders.data ?? [])
     .filter((o) => o.status !== "delivered")
@@ -108,35 +122,31 @@ function KitchenPage() {
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <PaymentTestModeBanner />
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="font-display text-xl font-bold italic tracking-tight">
-            Table<span className="text-ember">Forward</span>
-          </Link>
-          <AccountButton />
-        </div>
-      </header>
+      <SiteHeader />
 
-      <main className="mx-auto max-w-6xl px-6 py-14">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-ember-text">TableForward Kitchen</p>
-        <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold tracking-tight">
-          Guaranteed orders, posted at your own cost per meal.
+      <main className="site-shell py-14 md:py-20">
+        <p className="kicker text-primary">TableForward for kitchens</p>
+        <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
+          TURN OPEN CAPACITY INTO PAID MEALS.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
-          Register your kitchen, publish what you can cook and at what price, then work funded orders
-          through accepted, prepared and delivered. Delivery queues a payout automatically.
+          Register your kitchen, publish what you can cook and at what price, then work funded
+          orders through accepted, prepared and delivered. Delivery queues a payout automatically.
         </p>
 
         {!user && (
-          <div className="mt-10 rounded-xl border border-border bg-surface p-6">
-            <p className="text-sm text-muted-foreground">
-              Sign in with a kitchen account to register capacity and accept funded orders.
-            </p>
-            <Link
-              to="/auth"
-              className="mt-4 inline-block rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground"
-            >
-              Sign in
+          <div className="editorial-card mt-10 grid gap-6 p-6 md:grid-cols-[1fr_auto] md:items-center md:p-8">
+            <div>
+              <p className="font-display text-2xl font-black">
+                Run a restaurant, food truck, church, school or community kitchen?
+              </p>
+              <p className="mt-2 text-sm leading-6 text-muted-foreground">
+                Claim an existing listing or register capacity, publish meal costs and receive
+                tracked funded orders.
+              </p>
+            </div>
+            <Link to="/auth" search={{ redirect: "/kitchen" }} className="button-primary">
+              Claim or register
             </Link>
           </div>
         )}
@@ -205,7 +215,9 @@ function KitchenPage() {
                                   } else if (result.status === "paid") {
                                     toast.success("Delivered — payout sent to your account");
                                   } else if (result.status === "awaiting_onboarding") {
-                                    toast.message("Delivered — finish payout setup to release the funds");
+                                    toast.message(
+                                      "Delivered — finish payout setup to release the funds",
+                                    );
                                   }
                                 } else {
                                   toast.success(`Marked ${s}`);
@@ -253,15 +265,90 @@ function KitchenPage() {
                   templates={templates.data ?? []}
                   onChanged={() => void qc.invalidateQueries({ queryKey: ["templates"] })}
                 />
+
+                <SupportPanel
+                  awards={support.data ?? []}
+                  onChanged={() =>
+                    void qc.invalidateQueries({ queryKey: ["kitchen-support", kitchenId] })
+                  }
+                />
               </div>
             </section>
 
             <ShiftsPanel kitchenId={kitchenId} defaultNeighborhood={mine.data.neighborhood ?? ""} />
-
           </>
         )}
       </main>
+      <SiteFooter />
     </div>
+  );
+}
+
+function SupportPanel({
+  awards,
+  onChanged,
+}: {
+  awards: Array<{
+    id: string;
+    kind: string;
+    title: string;
+    amount_cents: number;
+    status: string;
+    details: string | null;
+  }>;
+  onChanged: () => void;
+}) {
+  return (
+    <section className="editorial-card p-6">
+      <p className="kicker text-primary">Kitchen stability</p>
+      <h2 className="mt-2 font-display text-2xl font-black">Support beyond meal orders</h2>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">
+        Revenue floors, micro-grants, supply credits, equipment and volunteer labor offered to this
+        kitchen appear here.
+      </p>
+      <div className="mt-5 grid gap-3">
+        {awards.map((award) => (
+          <div key={award.id} className="border-2 border-foreground p-4">
+            <div className="flex flex-wrap justify-between gap-3">
+              <div>
+                <p className="font-display text-lg font-black">{award.title}</p>
+                <p className="font-mono text-xs uppercase">{award.kind.replaceAll("_", " ")}</p>
+              </div>
+              <p className="font-mono text-sm font-bold">
+                {award.amount_cents ? money(award.amount_cents) : award.status}
+              </p>
+            </div>
+            {award.details && <p className="mt-3 text-sm text-muted-foreground">{award.details}</p>}
+            {award.status === "available" && (
+              <button
+                type="button"
+                className="button-secondary mt-4"
+                onClick={async () => {
+                  const { error } = await supabase.rpc("apply_for_kitchen_support", {
+                    _award_id: award.id,
+                  });
+                  if (error) toast.error(error.message);
+                  else {
+                    toast.success("Support request submitted");
+                    onChanged();
+                  }
+                }}
+              >
+                Request support
+              </button>
+            )}
+            {award.status !== "available" && (
+              <p className="mt-3 font-mono text-xs font-bold uppercase">{award.status}</p>
+            )}
+          </div>
+        ))}
+        {!awards.length && (
+          <p className="text-sm text-muted-foreground">
+            No support offers are assigned to this kitchen yet.
+          </p>
+        )}
+      </div>
+    </section>
   );
 }
 
@@ -278,7 +365,7 @@ function RegisterKitchen({ onCreated }: { onCreated: () => void }) {
   const { user } = useAuth();
   const [name, setName] = useState("");
   const [kind, setKind] = useState("restaurant");
-  const [city, setCity] = useState("Austin");
+  const [city, setCity] = useState("Galveston");
   const [neighborhood, setNeighborhood] = useState("");
   const [capacity, setCapacity] = useState(40);
   const [cost, setCost] = useState(6.5);
@@ -306,21 +393,34 @@ function RegisterKitchen({ onCreated }: { onCreated: () => void }) {
   }
 
   return (
-    <form onSubmit={submit} className="mt-10 max-w-xl rounded-xl border border-border bg-surface p-6">
+    <form
+      onSubmit={submit}
+      className="mt-10 max-w-xl rounded-xl border border-border bg-surface p-6"
+    >
       <h2 className="font-display text-2xl font-bold">Register your kitchen</h2>
       <div className="mt-5 grid gap-4 sm:grid-cols-2">
         <Field label="Name">
-          <input required value={name} onChange={(e) => setName(e.target.value)} className={inputCls} />
+          <input
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className={inputCls}
+          />
         </Field>
         <Field label="Type">
           <select value={kind} onChange={(e) => setKind(e.target.value)} className={inputCls}>
-            {["restaurant", "food truck", "caterer", "community kitchen", "church kitchen", "school kitchen"].map(
-              (k) => (
-                <option key={k} value={k}>
-                  {k}
-                </option>
-              ),
-            )}
+            {[
+              "restaurant",
+              "food truck",
+              "caterer",
+              "community kitchen",
+              "church kitchen",
+              "school kitchen",
+            ].map((k) => (
+              <option key={k} value={k}>
+                {k}
+              </option>
+            ))}
           </select>
         </Field>
         <Field label="City">
@@ -548,8 +648,8 @@ function PayoutPanel({
         </span>
       </div>
       <p className="mt-2 text-sm text-muted-foreground">
-        Sponsors pay by card. Once you mark an order delivered, its payout is queued here and sent to
-        your bank through your connected payout account.
+        Sponsors pay by card. Once you mark an order delivered, its payout is queued here and sent
+        to your bank through your connected payout account.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-2">
@@ -617,7 +717,9 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("kitchens")
-        .select("id, name, kind_detail, city, neighborhood, address, daily_capacity_meals, cost_per_meal, summary, website")
+        .select(
+          "id, name, kind_detail, city, neighborhood, address, daily_capacity_meals, cost_per_meal, summary, website",
+        )
         .eq("claimed", false)
         .eq("active", true)
         .order("name");
@@ -632,9 +734,9 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
     <section className="mt-10 rounded-xl border border-border bg-surface p-6">
       <h2 className="font-display text-2xl font-bold">Already feeding people here?</h2>
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        These Galveston-area programs are listed on TableForward from public information and have not
-        been claimed yet. If you run one, claim it — the listing becomes your account, with capacity,
-        pricing, funded orders and payouts under your control.
+        These Galveston-area programs are listed on TableForward from public information and have
+        not been claimed yet. If you run one, claim it — the listing becomes your account, with
+        capacity, pricing, funded orders and payouts under your control.
       </p>
 
       <ul className="mt-5 grid gap-3 md:grid-cols-2">
@@ -651,7 +753,8 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
             </p>
             {k.summary && <p className="mt-2 text-xs text-muted-foreground">{k.summary}</p>}
             <p className="mt-2 text-xs text-muted-foreground">
-              Listed at {k.daily_capacity_meals} meals/day · ${Number(k.cost_per_meal).toFixed(2)} per meal
+              Listed at {k.daily_capacity_meals} meals/day · ${Number(k.cost_per_meal).toFixed(2)}{" "}
+              per meal
             </p>
 
             {openId === k.id ? (
@@ -665,7 +768,9 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
                     toast.success(`${k.name} is yours — check your capacity and pricing`);
                     onClaimed();
                   } catch (err) {
-                    toast.error(err instanceof Error ? err.message : "Could not claim this listing");
+                    toast.error(
+                      err instanceof Error ? err.message : "Could not claim this listing",
+                    );
                   } finally {
                     setBusy(false);
                   }
@@ -750,7 +855,9 @@ function ShiftsPanel({
     queryKey: ["kitchen-volunteers", kitchenId],
     enabled: Boolean(kitchenId),
     queryFn: async () => {
-      const { data, error } = await supabase.from("volunteers").select("id, full_name, phone, can_drive, skills");
+      const { data, error } = await supabase
+        .from("volunteers")
+        .select("id, full_name, phone, can_drive, skills");
       if (error) throw error;
       return data ?? [];
     },
@@ -804,7 +911,12 @@ function ShiftsPanel({
               className={inputCls}
             />
           </div>
-          <select value={role} onChange={(e) => setRole(e.target.value)} className={inputCls} aria-label="Role">
+          <select
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+            className={inputCls}
+            aria-label="Role"
+          >
             {SHIFT_ROLES.map((r) => (
               <option key={r} value={r}>
                 {r}

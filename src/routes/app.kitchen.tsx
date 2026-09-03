@@ -31,7 +31,10 @@ function KitchenPage() {
   return (
     <div className="space-y-8">
       <header>
-        <h1 className="font-display text-3xl font-bold tracking-tight">Kitchen</h1>
+        <p className="kicker text-primary">Your food system</p>
+        <h1 className="mt-2 font-display text-4xl font-black tracking-tight">
+          Pantry + recipe library
+        </h1>
         <p className="mt-1 text-sm text-muted-foreground">
           What you already own, and what you know how to cook.
         </p>
@@ -98,8 +101,8 @@ function KitchenPage() {
               <p className="font-medium">{r.title}</p>
               <p className="text-xs text-muted-foreground">
                 {r.servings} servings · {r.totalTimeMinutes} min · {r.ingredients.length}{" "}
-                ingredients · {r.source.extractionMethod} ·{" "}
-                {Math.round(r.source.confidence * 100)}% confidence
+                ingredients · {r.source.extractionMethod} · {Math.round(r.source.confidence * 100)}%
+                confidence
               </p>
             </li>
           ))}

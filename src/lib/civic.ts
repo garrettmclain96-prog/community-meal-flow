@@ -77,7 +77,10 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
       .eq("approved", true)
       .eq("active", true)
       .order("name"),
-    supabase.from("volunteer_shifts").select("id, kitchen_id, neighborhood, starts_at").gte("starts_at", since),
+    supabase
+      .from("volunteer_shifts")
+      .select("id, kitchen_id, neighborhood, starts_at")
+      .gte("starts_at", since),
   ]);
 
   if (eventsRes.error) throw eventsRes.error;
@@ -124,7 +127,8 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
 
   const trendMap = new Map<string, { funded: number; delivered: number }>();
   for (const e of events) {
-    const area = e.neighborhood || (e.kitchen_id ? kitchenArea.get(e.kitchen_id) : null) || "Unassigned";
+    const area =
+      e.neighborhood || (e.kitchen_id ? kitchenArea.get(e.kitchen_id) : null) || "Unassigned";
     const r = row(area);
     const day = e.occurred_at.slice(0, 10);
     const t = trendMap.get(day) ?? { funded: 0, delivered: 0 };
@@ -210,7 +214,9 @@ export function snapshotToCsv(snap: CivicSnapshot): string {
       r.dollars,
     ].join(","),
   );
-  return [`# TableForward Civic export — last ${snap.window} days — generated ${new Date().toISOString()}`, header, ...lines].join(
-    "\n",
-  );
+  return [
+    `# TableForward Civic export — last ${snap.window} days — generated ${new Date().toISOString()}`,
+    header,
+    ...lines,
+  ].join("\n");
 }

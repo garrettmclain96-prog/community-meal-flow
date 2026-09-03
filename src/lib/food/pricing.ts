@@ -20,9 +20,7 @@ export const STORES: Store[] = [
   { id: "wholefoods", name: "Whole Foods", banner: "Whole Foods", region: "National" },
 ];
 
-export const STORE_BY_ID: Record<string, Store> = Object.fromEntries(
-  STORES.map((s) => [s.id, s]),
-);
+export const STORE_BY_ID: Record<string, Store> = Object.fromEntries(STORES.map((s) => [s.id, s]));
 
 /** Relative price index per banner — used only for ESTIMATED quotes. */
 const STORE_INDEX: Record<string, number> = {

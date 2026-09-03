@@ -16,7 +16,8 @@ export const Route = createFileRoute("/app/plan")({
       { property: "og:title", content: "Weekly Plan — MealForge" },
       {
         property: "og:description",
-        content: "A scored week of dinners chosen by constraint, pantry reuse and package economics.",
+        content:
+          "A scored week of dinners chosen by constraint, pantry reuse and package economics.",
       },
     ],
   }),
@@ -76,8 +77,8 @@ function PlanPage() {
                     </p>
                     <h2 className="font-display text-xl font-bold">{meal.recipe.title}</h2>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {meal.recipe.totalTimeMinutes} min · $
-                      {meal.cost.costPerServing.toFixed(2)}/serving · score {meal.score}
+                      {meal.recipe.totalTimeMinutes} min · ${meal.cost.costPerServing.toFixed(2)}
+                      /serving · score {meal.score}
                     </p>
                   </div>
                   <p className="font-display text-lg font-bold">

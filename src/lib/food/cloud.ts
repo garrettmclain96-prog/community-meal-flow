@@ -50,10 +50,7 @@ async function getOrCreateHousehold(userId: string, fallback: Household) {
   return data;
 }
 
-export async function loadCloudState(
-  userId: string,
-  fallback: Household,
-): Promise<CloudSnapshot> {
+export async function loadCloudState(userId: string, fallback: Household): Promise<CloudSnapshot> {
   const hh = await getOrCreateHousehold(userId, fallback);
 
   const [members, pantry, recipes, plans] = await Promise.all([

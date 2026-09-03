@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
-import { AccountButton } from "@/components/AccountButton";
 import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
+import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
@@ -38,7 +38,6 @@ const SPONSORSHIP_TIERS = [
     blurb: "Sustained coverage across every kitchen in one neighborhood.",
   },
 ] as const;
-
 
 export const Route = createFileRoute("/impact")({
   head: () => ({
@@ -123,31 +122,22 @@ function ImpactPage() {
     }
   }
 
-
   return (
     <div className="min-h-dvh bg-background text-foreground">
       <PaymentTestModeBanner />
-      <header className="border-b border-border">
+      <SiteHeader />
 
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="font-display text-xl font-bold italic tracking-tight">
-            Table<span className="text-ember">Forward</span>
-          </Link>
-          <AccountButton />
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-6xl px-6 py-14">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-ember-text">TableForward Impact</p>
-        <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold tracking-tight">
-          Fund meals with an audit trail attached to every dollar.
+      <main className="site-shell py-14 md:py-20">
+        <p className="kicker text-primary">Fund meals · live Galveston pilot</p>
+        <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
+          TURN LOCAL DOLLARS INTO DINNER.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
-          Every figure below is read live from the impact ledger. Sponsors see outcomes and aggregate
-          neighborhood impact; they never see who received a meal.
+          Every figure below is read live from the impact ledger. Sponsors see outcomes and
+          aggregate neighborhood impact; they never see who received a meal.
         </p>
 
-        <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid border-2 border-foreground sm:grid-cols-2 lg:grid-cols-4">
           <Stat label="Meals funded" value={totals.data?.mealsFunded ?? 0} />
           <Stat label="Meals delivered" value={totals.data?.mealsDelivered ?? 0} />
           <Stat label="Kitchens live" value={totals.data?.kitchens ?? 0} />
@@ -155,10 +145,13 @@ function ImpactPage() {
         </div>
 
         <section className="mt-14 grid gap-8 lg:grid-cols-[1.1fr_1fr]">
-          <div className="rounded-xl border border-border bg-surface p-6">
-            <h2 className="font-display text-2xl font-bold">Fund meals now</h2>
+          <div className="editorial-card p-6 md:p-8">
+            <p className="kicker text-primary">One-time funding</p>
+            <h2 className="mt-2 font-display text-3xl font-black">Fund meals now</h2>
 
-            {kitchens.isLoading && <p className="mt-4 text-sm text-muted-foreground">Loading kitchens…</p>}
+            {kitchens.isLoading && (
+              <p className="mt-4 text-sm text-muted-foreground">Loading kitchens…</p>
+            )}
             {kitchens.data?.length === 0 && (
               <p className="mt-4 text-sm text-muted-foreground">
                 No kitchens have joined yet. A restaurant or community kitchen can register in{" "}
@@ -172,14 +165,16 @@ function ImpactPage() {
             {(kitchens.data?.length ?? 0) > 0 && (
               <div className="mt-5 space-y-4">
                 <label className="block">
-                  <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Kitchen</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    Kitchen
+                  </span>
                   <select
                     value={kitchenId}
                     onChange={(e) => {
                       setKitchenId(e.target.value);
                       setTemplateId("");
                     }}
-                    className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
+                    className="field-control mt-1"
                   >
                     <option value="">Choose a kitchen…</option>
                     {kitchens.data?.map((k) => (
@@ -192,11 +187,13 @@ function ImpactPage() {
 
                 {(templates.data?.length ?? 0) > 0 && (
                   <label className="block">
-                    <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Meal</span>
+                    <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                      Meal
+                    </span>
                     <select
                       value={templateId}
                       onChange={(e) => setTemplateId(e.target.value)}
-                      className="mt-1 w-full rounded-lg border border-border bg-card px-3 py-2.5 text-sm"
+                      className="field-control mt-1"
                     >
                       <option value="">Kitchen's choice</option>
                       {templates.data?.map((t) => (
@@ -209,7 +206,9 @@ function ImpactPage() {
                 )}
 
                 <label className="block">
-                  <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Meals</span>
+                  <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    Meals
+                  </span>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {[5, 10, 25, 100].map((n) => (
                       <button
@@ -236,10 +235,16 @@ function ImpactPage() {
                 </label>
 
                 <div className="rounded-lg border border-border bg-card p-4">
-                  <p className="text-xs uppercase tracking-widest text-muted-foreground">Total</p>
-                  <p className="font-display text-3xl font-bold">{money(amount)}</p>
+                  <p className="kicker text-muted-foreground">
+                    {kitchen ? "Total" : "Choose a kitchen for pricing"}
+                  </p>
+                  <p className="font-display text-4xl font-black">
+                    {kitchen ? money(amount) : "—"}
+                  </p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    {meals} meals at ${perMeal.toFixed(2)} — the kitchen's own posted cost, not a platform markup.
+                    {kitchen
+                      ? `${meals} meals at $${perMeal.toFixed(2)} — the kitchen's own posted cost, not a platform markup.`
+                      : "Every total is calculated from the selected kitchen's posted meal cost."}
                   </p>
                 </div>
 
@@ -248,21 +253,22 @@ function ImpactPage() {
                     type="button"
                     onClick={fund}
                     disabled={!kitchenId || busy}
-                    className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground disabled:opacity-60"
+                    className="button-primary w-full py-4 disabled:opacity-60"
                   >
                     {isOpen ? "Checkout open below" : `Fund ${meals} meals — ${money(amount)}`}
                   </button>
                 ) : (
                   <Link
                     to="/auth"
-                    className="block w-full rounded-xl bg-primary px-4 py-3 text-center text-sm font-semibold text-primary-foreground"
+                    search={{ redirect: "/impact" }}
+                    className="button-primary w-full py-4"
                   >
                     Sign in to fund meals
                   </Link>
                 )}
                 <p className="text-xs text-muted-foreground">
-                  Meals only enter the public ledger once the payment clears. The kitchen is paid out
-                  from that payment after the meals are delivered.
+                  Meals only enter the public ledger once the payment clears. The kitchen is paid
+                  out from that payment after the meals are delivered.
                 </p>
 
                 {isOpen && (
@@ -270,11 +276,9 @@ function ImpactPage() {
                     Secure checkout is open at the bottom of this page.
                   </p>
                 )}
-
               </div>
             )}
           </div>
-
 
           <div className="space-y-8">
             <div className="rounded-xl border border-border bg-surface p-6">
@@ -283,7 +287,10 @@ function ImpactPage() {
               </h2>
               <ul className="mt-4 space-y-2 text-sm">
                 {(totals.data?.recent ?? []).map((e) => (
-                  <li key={e.id} className="flex items-center justify-between border-b border-border/60 pb-2">
+                  <li
+                    key={e.id}
+                    className="flex items-center justify-between border-b border-border/60 pb-2"
+                  >
                     <span>
                       <span className="text-ember-text">{e.kind}</span> · {e.meals} meals
                       {e.neighborhood ? ` · ${e.neighborhood}` : ""}
@@ -355,7 +362,7 @@ function ImpactPage() {
 
           <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {SPONSORSHIP_TIERS.map((tier) => (
-              <div key={tier.priceId} className="flex flex-col rounded-xl border border-border bg-surface p-6">
+              <div key={tier.priceId} className="editorial-card flex flex-col p-6">
                 <p className="font-display text-xl font-bold">{tier.name}</p>
                 <p className="mt-1 text-ember-text">{tier.price}</p>
                 <p className="mt-3 flex-1 text-sm text-muted-foreground">{tier.blurb}</p>
@@ -370,6 +377,7 @@ function ImpactPage() {
                 ) : (
                   <Link
                     to="/auth"
+                    search={{ redirect: "/impact" }}
                     className="mt-5 rounded-xl border border-primary px-4 py-2.5 text-center text-sm font-semibold"
                   >
                     Sign in to sponsor
@@ -382,8 +390,14 @@ function ImpactPage() {
           {isOpen && (
             <div className="mt-8 rounded-xl border border-border bg-surface p-4">
               <div className="mb-3 flex items-center justify-between">
-                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Secure checkout</p>
-                <button type="button" onClick={closeCheckout} className="text-xs underline underline-offset-4">
+                <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  Secure checkout
+                </p>
+                <button
+                  type="button"
+                  onClick={closeCheckout}
+                  className="text-xs underline underline-offset-4"
+                >
                   Cancel
                 </button>
               </div>
@@ -392,14 +406,14 @@ function ImpactPage() {
           )}
         </section>
       </main>
-
+      <SiteFooter />
     </div>
   );
 }
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-lg border border-border bg-surface p-5">
+    <div className="border-b border-r border-foreground bg-surface p-5 last:border-r-0 lg:border-b-0">
       <p className="text-[11px] uppercase tracking-widest text-muted-foreground">{label}</p>
       <p className="mt-2 font-display text-3xl font-bold">{value.toLocaleString()}</p>
     </div>

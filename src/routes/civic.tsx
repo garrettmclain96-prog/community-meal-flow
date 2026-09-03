@@ -2,9 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 
-import { AccountButton } from "@/components/AccountButton";
+import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { loadCivicSnapshot, snapshotToCsv, type WindowDays } from "@/lib/civic";
-import { Link } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/civic")({
   head: () => ({
@@ -56,19 +55,12 @@ function CivicPage() {
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
-      <header className="border-b border-border">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <Link to="/" className="font-display text-xl font-bold italic tracking-tight">
-            Table<span className="text-ember">Forward</span>
-          </Link>
-          <AccountButton />
-        </div>
-      </header>
+      <SiteHeader />
 
-      <main className="mx-auto max-w-6xl px-6 py-14">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-ember-text">TableForward Civic</p>
-        <h1 className="mt-3 max-w-3xl font-display text-5xl font-bold tracking-tight">
-          Demand, capacity and funding gap — by neighborhood, never by household.
+      <main className="site-shell py-14 md:py-20">
+        <p className="kicker text-primary">Public accountability</p>
+        <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
+          THE NUMBERS WITHOUT THE NAMES.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
           Every number here is computed from the public impact ledger, approved kitchen capacity and
@@ -108,13 +100,23 @@ function CivicPage() {
           )}
         </div>
 
-        {snap.isLoading && <p className="mt-10 text-sm text-muted-foreground">Loading city data…</p>}
+        {snap.isLoading && (
+          <p className="mt-10 text-sm text-muted-foreground">Loading city data…</p>
+        )}
 
         {data && (
           <>
             <div className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-              <Stat label="Meals funded" value={data.totals.funded.toLocaleString()} note={`last ${days} days`} />
-              <Stat label="Meals delivered" value={data.totals.delivered.toLocaleString()} note="confirmed handoffs" />
+              <Stat
+                label="Meals funded"
+                value={data.totals.funded.toLocaleString()}
+                note={`last ${days} days`}
+              />
+              <Stat
+                label="Meals delivered"
+                value={data.totals.delivered.toLocaleString()}
+                note="confirmed handoffs"
+              />
               <Stat
                 label="Weekly kitchen capacity"
                 value={data.totals.capacityPerWeek.toLocaleString()}
@@ -133,7 +135,8 @@ function CivicPage() {
                   Demand versus capacity by area
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  {data.totals.unclaimed} listed kitchens have not been claimed by their operator yet
+                  {data.totals.unclaimed} listed kitchens have not been claimed by their operator
+                  yet
                 </p>
               </div>
 
@@ -173,8 +176,12 @@ function CivicPage() {
                           </div>
                         </td>
                         <td className="px-5 py-3">{r.funded.toLocaleString()}</td>
-                        <td className="px-5 py-3 text-muted-foreground">{r.delivered.toLocaleString()}</td>
-                        <td className="px-5 py-3 text-muted-foreground">{r.unmet.toLocaleString()}</td>
+                        <td className="px-5 py-3 text-muted-foreground">
+                          {r.delivered.toLocaleString()}
+                        </td>
+                        <td className="px-5 py-3 text-muted-foreground">
+                          {r.unmet.toLocaleString()}
+                        </td>
                         <td className="px-5 py-3">
                           <span
                             className={
@@ -232,9 +239,12 @@ function CivicPage() {
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
                           {k.address ? `${k.address} · ` : ""}
-                          {k.daily_capacity_meals} meals/day · ${k.cost_per_meal.toFixed(2)} per meal
+                          {k.daily_capacity_meals} meals/day · ${k.cost_per_meal.toFixed(2)} per
+                          meal
                         </p>
-                        {k.summary && <p className="mt-2 text-xs text-muted-foreground">{k.summary}</p>}
+                        {k.summary && (
+                          <p className="mt-2 text-xs text-muted-foreground">{k.summary}</p>
+                        )}
                       </li>
                     ))}
                 </ul>
@@ -250,15 +260,16 @@ function CivicPage() {
 
             <p className="mt-12 max-w-3xl text-xs text-muted-foreground">
               Method: funded and delivered counts come from the public impact ledger, attributed to
-              the kitchen's neighborhood. Weekly capacity is the sum of each approved kitchen's daily
-              capacity across seven days. Sponsor dollars are estimated at each area's highest posted
-              cost per meal. Unclaimed listings are real local programs added by TableForward and not
-              yet verified by their operator; they can receive funding but cannot receive a payout
-              until the operator claims the listing and completes payout onboarding.
+              the kitchen's neighborhood. Weekly capacity is the sum of each approved kitchen's
+              daily capacity across seven days. Sponsor dollars are estimated at each area's highest
+              posted cost per meal. Unclaimed listings are real local programs added by TableForward
+              and not yet verified by their operator; they can receive funding but cannot receive a
+              payout until the operator claims the listing and completes payout onboarding.
             </p>
           </>
         )}
       </main>
+      <SiteFooter />
     </div>
   );
 }
@@ -282,7 +293,11 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   );
 }
 
-function TrendChart({ trend }: { trend: Array<{ date: string; funded: number; delivered: number }> }) {
+function TrendChart({
+  trend,
+}: {
+  trend: Array<{ date: string; funded: number; delivered: number }>;
+}) {
   if (trend.length === 0) {
     return (
       <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-muted-foreground">
@@ -295,7 +310,11 @@ function TrendChart({ trend }: { trend: Array<{ date: string; funded: number; de
     <div className="mt-4 rounded-xl border border-border bg-surface p-6">
       <div className="flex h-40 items-end gap-1">
         {trend.map((t) => (
-          <div key={t.date} className="flex flex-1 flex-col justify-end gap-0.5" title={`${t.date}: ${t.funded} funded, ${t.delivered} delivered`}>
+          <div
+            key={t.date}
+            className="flex flex-1 flex-col justify-end gap-0.5"
+            title={`${t.date}: ${t.funded} funded, ${t.delivered} delivered`}
+          >
             <span
               className="block w-full rounded-t-sm bg-ember/70"
               style={{ height: `${(t.funded / max) * 100}%` }}

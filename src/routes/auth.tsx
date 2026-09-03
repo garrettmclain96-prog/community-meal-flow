@@ -7,6 +7,12 @@ import { lovable } from "@/integrations/lovable";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/auth")({
+  validateSearch: (search: Record<string, unknown>) => ({
+    redirect:
+      typeof search.redirect === "string" && search.redirect.startsWith("/")
+        ? search.redirect
+        : "/app",
+  }),
   head: () => ({
     meta: [
       { title: "Sign in — TableForward" },
@@ -32,11 +38,16 @@ const ROLES: Array<{ id: AppRole; label: string; blurb: string }> = [
   { id: "sponsor", label: "Sponsor / donor", blurb: "Fund meals and follow where they land" },
   { id: "kitchen", label: "Kitchen", blurb: "Restaurant, food truck or community kitchen" },
   { id: "nonprofit", label: "Nonprofit partner", blurb: "Route demand and verify fulfilment" },
-  { id: "city_admin", label: "City / public sector", blurb: "Neighborhood-level food security signal" },
+  {
+    id: "city_admin",
+    label: "City / public sector",
+    blurb: "Neighborhood-level food security signal",
+  },
 ];
 
 function AuthPage() {
   const navigate = useNavigate();
+  const { redirect } = Route.useSearch();
   const { session, loading } = useAuth();
   const [mode, setMode] = useState<"signin" | "signup">("signin");
   const [email, setEmail] = useState("");
@@ -46,8 +57,8 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (!loading && session) void navigate({ to: "/app", replace: true });
-  }, [loading, session, navigate]);
+    if (!loading && session) void navigate({ to: redirect, replace: true });
+  }, [loading, session, navigate, redirect]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -106,14 +117,17 @@ function AuthPage() {
         </button>
 
         <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
-          <span className="h-px flex-1 bg-border" /> or email <span className="h-px flex-1 bg-border" />
+          <span className="h-px flex-1 bg-border" /> or email{" "}
+          <span className="h-px flex-1 bg-border" />
         </div>
 
         <form onSubmit={submit} className="space-y-4">
           {mode === "signup" && (
             <>
               <label className="block">
-                <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Name</span>
+                <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  Name
+                </span>
                 <input
                   value={displayName}
                   onChange={(e) => setDisplayName(e.target.value)}
@@ -122,7 +136,9 @@ function AuthPage() {
                 />
               </label>
               <fieldset>
-                <legend className="text-xs uppercase tracking-[0.2em] text-muted-foreground">I am a…</legend>
+                <legend className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                  I am a…
+                </legend>
                 <div className="mt-2 grid gap-2">
                   {ROLES.map((r) => (
                     <button
@@ -157,7 +173,9 @@ function AuthPage() {
             />
           </label>
           <label className="block">
-            <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Password</span>
+            <span className="text-xs uppercase tracking-[0.2em] text-muted-foreground">
+              Password
+            </span>
             <input
               type="password"
               required

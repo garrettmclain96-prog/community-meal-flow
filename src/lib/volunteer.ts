@@ -77,7 +77,15 @@ export const AVAILABILITY_BLOCKS = [
   "sunday",
 ] as const;
 
-export const SHIFT_ROLES = ["prep", "cook", "serve", "pack", "cleanup", "delivery", "event"] as const;
+export const SHIFT_ROLES = [
+  "prep",
+  "cook",
+  "serve",
+  "pack",
+  "cleanup",
+  "delivery",
+  "event",
+] as const;
 
 export async function loadMyVolunteer(userId: string): Promise<VolunteerProfile | null> {
   const { data, error } = await supabase

@@ -18,7 +18,8 @@ export const Route = createFileRoute("/app/import")({
       { property: "og:title", content: "Import a Recipe — MealForge" },
       {
         property: "og:description",
-        content: "Paste a recipe; it is normalized against the ingredient graph with source kept intact.",
+        content:
+          "Paste a recipe; it is normalized against the ingredient graph with source kept intact.",
       },
     ],
   }),
@@ -47,7 +48,9 @@ function ImportPage() {
         value={text}
         onChange={(e) => setText(e.target.value)}
         rows={12}
-        placeholder={"Skillet chicken and rice\nServes 4 · 35 minutes\n\nIngredients\n1.5 lb chicken thighs\n1 cup white rice\n2 tbsp olive oil\n\nInstructions\nSear the chicken…"}
+        placeholder={
+          "Skillet chicken and rice\nServes 4 · 35 minutes\n\nIngredients\n1.5 lb chicken thighs\n1 cup white rice\n2 tbsp olive oil\n\nInstructions\nSear the chicken…"
+        }
         className="w-full rounded-lg border border-border bg-surface p-4 font-mono text-xs"
       />
 
@@ -86,8 +89,8 @@ function ImportPage() {
                 ))}
               </ul>
               <p className="mt-1 text-xs text-muted-foreground">
-                Unmatched lines are kept in the source record rather than silently dropped. They
-                are not costed until the ingredient exists in the graph.
+                Unmatched lines are kept in the source record rather than silently dropped. They are
+                not costed until the ingredient exists in the graph.
               </p>
             </div>
           )}

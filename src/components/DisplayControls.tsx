@@ -45,10 +45,7 @@ export function DisplayControls({ surface = "photo", className = "" }: Props) {
         <div className="space-y-6">
           <div>
             <div className="mb-3 flex items-center justify-between">
-              <label
-                htmlFor="tf-image-opacity"
-                className="text-sm font-medium text-foreground"
-              >
+              <label htmlFor="tf-image-opacity" className="text-sm font-medium text-foreground">
                 Photo opacity
               </label>
               <span className="font-mono text-xs text-ember-text">{imageOpacity}%</span>

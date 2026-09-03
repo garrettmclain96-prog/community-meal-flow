@@ -1,9 +1,5 @@
 import { useState } from "react";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import {
   Dialog,
   DialogContent,
@@ -95,7 +91,10 @@ export function MapHotspot({ dispatch, index }: { dispatch: Dispatch; index: num
       </span>
       <span className="relative flex size-3.5 items-center justify-center">
         {d.status !== "delivered" && (
-          <span className="absolute inset-0 rounded-full bg-ember animate-ember-ping" aria-hidden="true" />
+          <span
+            className="absolute inset-0 rounded-full bg-ember animate-ember-ping"
+            aria-hidden="true"
+          />
         )}
         <span
           className={`absolute inset-0 rounded-full shadow-[0_0_18px_var(--ember-glow)] transition-transform group-hover:scale-150 ${
@@ -130,9 +129,7 @@ export function MapHotspot({ dispatch, index }: { dispatch: Dispatch; index: num
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-lg border-border-strong bg-popover text-popover-foreground">
           <DialogHeader>
-            <DialogTitle className="font-display text-2xl italic">
-              Dispatch {d.id}
-            </DialogTitle>
+            <DialogTitle className="font-display text-2xl italic">Dispatch {d.id}</DialogTitle>
             <DialogDescription className="text-muted-foreground">
               {d.meals} meals · {d.neighborhood} · {d.kitchen}
             </DialogDescription>
@@ -156,9 +153,7 @@ export function MapHotspot({ dispatch, index }: { dispatch: Dispatch; index: num
                   <span className={s.done ? "text-foreground" : "text-muted-foreground"}>
                     {s.label}
                   </span>
-                  <span className="ml-auto font-mono text-xs text-muted-foreground">
-                    {s.time}
-                  </span>
+                  <span className="ml-auto font-mono text-xs text-muted-foreground">{s.time}</span>
                   <span className="sr-only">{s.done ? "completed" : "pending"}</span>
                 </li>
               ))}

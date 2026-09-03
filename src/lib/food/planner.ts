@@ -125,10 +125,7 @@ export function costRecipe(recipe: Recipe, ctx: CostContext): RecipeCost {
 
 export function householdServings(household: Household): number {
   if (household.members.length === 0) return 2;
-  return Math.max(
-    1,
-    Math.round(household.members.reduce((s, m) => s + m.appetite, 0)),
-  );
+  return Math.max(1, Math.round(household.members.reduce((s, m) => s + m.appetite, 0)));
 }
 
 export interface Exclusion {
@@ -301,7 +298,7 @@ export function buildMealPlan(req: PlanRequest): MealPlan {
 
       const remainingBudget = budget - chosen.reduce((s, m) => s + m.cost.purchaseCost, 0);
       const slotsLeft = dinners - slot;
-      const overBudget = cost.purchaseCost > remainingBudget / Math.max(1, slotsLeft) * 1.6;
+      const overBudget = cost.purchaseCost > (remainingBudget / Math.max(1, slotsLeft)) * 1.6;
       const adjusted = overBudget ? score - 25 : score;
 
       if (!best || adjusted > best.score) best = { recipe, cost, score: adjusted, reasons };
@@ -313,7 +310,8 @@ export function buildMealPlan(req: PlanRequest): MealPlan {
 
     // consume what the meal uses, bank the package remainders
     for (const line of best.cost.lines) {
-      if (line.fromPantryBase > 0) consumeVirtual(virtualPantry, line.ingredientId, line.fromPantryBase);
+      if (line.fromPantryBase > 0)
+        consumeVirtual(virtualPantry, line.ingredientId, line.fromPantryBase);
       if (line.remainderBase > 0) {
         virtualPantry.push({
           id: `remainder_${best.recipe.id}_${line.ingredientId}`,

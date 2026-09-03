@@ -1,10 +1,7 @@
 import { EmbeddedCheckout, EmbeddedCheckoutProvider } from "@stripe/react-stripe-js";
 
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
-import {
-  createMealFundingCheckout,
-  createSponsorshipCheckout,
-} from "@/lib/payments.functions";
+import { createMealFundingCheckout, createSponsorshipCheckout } from "@/lib/payments.functions";
 
 type MealFundingProps = {
   kind: "meal_funding";

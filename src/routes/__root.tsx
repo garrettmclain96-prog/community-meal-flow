@@ -13,7 +13,6 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { ThemeProvider, THEME_BOOT_SCRIPT } from "@/lib/theme";
 import { DisplayProvider, DISPLAY_BOOT_SCRIPT } from "@/lib/display-settings";
 
-
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
@@ -79,31 +78,49 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Table Forward" },
-      { name: "description", content: "A public benefit corporation building the digital and logistical rails for a world without hunger." },
-      { name: "author", content: "Lovable" },
+      {
+        name: "description",
+        content:
+          "A public benefit corporation building the digital and logistical rails for a world without hunger.",
+      },
+      { name: "author", content: "TableForward" },
       { property: "og:title", content: "Table Forward" },
-      { property: "og:description", content: "A public benefit corporation building the digital and logistical rails for a world without hunger." },
+      {
+        property: "og:description",
+        content:
+          "A public benefit corporation building the digital and logistical rails for a world without hunger.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
       { name: "twitter:title", content: "Table Forward" },
-      { name: "twitter:description", content: "A public benefit corporation building the digital and logistical rails for a world without hunger." },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/52cdab5b-9d5a-4e8f-b3ef-8d08fa592d74" },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/52cdab5b-9d5a-4e8f-b3ef-8d08fa592d74" },
+      {
+        name: "twitter:description",
+        content:
+          "A public benefit corporation building the digital and logistical rails for a world without hunger.",
+      },
+      {
+        property: "og:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/52cdab5b-9d5a-4e8f-b3ef-8d08fa592d74",
+      },
+      {
+        name: "twitter:image",
+        content:
+          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/52cdab5b-9d5a-4e8f-b3ef-8d08fa592d74",
+      },
     ],
     links: [
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,700&family=JetBrains+Mono:wght@400;500&display=swap",
+        href: "https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700;800;900&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap",
       },
       {
         rel: "stylesheet",
         href: appCss,
       },
     ],
-
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -113,7 +130,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="dark" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <head>
         <HeadContent />
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }} />
@@ -145,4 +162,3 @@ function RootComponent() {
     </QueryClientProvider>
   );
 }
-

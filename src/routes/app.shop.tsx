@@ -15,7 +15,8 @@ export const Route = createFileRoute("/app/shop")({
       { property: "og:title", content: "Grocery List — MealForge" },
       {
         property: "og:description",
-        content: "Pantry-offset, package-rounded and aisle-grouped, with provenance on every price.",
+        content:
+          "Pantry-offset, package-rounded and aisle-grouped, with provenance on every price.",
       },
     ],
   }),

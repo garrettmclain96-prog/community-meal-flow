@@ -46,25 +46,75 @@ export const UNITS: Record<string, UnitDef> = {
 
 /** Written forms seen in real recipes, mapped to a unit id. */
 const UNIT_ALIASES: Record<string, string> = {
-  gram: "g", grams: "g", gr: "g", g: "g",
-  kilogram: "kg", kilograms: "kg", kg: "kg", kgs: "kg",
-  ounce: "oz", ounces: "oz", oz: "oz",
-  pound: "lb", pounds: "lb", lb: "lb", lbs: "lb", "#": "lb",
-  milliliter: "ml", milliliters: "ml", millilitre: "ml", ml: "ml",
-  liter: "l", liters: "l", litre: "l", l: "l",
-  teaspoon: "tsp", teaspoons: "tsp", tsp: "tsp", tsps: "tsp", t: "tsp",
-  tablespoon: "tbsp", tablespoons: "tbsp", tbsp: "tbsp", tbs: "tbsp", tbsps: "tbsp", T: "tbsp",
-  cup: "cup", cups: "cup", c: "cup",
-  "fluid ounce": "floz", "fluid ounces": "floz", floz: "floz", "fl oz": "floz", "fl. oz.": "floz",
-  pint: "pt", pints: "pt", pt: "pt",
-  quart: "qt", quarts: "qt", qt: "qt",
-  gallon: "gal", gallons: "gal", gal: "gal",
-  clove: "clove", cloves: "clove",
-  bunch: "bunch", bunches: "bunch",
-  can: "can", cans: "can",
-  slice: "slice", slices: "slice",
-  each: "each", whole: "each", large: "each", medium: "each", small: "each",
-  package: "each", pkg: "each", head: "each", stalk: "each",
+  gram: "g",
+  grams: "g",
+  gr: "g",
+  g: "g",
+  kilogram: "kg",
+  kilograms: "kg",
+  kg: "kg",
+  kgs: "kg",
+  ounce: "oz",
+  ounces: "oz",
+  oz: "oz",
+  pound: "lb",
+  pounds: "lb",
+  lb: "lb",
+  lbs: "lb",
+  "#": "lb",
+  milliliter: "ml",
+  milliliters: "ml",
+  millilitre: "ml",
+  ml: "ml",
+  liter: "l",
+  liters: "l",
+  litre: "l",
+  l: "l",
+  teaspoon: "tsp",
+  teaspoons: "tsp",
+  tsp: "tsp",
+  tsps: "tsp",
+  t: "tsp",
+  tablespoon: "tbsp",
+  tablespoons: "tbsp",
+  tbsp: "tbsp",
+  tbs: "tbsp",
+  tbsps: "tbsp",
+  T: "tbsp",
+  cup: "cup",
+  cups: "cup",
+  c: "cup",
+  "fluid ounce": "floz",
+  "fluid ounces": "floz",
+  floz: "floz",
+  "fl oz": "floz",
+  "fl. oz.": "floz",
+  pint: "pt",
+  pints: "pt",
+  pt: "pt",
+  quart: "qt",
+  quarts: "qt",
+  qt: "qt",
+  gallon: "gal",
+  gallons: "gal",
+  gal: "gal",
+  clove: "clove",
+  cloves: "clove",
+  bunch: "bunch",
+  bunches: "bunch",
+  can: "can",
+  cans: "can",
+  slice: "slice",
+  slices: "slice",
+  each: "each",
+  whole: "each",
+  large: "each",
+  medium: "each",
+  small: "each",
+  package: "each",
+  pkg: "each",
+  head: "each",
+  stalk: "each",
 };
 
 export function resolveUnit(raw: string | undefined | null): UnitDef | null {
@@ -108,9 +158,21 @@ export function convert(q: Quantity, targetUnit: string, gramsPerCup?: number): 
 }
 
 const VULGAR: Record<string, number> = {
-  "½": 0.5, "⅓": 1 / 3, "⅔": 2 / 3, "¼": 0.25, "¾": 0.75,
-  "⅕": 0.2, "⅖": 0.4, "⅗": 0.6, "⅘": 0.8, "⅙": 1 / 6, "⅚": 5 / 6,
-  "⅛": 0.125, "⅜": 0.375, "⅝": 0.625, "⅞": 0.875,
+  "½": 0.5,
+  "⅓": 1 / 3,
+  "⅔": 2 / 3,
+  "¼": 0.25,
+  "¾": 0.75,
+  "⅕": 0.2,
+  "⅖": 0.4,
+  "⅗": 0.6,
+  "⅘": 0.8,
+  "⅙": 1 / 6,
+  "⅚": 5 / 6,
+  "⅛": 0.125,
+  "⅜": 0.375,
+  "⅝": 0.625,
+  "⅞": 0.875,
 };
 
 /** Parses "1 1/2", "1½", "0.75", "2-3" (takes the midpoint) into a number. */
@@ -140,8 +202,17 @@ export function parseAmount(raw: string): number | null {
 }
 
 const FRACTION_STEPS: Array<[number, string]> = [
-  [0, ""], [0.125, "⅛"], [0.25, "¼"], [1 / 3, "⅓"], [0.375, "⅜"], [0.5, "½"],
-  [0.625, "⅝"], [2 / 3, "⅔"], [0.75, "¾"], [0.875, "⅞"], [1, ""],
+  [0, ""],
+  [0.125, "⅛"],
+  [0.25, "¼"],
+  [1 / 3, "⅓"],
+  [0.375, "⅜"],
+  [0.5, "½"],
+  [0.625, "⅝"],
+  [2 / 3, "⅔"],
+  [0.75, "¾"],
+  [0.875, "⅞"],
+  [1, ""],
 ];
 
 /** Human-readable quantity, e.g. 1.5 cup -> "1½ cups". */
@@ -160,7 +231,8 @@ export function formatQuantity(q: Quantity): string {
       if (Math.abs(step[0] - rest) < Math.abs(best[0] - rest)) best = step;
     }
     if (best[0] === 1) numeric = String(whole + 1);
-    else if (!best[1]) numeric = whole > 0 ? String(whole) : (Math.round(q.amount * 100) / 100).toString();
+    else if (!best[1])
+      numeric = whole > 0 ? String(whole) : (Math.round(q.amount * 100) / 100).toString();
     else numeric = whole > 0 ? `${whole}${best[1]}` : best[1];
   }
 

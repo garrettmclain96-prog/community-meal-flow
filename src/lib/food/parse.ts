@@ -88,8 +88,14 @@ export function parsePastedRecipe(text: string): PasteParseResult {
 
   for (const line of lines) {
     if (!line) continue;
-    if (SECTION_ING.test(line)) { mode = "ing"; continue; }
-    if (SECTION_STEPS.test(line)) { mode = "steps"; continue; }
+    if (SECTION_ING.test(line)) {
+      mode = "ing";
+      continue;
+    }
+    if (SECTION_STEPS.test(line)) {
+      mode = "steps";
+      continue;
+    }
     if (mode === "ing") ingLines.push(line);
     else if (mode === "steps") stepLines.push(line);
   }
