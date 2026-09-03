@@ -1,5 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useState } from "react";
 
+import { askMealPlanAssistant } from "@/lib/chatgpt.functions";
 import { PROVENANCE_LABEL, STORE_BY_ID } from "@/lib/food/pricing";
 import { useMealForge } from "@/lib/food/store";
 import { INGREDIENT_BY_ID } from "@/lib/food/ingredients";
@@ -26,8 +28,58 @@ export const Route = createFileRoute("/app/plan")({
 function PlanPage() {
   const { state, ready, regeneratePlan } = useMealForge();
   const { plan, household } = state;
+  const [prompt, setPrompt] = useState("");
+  const [answer, setAnswer] = useState<string | null>(null);
+  const [answerModel, setAnswerModel] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   if (!ready) return <p className="text-sm text-muted-foreground">Loading…</p>;
+
+  const storeName = STORE_BY_ID[household.storeIds[0] ?? "heb"]?.name ?? "your store";
+  const canAsk = Boolean(plan && prompt.trim());
+
+  async function submitAssistant(nextPrompt: string) {
+    if (!plan) return;
+    setLoading(true);
+    setError(null);
+    setAnswer(null);
+    setAnswerModel(null);
+    try {
+      const result = await askMealPlanAssistant({
+        data: {
+          prompt: nextPrompt,
+          context: {
+            householdName: household.name,
+            weeklyBudget: household.weeklyBudget,
+            dinnersPerWeek: household.dinnersPerWeek,
+            storeName,
+            gap: plan.gap,
+            excludedCount: plan.excluded.length,
+            meals: plan.meals.map((meal) => ({
+              title: meal.recipe.title,
+              minutes: meal.recipe.totalTimeMinutes,
+              costPerServing: meal.cost.costPerServing,
+              reasons: meal.reasons,
+            })),
+          },
+        },
+      });
+
+      if ("error" in result) {
+        setError(result.error);
+        return;
+      }
+
+      setAnswer(result.answer);
+      setAnswerModel(result.model);
+      setPrompt(nextPrompt);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ChatGPT could not answer right now.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -65,6 +117,71 @@ function PlanPage() {
               value={`$${(plan.gap > 0 ? plan.gap : plan.budget - plan.totalCost).toFixed(2)}`}
             />
           </div>
+
+          <section className="rounded-lg border border-border bg-surface p-4">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h2 className="font-display text-xl font-bold">ChatGPT</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Ask for swaps, prep help, or ways to stretch this exact plan.
+                </p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  "Explain why this plan fits my household.",
+                  "How can I stretch this plan if money gets tighter?",
+                  "Give me prep-ahead tips for this week.",
+                ].map((quickPrompt) => (
+                  <button
+                    key={quickPrompt}
+                    type="button"
+                    onClick={() => {
+                      setPrompt(quickPrompt);
+                      void submitAssistant(quickPrompt);
+                    }}
+                    disabled={loading}
+                    className="rounded-sm border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:border-ember/50 hover:text-foreground disabled:opacity-50"
+                  >
+                    {quickPrompt}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mt-4 space-y-3">
+              <textarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                rows={4}
+                placeholder="Ask ChatGPT about this week's meals, substitutions, prep, or budget."
+                className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+              />
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-xs text-muted-foreground">
+                  Uses your current week, budget, and meal lineup as context.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => void submitAssistant(prompt.trim())}
+                  disabled={!canAsk || loading}
+                  className="rounded-sm bg-ember px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-40"
+                >
+                  {loading ? "Asking…" : "Ask ChatGPT"}
+                </button>
+              </div>
+            </div>
+
+            {error && <p className="mt-3 text-sm text-ember-text">{error}</p>}
+
+            {answer && (
+              <div className="mt-4 rounded-lg border border-border bg-background p-4">
+                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                  ChatGPT{answerModel ? ` · ${answerModel}` : ""}
+                </p>
+                <p className="mt-2 whitespace-pre-wrap text-sm">{answer}</p>
+              </div>
+            )}
+          </section>
 
           <ol className="space-y-3">
             {plan.meals.map((meal, i) => (
