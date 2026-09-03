@@ -156,7 +156,7 @@ This turns ProvisionLoop into a movement, not an app.
 
 This project was built with [Lovable](https://lovable.dev).
 
-**Live app**: https://community-meal-flow.lovable.app
+**Live app**: https://provisionloop.lovable.app
 
 ## Build with Lovable
 
