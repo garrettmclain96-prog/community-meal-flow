@@ -70,7 +70,7 @@ async function createSessionWithTax(
  */
 export const createMealFundingCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(
+  .inputValidator(
     (data: {
       kitchenId: string;
       templateId: string | null;
@@ -174,7 +174,7 @@ export const createMealFundingCheckout = createServerFn({ method: "POST" })
 /** Recurring sponsorship tiers (100 meals a week, neighborhood, school, restaurant). */
 export const createSponsorshipCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: { priceId: string; returnUrl: string; environment: StripeEnv }) => {
+  .inputValidator((data: { priceId: string; returnUrl: string; environment: StripeEnv }) => {
     if (!/^[a-zA-Z0-9_-]+$/.test(data.priceId)) throw new Error("Invalid priceId");
     return data;
   })
@@ -212,7 +212,7 @@ export const createSponsorshipCheckout = createServerFn({ method: "POST" })
 /** Billing portal so sponsors can change or cancel a recurring sponsorship. */
 export const createSponsorPortalSession = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: { returnUrl?: string; environment: StripeEnv }) => data)
+  .inputValidator((data: { returnUrl?: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<{ url: string } | { error: string }> => {
     const { supabase, userId } = context;
     const { data: sub } = await supabase
@@ -240,7 +240,7 @@ export const createSponsorPortalSession = createServerFn({ method: "POST" })
 /** Kitchen payout onboarding — creates/continues a connected payout account. */
 export const createKitchenPayoutOnboarding = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: { kitchenId: string; returnUrl: string; environment: StripeEnv }) => {
+  .inputValidator((data: { kitchenId: string; returnUrl: string; environment: StripeEnv }) => {
     if (!data.kitchenId) throw new Error("Missing kitchen");
     return data;
   })
@@ -287,7 +287,7 @@ export const createKitchenPayoutOnboarding = createServerFn({ method: "POST" })
 /** Refresh a kitchen's payout readiness from the provider. */
 export const refreshKitchenPayoutStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: { kitchenId: string; environment: StripeEnv }) => data)
+  .inputValidator((data: { kitchenId: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<{ status: string } | { error: string }> => {
     const { supabase } = context;
     const { data: kitchen } = await supabase
@@ -311,7 +311,7 @@ export const refreshKitchenPayoutStatus = createServerFn({ method: "POST" })
 /** Send a queued payout for a delivered order to the kitchen's payout account. */
 export const submitKitchenPayout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: { payoutId: string; environment: StripeEnv }) => data)
+  .inputValidator((data: { payoutId: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<{ status: string } | { error: string }> => {
     const { supabase } = context;
     const { data: payout } = await supabase
@@ -361,7 +361,7 @@ export const submitKitchenPayout = createServerFn({ method: "POST" })
 /** Automatically settle the payout queued for a delivered order. */
 export const settleOrderPayout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator((data: { orderId: string; environment: StripeEnv }) => data)
+  .inputValidator((data: { orderId: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<{ status: string } | { error: string }> => {
     const { supabase } = context;
     const { data: payout } = await supabase
