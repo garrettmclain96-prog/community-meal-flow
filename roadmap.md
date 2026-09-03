@@ -1,4 +1,4 @@
-# TableForward 2.0 — Roadmap
+# ProvisionLoop 2.0 — Roadmap
 
 ## Done
 
@@ -32,7 +32,7 @@
       daily trend, drill-down and CSV export
 - [ ] /app: budget, preferences, pantry, planner, shop screens fully built out
 
-## Vision alignment (TableForward 2.0 brief)
+## Vision alignment (ProvisionLoop 2.0 brief)
 
 - [x] Volunteer integration: /volunteer profiles, skills/availability, kitchen shifts, signups,
       hours logging, delivery-run dispatch (claim → picked up → delivered → payout queued)

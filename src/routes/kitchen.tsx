@@ -20,13 +20,13 @@ import {
 export const Route = createFileRoute("/kitchen")({
   head: () => ({
     meta: [
-      { title: "Kitchen Operations — TableForward Kitchen" },
+      { title: "Kitchen Operations — ProvisionLoop Kitchen" },
       {
         name: "description",
         content:
           "Restaurants, food trucks and community kitchens register capacity, post meal templates, accept funded orders and track guaranteed revenue.",
       },
-      { property: "og:title", content: "Kitchen Operations — TableForward Kitchen" },
+      { property: "og:title", content: "Kitchen Operations — ProvisionLoop Kitchen" },
       {
         property: "og:description",
         content: "Capacity, funded orders and payout tracking for community kitchens.",
@@ -125,7 +125,7 @@ function KitchenPage() {
       <SiteHeader />
 
       <main className="site-shell py-14 md:py-20">
-        <p className="kicker text-primary">TableForward for kitchens</p>
+        <p className="kicker text-primary">ProvisionLoop for kitchens</p>
         <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
           TURN OPEN CAPACITY INTO PAID MEALS.
         </h1>
@@ -734,7 +734,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
     <section className="mt-10 rounded-xl border border-border bg-surface p-6">
       <h2 className="font-display text-2xl font-bold">Already feeding people here?</h2>
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        These Galveston-area programs are listed on TableForward from public information and have
+        These Galveston-area programs are listed on ProvisionLoop from public information and have
         not been claimed yet. If you run one, claim it — the listing becomes your account, with
         capacity, pricing, funded orders and payouts under your control.
       </p>

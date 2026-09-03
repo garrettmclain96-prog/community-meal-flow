@@ -17,13 +17,13 @@ import { listKitchens, loadImpactTotals } from "@/lib/community";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "TableForward — Fund Local Meals in Galveston County" },
+      { title: "ProvisionLoop — Fund Local Meals in Galveston County" },
       {
         name: "description",
         content:
           "Fund real meals through Galveston County kitchens, find nearby food support, volunteer, and follow every completed delivery on a public ledger.",
       },
-      { property: "og:title", content: "TableForward — Local meals. Public proof." },
+      { property: "og:title", content: "ProvisionLoop — Local meals. Public proof." },
       {
         property: "og:description",
         content:
@@ -116,7 +116,7 @@ function HomePage() {
                 <LiveStat label="Kitchens" value={totals ? String(totals.kitchens) : "—"} />
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
-                Live pilot totals from the public TableForward ledger. No demo numbers.
+                Live pilot totals from the public ProvisionLoop ledger. No demo numbers.
               </p>
             </div>
 
@@ -152,7 +152,7 @@ function HomePage() {
               <h2 className="display-title mt-4 text-5xl md:text-6xl">WHAT ARE YOU HERE TO DO?</h2>
             </div>
             <p className="max-w-lg text-base leading-7 text-muted-foreground md:justify-self-end">
-              No maze of dashboards. Start with the outcome you need and TableForward routes you
+              No maze of dashboards. Start with the outcome you need and ProvisionLoop routes you
               into the right workflow.
             </p>
           </div>

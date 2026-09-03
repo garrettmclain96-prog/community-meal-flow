@@ -215,7 +215,7 @@ export function snapshotToCsv(snap: CivicSnapshot): string {
     ].join(","),
   );
   return [
-    `# TableForward Civic export — last ${snap.window} days — generated ${new Date().toISOString()}`,
+    `# ProvisionLoop Civic export — last ${snap.window} days — generated ${new Date().toISOString()}`,
     header,
     ...lines,
   ].join("\n");

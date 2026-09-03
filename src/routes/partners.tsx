@@ -15,7 +15,7 @@ import {
 export const Route = createFileRoute("/partners")({
   head: () => ({
     meta: [
-      { title: "Partner Dispatch — TableForward" },
+      { title: "Partner Dispatch — ProvisionLoop" },
       { name: "description", content: "Private assistance routing for local partners." },
     ],
   }),
@@ -47,7 +47,7 @@ function PartnersPage() {
       <main>
         <section className="border-b-2 border-foreground bg-secondary text-secondary-foreground">
           <div className="site-shell py-16 md:py-24">
-            <p className="kicker">TableForward partner dispatch</p>
+            <p className="kicker">ProvisionLoop partner dispatch</p>
             <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
               PRIVATE REQUESTS. ACCOUNTABLE DELIVERY.
             </h1>

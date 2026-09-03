@@ -8,13 +8,13 @@ import { loadCivicSnapshot, snapshotToCsv, type WindowDays } from "@/lib/civic";
 export const Route = createFileRoute("/civic")({
   head: () => ({
     meta: [
-      { title: "City Dashboard — TableForward Civic" },
+      { title: "City Dashboard — ProvisionLoop Civic" },
       {
         name: "description",
         content:
           "Galveston-area food demand, kitchen capacity, funding gaps and volunteer coverage by neighborhood — aggregate only, with CSV export for public reporting.",
       },
-      { property: "og:title", content: "City Dashboard — TableForward Civic" },
+      { property: "og:title", content: "City Dashboard — ProvisionLoop Civic" },
       {
         property: "og:description",
         content:
@@ -48,7 +48,7 @@ function CivicPage() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `tableforward-civic-${days}d.csv`;
+    a.download = `provisionloop-civic-${days}d.csv`;
     a.click();
     URL.revokeObjectURL(url);
   }
@@ -262,9 +262,10 @@ function CivicPage() {
               Method: funded and delivered counts come from the public impact ledger, attributed to
               the kitchen's neighborhood. Weekly capacity is the sum of each approved kitchen's
               daily capacity across seven days. Sponsor dollars are estimated at each area's highest
-              posted cost per meal. Unclaimed listings are real local programs added by TableForward
-              and not yet verified by their operator; they can receive funding but cannot receive a
-              payout until the operator claims the listing and completes payout onboarding.
+              posted cost per meal. Unclaimed listings are real local programs added by
+              ProvisionLoop and not yet verified by their operator; they can receive funding but
+              cannot receive a payout until the operator claims the listing and completes payout
+              onboarding.
             </p>
           </>
         )}

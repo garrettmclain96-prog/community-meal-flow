@@ -74,7 +74,7 @@ function MealForgeHome() {
             ${plan.gap.toFixed(2)} over budget this week
           </p>
           <p className="mt-1 text-muted-foreground">
-            A gap this size is exactly what TableForward's assistance bridge is designed to close —
+            A gap this size is exactly what ProvisionLoop's assistance bridge is designed to close —
             grocery subsidy pools and sponsored baskets, without ever exposing who you are.
           </p>
         </div>

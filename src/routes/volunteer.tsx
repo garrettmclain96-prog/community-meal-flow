@@ -25,13 +25,13 @@ import {
 export const Route = createFileRoute("/volunteer")({
   head: () => ({
     meta: [
-      { title: "Volunteer — Deliver, Prep and Serve with TableForward" },
+      { title: "Volunteer — Deliver, Prep and Serve with ProvisionLoop" },
       {
         name: "description",
         content:
           "Sign up to deliver funded meals, prep and cook alongside Galveston kitchens, and log the hours you give. Open shifts and delivery runs, updated live.",
       },
-      { property: "og:title", content: "Volunteer — TableForward" },
+      { property: "og:title", content: "Volunteer — ProvisionLoop" },
       {
         property: "og:description",
         content:
@@ -99,7 +99,7 @@ function VolunteerPage() {
       <SiteHeader />
 
       <main className="site-shell py-14 md:py-20">
-        <p className="kicker text-primary">TableForward volunteers</p>
+        <p className="kicker text-primary">ProvisionLoop volunteers</p>
         <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
           GIVE TWO HOURS. MOVE A HUNDRED MEALS.
         </h1>

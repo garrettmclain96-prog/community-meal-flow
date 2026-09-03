@@ -19,8 +19,8 @@ export function SiteHeader() {
       <div className="site-shell flex h-[72px] items-center justify-between gap-4">
         <Link to="/" className="brand-mark" onClick={() => setOpen(false)}>
           <span className="brand-dot" aria-hidden="true" />
-          <span>TABLE</span>
-          <span className="text-primary">FORWARD</span>
+          <span>PROVISION</span>
+          <span className="text-primary">LOOP</span>
         </Link>
         <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
           {NAV.map((item) => (
@@ -84,8 +84,8 @@ export function SiteFooter() {
       <div className="site-shell grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <div className="brand-mark text-background">
-            <span className="brand-dot" aria-hidden="true" /> TABLE
-            <span className="text-primary">FORWARD</span>
+            <span className="brand-dot" aria-hidden="true" /> PROVISION
+            <span className="text-primary">LOOP</span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-background/70">
             Community-funded meals, local kitchen revenue and public accountability—starting in
@@ -111,7 +111,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-background/20">
         <div className="site-shell flex flex-wrap justify-between gap-3 py-5 text-xs text-background/55">
-          <span>© 2026 TableForward</span>
+          <span>© 2026 ProvisionLoop</span>
           <span>Recipient identities never appear on the public ledger.</span>
         </div>
       </div>

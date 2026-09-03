@@ -15,13 +15,13 @@ export const Route = createFileRoute("/auth")({
   }),
   head: () => ({
     meta: [
-      { title: "Sign in — TableForward" },
+      { title: "Sign in — ProvisionLoop" },
       {
         name: "description",
         content:
-          "Sign in to TableForward to plan household meals with MealForge, fund meals, run a community kitchen, or track city food impact.",
+          "Sign in to ProvisionLoop to plan household meals with MealForge, fund meals, run a community kitchen, or track city food impact.",
       },
-      { property: "og:title", content: "Sign in — TableForward" },
+      { property: "og:title", content: "Sign in — ProvisionLoop" },
       {
         property: "og:description",
         content: "One account for MealForge households, sponsors, kitchens, nonprofits and cities.",
@@ -99,7 +99,7 @@ function AuthPage() {
     <main className="min-h-dvh bg-background px-5 py-14">
       <div className="mx-auto w-full max-w-md">
         <Link to="/" className="text-xs uppercase tracking-[0.28em] text-muted-foreground">
-          ← TableForward
+          ← ProvisionLoop
         </Link>
         <h1 className="mt-6 font-display text-3xl text-foreground">
           {mode === "signin" ? "Sign in" : "Create your account"}

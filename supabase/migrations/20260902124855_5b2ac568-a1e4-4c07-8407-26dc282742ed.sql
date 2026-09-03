@@ -38,7 +38,7 @@ BEGIN
   IF _k.id IS NULL THEN RAISE EXCEPTION 'kitchen not found'; END IF;
   IF _k.claimed OR _k.owner_id IS NOT NULL THEN RAISE EXCEPTION 'this kitchen has already been claimed'; END IF;
   IF EXISTS (SELECT 1 FROM public.kitchens WHERE owner_id = auth.uid()) THEN
-    RAISE EXCEPTION 'you already operate a kitchen on TableForward';
+    RAISE EXCEPTION 'you already operate a kitchen on ProvisionLoop';
   END IF;
 
   UPDATE public.kitchens

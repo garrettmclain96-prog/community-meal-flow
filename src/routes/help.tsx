@@ -11,11 +11,11 @@ import { listKitchens } from "@/lib/community";
 export const Route = createFileRoute("/help")({
   head: () => ({
     meta: [
-      { title: "Find Food Help — TableForward Galveston" },
+      { title: "Find Food Help — ProvisionLoop Galveston" },
       {
         name: "description",
         content:
-          "Find participating Galveston County food programs or privately request help from the TableForward partner network.",
+          "Find participating Galveston County food programs or privately request help from the ProvisionLoop partner network.",
       },
     ],
   }),
@@ -267,7 +267,7 @@ function HelpPage() {
                       onChange={(e) => setForm({ ...form, consent: e.target.checked })}
                     />
                     <span>
-                      I consent to TableForward sharing this request with a verified local partner
+                      I consent to ProvisionLoop sharing this request with a verified local partner
                       for the purpose of connecting me with food support.
                     </span>
                   </label>

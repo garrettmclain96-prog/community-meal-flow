@@ -1,4 +1,4 @@
--- Complete the human-side workflows promised by the TableForward 2.0 brief.
+-- Complete the human-side workflows promised by the ProvisionLoop 2.0 brief.
 -- Recipient contact details remain private and never enter the public impact ledger.
 
 CREATE TABLE public.partner_organizations (

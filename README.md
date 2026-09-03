@@ -1,10 +1,10 @@
-# Community Plate
+# ProvisionLoop
 
-TABLEFORWARD 2.0 — The World‑Impact Platform
+PROVISIONLOOP 2.0 — The World‑Impact Platform
 
 🚀 Core Idea (Upgraded)
 
-TableForward becomes a real‑time community support network that connects:
+ProvisionLoop becomes a real‑time community support network that connects:
 
 • People who want to help
 
@@ -126,7 +126,7 @@ Businesses can sponsor:
 
 • A monthly subscription
 
-Cities can integrate TableForward into:
+Cities can integrate ProvisionLoop into:
 
 • Disaster response
 
@@ -150,7 +150,7 @@ People can sign up to:
 
 • Host community events
 
-This turns TableForward into a movement, not an app.
+This turns ProvisionLoop into a movement, not an app.
 
 ---
 

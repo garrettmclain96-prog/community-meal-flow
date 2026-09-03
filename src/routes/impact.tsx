@@ -42,13 +42,13 @@ const SPONSORSHIP_TIERS = [
 export const Route = createFileRoute("/impact")({
   head: () => ({
     meta: [
-      { title: "Fund Meals — TableForward Impact" },
+      { title: "Fund Meals — ProvisionLoop Impact" },
       {
         name: "description",
         content:
           "Sponsors and donors fund meals at real community kitchens and see transparent allocation with verified outcomes — never recipient identity.",
       },
-      { property: "og:title", content: "Fund Meals — TableForward Impact" },
+      { property: "og:title", content: "Fund Meals — ProvisionLoop Impact" },
       {
         property: "og:description",
         content: "Fund meals at real kitchens with a public, verifiable impact ledger.",
@@ -156,7 +156,7 @@ function ImpactPage() {
               <p className="mt-4 text-sm text-muted-foreground">
                 No kitchens have joined yet. A restaurant or community kitchen can register in{" "}
                 <Link to="/kitchen" className="underline underline-offset-4">
-                  TableForward Kitchen
+                  ProvisionLoop Kitchen
                 </Link>
                 , and it becomes fundable here immediately.
               </p>

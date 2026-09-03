@@ -6,13 +6,13 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/checkout/return")({
   head: () => ({
     meta: [
-      { title: "Payment complete — TableForward" },
+      { title: "Payment complete — ProvisionLoop" },
       {
         name: "description",
         content:
-          "Your TableForward payment is confirmed and the funded meals are now recorded in the public impact ledger.",
+          "Your ProvisionLoop payment is confirmed and the funded meals are now recorded in the public impact ledger.",
       },
-      { property: "og:title", content: "Payment complete — TableForward" },
+      { property: "og:title", content: "Payment complete — ProvisionLoop" },
       {
         property: "og:description",
         content: "Funded meals are recorded in the public impact ledger.",
@@ -49,7 +49,7 @@ function CheckoutReturn() {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-background px-6 text-foreground">
       <div className="w-full max-w-lg rounded-2xl border border-border bg-surface p-8 text-center">
-        <p className="text-[11px] uppercase tracking-[0.3em] text-ember-text">TableForward</p>
+        <p className="text-[11px] uppercase tracking-[0.3em] text-ember-text">ProvisionLoop</p>
         {!sessionId && (
           <>
             <h1 className="mt-3 font-display text-3xl font-bold">No payment found</h1>

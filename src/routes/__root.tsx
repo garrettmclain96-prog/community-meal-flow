@@ -77,14 +77,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Table Forward" },
+      { title: "ProvisionLoop" },
       {
         name: "description",
         content:
           "A public benefit corporation building the digital and logistical rails for a world without hunger.",
       },
-      { name: "author", content: "TableForward" },
-      { property: "og:title", content: "Table Forward" },
+      { name: "author", content: "ProvisionLoop" },
+      { property: "og:title", content: "ProvisionLoop" },
       {
         property: "og:description",
         content:
@@ -92,7 +92,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "Table Forward" },
+      { name: "twitter:title", content: "ProvisionLoop" },
       {
         name: "twitter:description",
         content:

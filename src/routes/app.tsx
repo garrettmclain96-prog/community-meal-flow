@@ -7,11 +7,11 @@ import { MealForgeProvider } from "@/lib/food/store";
 export const Route = createFileRoute("/app")({
   head: () => ({
     meta: [
-      { title: "MealForge — Household Food Intelligence | TableForward" },
+      { title: "MealForge — Household Food Intelligence | ProvisionLoop" },
       {
         name: "description",
         content:
-          "Plan a week of dinners against your real budget, pantry and local package prices. MealForge is TableForward's household food intelligence app.",
+          "Plan a week of dinners against your real budget, pantry and local package prices. MealForge is ProvisionLoop's household food intelligence app.",
       },
       { property: "og:title", content: "MealForge — Household Food Intelligence" },
       {
@@ -48,7 +48,7 @@ function MealForgeShell() {
                 to="/"
                 className="text-xs font-medium text-muted-foreground transition-colors hover:text-ember-text"
               >
-                TableForward ↗
+                ProvisionLoop ↗
               </Link>
               <AccountButton />
             </div>
