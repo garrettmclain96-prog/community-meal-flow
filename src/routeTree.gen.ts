@@ -9,59 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CivicRouteImport } from './routes/civic'
-import { Route as HelpRouteImport } from './routes/help'
-import { Route as ImpactRouteImport } from './routes/impact'
-import { Route as KitchenRouteImport } from './routes/kitchen'
-import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
+import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as KitchenRouteImport } from './routes/kitchen'
+import { Route as ImpactRouteImport } from './routes/impact'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as CivicRouteImport } from './routes/civic'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppCookRouteImport } from './routes/app.cook'
-import { Route as AppImportRouteImport } from './routes/app.import'
-import { Route as AppKitchenRouteImport } from './routes/app.kitchen'
-import { Route as AppPantryRouteImport } from './routes/app.pantry'
-import { Route as AppPlanRouteImport } from './routes/app.plan'
-import { Route as AppSetupRouteImport } from './routes/app.setup'
-import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AppShopRouteImport } from './routes/app.shop'
+import { Route as AppSetupRouteImport } from './routes/app.setup'
+import { Route as AppPlanRouteImport } from './routes/app.plan'
+import { Route as AppPantryRouteImport } from './routes/app.pantry'
+import { Route as AppKitchenRouteImport } from './routes/app.kitchen'
+import { Route as AppImportRouteImport } from './routes/app.import'
+import { Route as AppCookRouteImport } from './routes/app.cook'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CivicRoute = CivicRouteImport.update({
-  id: '/civic',
-  path: '/civic',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ImpactRoute = ImpactRouteImport.update({
-  id: '/impact',
-  path: '/impact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KitchenRoute = KitchenRouteImport.update({
-  id: '/kitchen',
-  path: '/kitchen',
+const VolunteerRoute = VolunteerRouteImport.update({
+  id: '/volunteer',
+  path: '/volunteer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -69,9 +39,39 @@ const PartnersRoute = PartnersRouteImport.update({
   path: '/partners',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VolunteerRoute = VolunteerRouteImport.update({
-  id: '/volunteer',
-  path: '/volunteer',
+const KitchenRoute = KitchenRouteImport.update({
+  id: '/kitchen',
+  path: '/kitchen',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CivicRoute = CivicRouteImport.update({
+  id: '/civic',
+  path: '/civic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AppIndexRoute = AppIndexRouteImport.update({
@@ -79,29 +79,14 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
-const AppCookRoute = AppCookRouteImport.update({
-  id: '/cook',
-  path: '/cook',
-  getParentRoute: () => AppRoute,
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppImportRoute = AppImportRouteImport.update({
-  id: '/import',
-  path: '/import',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppKitchenRoute = AppKitchenRouteImport.update({
-  id: '/kitchen',
-  path: '/kitchen',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPantryRoute = AppPantryRouteImport.update({
-  id: '/pantry',
-  path: '/pantry',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppPlanRoute = AppPlanRouteImport.update({
-  id: '/plan',
-  path: '/plan',
+const AppShopRoute = AppShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
   getParentRoute: () => AppRoute,
 } as any)
 const AppSetupRoute = AppSetupRouteImport.update({
@@ -109,15 +94,30 @@ const AppSetupRoute = AppSetupRouteImport.update({
   path: '/setup',
   getParentRoute: () => AppRoute,
 } as any)
-const AppShopRoute = AppShopRouteImport.update({
-  id: '/shop',
-  path: '/shop',
+const AppPlanRoute = AppPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
   getParentRoute: () => AppRoute,
 } as any)
-const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
-  id: '/checkout/return',
-  path: '/checkout/return',
-  getParentRoute: () => rootRouteImport,
+const AppPantryRoute = AppPantryRouteImport.update({
+  id: '/pantry',
+  path: '/pantry',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKitchenRoute = AppKitchenRouteImport.update({
+  id: '/kitchen',
+  path: '/kitchen',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppImportRoute = AppImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCookRoute = AppCookRouteImport.update({
+  id: '/cook',
+  path: '/cook',
+  getParentRoute: () => AppRoute,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
@@ -270,53 +270,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/civic': {
-      id: '/civic'
-      path: '/civic'
-      fullPath: '/civic'
-      preLoaderRoute: typeof CivicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/impact': {
-      id: '/impact'
-      path: '/impact'
-      fullPath: '/impact'
-      preLoaderRoute: typeof ImpactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kitchen': {
-      id: '/kitchen'
-      path: '/kitchen'
-      fullPath: '/kitchen'
-      preLoaderRoute: typeof KitchenRouteImport
+    '/volunteer': {
+      id: '/volunteer'
+      path: '/volunteer'
+      fullPath: '/volunteer'
+      preLoaderRoute: typeof VolunteerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -326,11 +284,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PartnersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/volunteer': {
-      id: '/volunteer'
-      path: '/volunteer'
-      fullPath: '/volunteer'
-      preLoaderRoute: typeof VolunteerRouteImport
+    '/kitchen': {
+      id: '/kitchen'
+      path: '/kitchen'
+      fullPath: '/kitchen'
+      preLoaderRoute: typeof KitchenRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/civic': {
+      id: '/civic'
+      path: '/civic'
+      fullPath: '/civic'
+      preLoaderRoute: typeof CivicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/app/': {
@@ -340,39 +340,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/cook': {
-      id: '/app/cook'
-      path: '/cook'
-      fullPath: '/app/cook'
-      preLoaderRoute: typeof AppCookRouteImport
-      parentRoute: typeof AppRoute
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/import': {
-      id: '/app/import'
-      path: '/import'
-      fullPath: '/app/import'
-      preLoaderRoute: typeof AppImportRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/kitchen': {
-      id: '/app/kitchen'
-      path: '/kitchen'
-      fullPath: '/app/kitchen'
-      preLoaderRoute: typeof AppKitchenRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/pantry': {
-      id: '/app/pantry'
-      path: '/pantry'
-      fullPath: '/app/pantry'
-      preLoaderRoute: typeof AppPantryRouteImport
-      parentRoute: typeof AppRoute
-    }
-    '/app/plan': {
-      id: '/app/plan'
-      path: '/plan'
-      fullPath: '/app/plan'
-      preLoaderRoute: typeof AppPlanRouteImport
+    '/app/shop': {
+      id: '/app/shop'
+      path: '/shop'
+      fullPath: '/app/shop'
+      preLoaderRoute: typeof AppShopRouteImport
       parentRoute: typeof AppRoute
     }
     '/app/setup': {
@@ -382,19 +361,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppSetupRouteImport
       parentRoute: typeof AppRoute
     }
-    '/app/shop': {
-      id: '/app/shop'
-      path: '/shop'
-      fullPath: '/app/shop'
-      preLoaderRoute: typeof AppShopRouteImport
+    '/app/plan': {
+      id: '/app/plan'
+      path: '/plan'
+      fullPath: '/app/plan'
+      preLoaderRoute: typeof AppPlanRouteImport
       parentRoute: typeof AppRoute
     }
-    '/checkout/return': {
-      id: '/checkout/return'
-      path: '/checkout/return'
-      fullPath: '/checkout/return'
-      preLoaderRoute: typeof CheckoutReturnRouteImport
-      parentRoute: typeof rootRouteImport
+    '/app/pantry': {
+      id: '/app/pantry'
+      path: '/pantry'
+      fullPath: '/app/pantry'
+      preLoaderRoute: typeof AppPantryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/kitchen': {
+      id: '/app/kitchen'
+      path: '/kitchen'
+      fullPath: '/app/kitchen'
+      preLoaderRoute: typeof AppKitchenRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/import': {
+      id: '/app/import'
+      path: '/import'
+      fullPath: '/app/import'
+      preLoaderRoute: typeof AppImportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/cook': {
+      id: '/app/cook'
+      path: '/cook'
+      fullPath: '/app/cook'
+      preLoaderRoute: typeof AppCookRouteImport
+      parentRoute: typeof AppRoute
     }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
