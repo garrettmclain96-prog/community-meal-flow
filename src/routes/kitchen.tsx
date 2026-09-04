@@ -818,10 +818,11 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
                   onChange={(e) => setNote(e.target.value)}
                   className={`${inputCls} min-h-16`}
                 />
+                {legal.gate}
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    disabled={busy}
+                    disabled={busy || !legal.satisfied}
                     className="rounded-full bg-ember px-4 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50"
                   >
                     {busy ? "Claiming…" : "Confirm claim"}
