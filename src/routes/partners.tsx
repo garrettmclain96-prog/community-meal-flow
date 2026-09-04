@@ -191,7 +191,8 @@ function PartnerApplication({ onCreated }: { onCreated: () => void }) {
         Separate areas with commas. Request access stays locked until an administrator verifies the
         organization.
       </p>
-      <button type="submit" disabled={busy} className="button-primary mt-6">
+      {legal.gate && <div className="mt-6">{legal.gate}</div>}
+      <button type="submit" disabled={busy || !legal.satisfied} className="button-primary mt-6">
         {busy ? "Submitting…" : "Submit for verification"}
       </button>
     </form>
