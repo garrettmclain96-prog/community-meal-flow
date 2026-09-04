@@ -472,6 +472,7 @@ function VolunteerProfileForm({
     }
     setBusy(true);
     try {
+      await legal.assertAccepted();
       await upsertVolunteer(user!.id, {
         full_name: name,
         email: user!.email ?? null,
