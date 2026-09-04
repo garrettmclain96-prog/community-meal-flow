@@ -137,6 +137,13 @@ function AuthPage() {
         >
           Continue with Google
         </button>
+        {mode === "signup" && !legalReady && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Accept the <Link to="/legal/terms">Terms v1.0</Link> and{" "}
+            <Link to="/legal/privacy">Privacy Policy v1.0</Link> below to enable account creation.
+          </p>
+        )}
+
 
         <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
           <span className="h-px flex-1 bg-border" /> or email{" "}
