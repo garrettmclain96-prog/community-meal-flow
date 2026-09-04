@@ -6,6 +6,7 @@ import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { submitAssistanceRequest } from "@/lib/assistance";
+import { ProviderStateBadge } from "@/components/ProviderStateBadge";
 import { listKitchens } from "@/lib/community";
 
 export const Route = createFileRoute("/help")({
@@ -94,6 +95,11 @@ function HelpPage() {
             <h2 className="mt-3 font-display text-4xl font-black tracking-tight">
               Start with a local door.
             </h2>
+            <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+              Most entries are directory listings: real local programs mapped from public
+              information so you can find them. They are not affiliated with ProvisionLoop — contact
+              them directly and confirm hours before you go.
+            </p>
             <label className="mt-7 block">
               <span className="field-label">Search by program, city or neighborhood</span>
               <input
@@ -115,9 +121,7 @@ function HelpPage() {
                           [program.neighborhood, program.city].filter(Boolean).join(", ")}
                       </p>
                     </div>
-                    <span className="kicker border border-border-strong px-2 py-1">
-                      {program.claimed ? "Operator verified" : "Directory listing"}
-                    </span>
+                    <ProviderStateBadge state={program.providerState} />
                   </div>
                   {program.summary && (
                     <p className="mt-4 text-sm leading-6 text-muted-foreground">

@@ -88,8 +88,8 @@ export function SiteFooter() {
             <span className="text-primary">LOOP</span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-background/70">
-            Community-funded meals, local kitchen revenue and public accountability—starting in
-            Galveston County.
+Accountable local food infrastructure: private requests, verified partners, paid local
+            kitchen capacity and a public aggregate ledger—starting in Galveston County.
           </p>
         </div>
         <div>
@@ -106,6 +106,7 @@ export function SiteFooter() {
             <Link to="/kitchen">Kitchen network</Link>
             <Link to="/partners">Community partners</Link>
             <Link to="/civic">Public ledger</Link>
+            <Link to="/trust-method">Trust &amp; method</Link>
           </div>
         </div>
       </div>
