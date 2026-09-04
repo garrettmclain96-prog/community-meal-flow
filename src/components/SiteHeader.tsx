@@ -111,6 +111,15 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-background/20">
+        <div className="site-shell flex flex-wrap gap-x-5 gap-y-2 py-4 text-xs text-background/70">
+          <Link to="/legal">Legal Center</Link>
+          <Link to="/legal/terms">Terms</Link>
+          <Link to="/legal/privacy">Privacy</Link>
+          <Link to="/legal/refunds">Refunds</Link>
+          <Link to="/legal/fees-tax">Fees &amp; tax</Link>
+        </div>
+      </div>
+      <div className="border-t border-background/20">
         <div className="site-shell flex flex-wrap justify-between gap-3 py-5 text-xs text-background/55">
           <span>© 2026 ProvisionLoop</span>
           <span>Recipient identities never appear on the public ledger.</span>

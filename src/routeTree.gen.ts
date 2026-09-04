@@ -11,7 +11,10 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as TrustMethodRouteImport } from './routes/trust-method'
+import { Route as RefundRequestRouteImport } from './routes/refund-request'
+import { Route as PrivacyCenterRouteImport } from './routes/privacy-center'
 import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as HelpRouteImport } from './routes/help'
@@ -19,7 +22,15 @@ import { Route as CivicRouteImport } from './routes/civic'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LegalIndexRouteImport } from './routes/legal.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as LegalVolunteerWaiverRouteImport } from './routes/legal.volunteer-waiver'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
+import { Route as LegalRefundsRouteImport } from './routes/legal.refunds'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
+import { Route as LegalPartnerDataRouteImport } from './routes/legal.partner-data'
+import { Route as LegalKitchenAgreementRouteImport } from './routes/legal.kitchen-agreement'
+import { Route as LegalFeesTaxRouteImport } from './routes/legal.fees-tax'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSetupRouteImport } from './routes/app.setup'
@@ -40,9 +51,24 @@ const TrustMethodRoute = TrustMethodRouteImport.update({
   path: '/trust-method',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RefundRequestRoute = RefundRequestRouteImport.update({
+  id: '/refund-request',
+  path: '/refund-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyCenterRoute = PrivacyCenterRouteImport.update({
+  id: '/privacy-center',
+  path: '/privacy-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PartnersRoute = PartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KitchenRoute = KitchenRouteImport.update({
@@ -80,10 +106,50 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalIndexRoute = LegalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LegalRoute,
+} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const LegalVolunteerWaiverRoute = LegalVolunteerWaiverRouteImport.update({
+  id: '/volunteer-waiver',
+  path: '/volunteer-waiver',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalRefundsRoute = LegalRefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalPartnerDataRoute = LegalPartnerDataRouteImport.update({
+  id: '/partner-data',
+  path: '/partner-data',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalKitchenAgreementRoute = LegalKitchenAgreementRouteImport.update({
+  id: '/kitchen-agreement',
+  path: '/kitchen-agreement',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalFeesTaxRoute = LegalFeesTaxRouteImport.update({
+  id: '/fees-tax',
+  path: '/fees-tax',
+  getParentRoute: () => LegalRoute,
 } as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
@@ -140,7 +206,10 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
+  '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/privacy-center': typeof PrivacyCenterRoute
+  '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
@@ -151,7 +220,15 @@ export interface FileRoutesByFullPath {
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/fees-tax': typeof LegalFeesTaxRoute
+  '/legal/kitchen-agreement': typeof LegalKitchenAgreementRoute
+  '/legal/partner-data': typeof LegalPartnerDataRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
+  '/legal/terms': typeof LegalTermsRoute
+  '/legal/volunteer-waiver': typeof LegalVolunteerWaiverRoute
   '/app/': typeof AppIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -162,6 +239,8 @@ export interface FileRoutesByTo {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/privacy-center': typeof PrivacyCenterRoute
+  '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
@@ -172,7 +251,15 @@ export interface FileRoutesByTo {
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/fees-tax': typeof LegalFeesTaxRoute
+  '/legal/kitchen-agreement': typeof LegalKitchenAgreementRoute
+  '/legal/partner-data': typeof LegalPartnerDataRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
+  '/legal/terms': typeof LegalTermsRoute
+  '/legal/volunteer-waiver': typeof LegalVolunteerWaiverRoute
   '/app': typeof AppIndexRoute
+  '/legal': typeof LegalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -184,7 +271,10 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
+  '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/privacy-center': typeof PrivacyCenterRoute
+  '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
@@ -195,7 +285,15 @@ export interface FileRoutesById {
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/fees-tax': typeof LegalFeesTaxRoute
+  '/legal/kitchen-agreement': typeof LegalKitchenAgreementRoute
+  '/legal/partner-data': typeof LegalPartnerDataRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/refunds': typeof LegalRefundsRoute
+  '/legal/terms': typeof LegalTermsRoute
+  '/legal/volunteer-waiver': typeof LegalVolunteerWaiverRoute
   '/app/': typeof AppIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -208,7 +306,10 @@ export interface FileRouteTypes {
     | '/help'
     | '/impact'
     | '/kitchen'
+    | '/legal'
     | '/partners'
+    | '/privacy-center'
+    | '/refund-request'
     | '/trust-method'
     | '/volunteer'
     | '/app/cook'
@@ -219,7 +320,15 @@ export interface FileRouteTypes {
     | '/app/setup'
     | '/app/shop'
     | '/checkout/return'
+    | '/legal/fees-tax'
+    | '/legal/kitchen-agreement'
+    | '/legal/partner-data'
+    | '/legal/privacy'
+    | '/legal/refunds'
+    | '/legal/terms'
+    | '/legal/volunteer-waiver'
     | '/app/'
+    | '/legal/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -230,6 +339,8 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/privacy-center'
+    | '/refund-request'
     | '/trust-method'
     | '/volunteer'
     | '/app/cook'
@@ -240,7 +351,15 @@ export interface FileRouteTypes {
     | '/app/setup'
     | '/app/shop'
     | '/checkout/return'
+    | '/legal/fees-tax'
+    | '/legal/kitchen-agreement'
+    | '/legal/partner-data'
+    | '/legal/privacy'
+    | '/legal/refunds'
+    | '/legal/terms'
+    | '/legal/volunteer-waiver'
     | '/app'
+    | '/legal'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -251,7 +370,10 @@ export interface FileRouteTypes {
     | '/help'
     | '/impact'
     | '/kitchen'
+    | '/legal'
     | '/partners'
+    | '/privacy-center'
+    | '/refund-request'
     | '/trust-method'
     | '/volunteer'
     | '/app/cook'
@@ -262,7 +384,15 @@ export interface FileRouteTypes {
     | '/app/setup'
     | '/app/shop'
     | '/checkout/return'
+    | '/legal/fees-tax'
+    | '/legal/kitchen-agreement'
+    | '/legal/partner-data'
+    | '/legal/privacy'
+    | '/legal/refunds'
+    | '/legal/terms'
+    | '/legal/volunteer-waiver'
     | '/app/'
+    | '/legal/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -274,7 +404,10 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   ImpactRoute: typeof ImpactRoute
   KitchenRoute: typeof KitchenRoute
+  LegalRoute: typeof LegalRouteWithChildren
   PartnersRoute: typeof PartnersRoute
+  PrivacyCenterRoute: typeof PrivacyCenterRoute
+  RefundRequestRoute: typeof RefundRequestRoute
   TrustMethodRoute: typeof TrustMethodRoute
   VolunteerRoute: typeof VolunteerRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -297,11 +430,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrustMethodRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/refund-request': {
+      id: '/refund-request'
+      path: '/refund-request'
+      fullPath: '/refund-request'
+      preLoaderRoute: typeof RefundRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-center': {
+      id: '/privacy-center'
+      path: '/privacy-center'
+      fullPath: '/privacy-center'
+      preLoaderRoute: typeof PrivacyCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/partners': {
       id: '/partners'
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kitchen': {
@@ -353,12 +507,68 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/': {
+      id: '/legal/'
+      path: '/'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof LegalIndexRouteImport
+      parentRoute: typeof LegalRoute
+    }
     '/app/': {
       id: '/app/'
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/legal/volunteer-waiver': {
+      id: '/legal/volunteer-waiver'
+      path: '/volunteer-waiver'
+      fullPath: '/legal/volunteer-waiver'
+      preLoaderRoute: typeof LegalVolunteerWaiverRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/refunds': {
+      id: '/legal/refunds'
+      path: '/refunds'
+      fullPath: '/legal/refunds'
+      preLoaderRoute: typeof LegalRefundsRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/partner-data': {
+      id: '/legal/partner-data'
+      path: '/partner-data'
+      fullPath: '/legal/partner-data'
+      preLoaderRoute: typeof LegalPartnerDataRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/kitchen-agreement': {
+      id: '/legal/kitchen-agreement'
+      path: '/kitchen-agreement'
+      fullPath: '/legal/kitchen-agreement'
+      preLoaderRoute: typeof LegalKitchenAgreementRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/fees-tax': {
+      id: '/legal/fees-tax'
+      path: '/fees-tax'
+      fullPath: '/legal/fees-tax'
+      preLoaderRoute: typeof LegalFeesTaxRouteImport
+      parentRoute: typeof LegalRoute
     }
     '/checkout/return': {
       id: '/checkout/return'
@@ -450,6 +660,30 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
+interface LegalRouteChildren {
+  LegalFeesTaxRoute: typeof LegalFeesTaxRoute
+  LegalKitchenAgreementRoute: typeof LegalKitchenAgreementRoute
+  LegalPartnerDataRoute: typeof LegalPartnerDataRoute
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalRefundsRoute: typeof LegalRefundsRoute
+  LegalTermsRoute: typeof LegalTermsRoute
+  LegalVolunteerWaiverRoute: typeof LegalVolunteerWaiverRoute
+  LegalIndexRoute: typeof LegalIndexRoute
+}
+
+const LegalRouteChildren: LegalRouteChildren = {
+  LegalFeesTaxRoute: LegalFeesTaxRoute,
+  LegalKitchenAgreementRoute: LegalKitchenAgreementRoute,
+  LegalPartnerDataRoute: LegalPartnerDataRoute,
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalRefundsRoute: LegalRefundsRoute,
+  LegalTermsRoute: LegalTermsRoute,
+  LegalVolunteerWaiverRoute: LegalVolunteerWaiverRoute,
+  LegalIndexRoute: LegalIndexRoute,
+}
+
+const LegalRouteWithChildren = LegalRoute._addFileChildren(LegalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
@@ -458,7 +692,10 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   ImpactRoute: ImpactRoute,
   KitchenRoute: KitchenRoute,
+  LegalRoute: LegalRouteWithChildren,
   PartnersRoute: PartnersRoute,
+  PrivacyCenterRoute: PrivacyCenterRoute,
+  RefundRequestRoute: RefundRequestRoute,
   TrustMethodRoute: TrustMethodRoute,
   VolunteerRoute: VolunteerRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,

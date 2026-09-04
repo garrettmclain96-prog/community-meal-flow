@@ -600,6 +600,39 @@ export type Database = {
         }
         Relationships: []
       }
+      legal_document_acceptances: {
+        Row: {
+          accepted_at: string
+          context: string | null
+          created_at: string
+          document_key: string
+          document_version: string
+          id: string
+          signer_name: string | null
+          user_id: string
+        }
+        Insert: {
+          accepted_at?: string
+          context?: string | null
+          created_at?: string
+          document_key: string
+          document_version: string
+          id?: string
+          signer_name?: string | null
+          user_id: string
+        }
+        Update: {
+          accepted_at?: string
+          context?: string | null
+          created_at?: string
+          document_key?: string
+          document_version?: string
+          id?: string
+          signer_name?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       meal_plans: {
         Row: {
           checked: string[]
@@ -938,6 +971,42 @@ export type Database = {
           },
         ]
       }
+      privacy_requests: {
+        Row: {
+          contact_preference: string | null
+          created_at: string
+          details: string | null
+          id: string
+          request_type: string
+          resolved_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          contact_preference?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          request_type: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          contact_preference?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          request_type?: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           created_at: string
@@ -1053,6 +1122,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      refund_requests: {
+        Row: {
+          created_at: string
+          id: string
+          reason: string | null
+          reference_id: string | null
+          request_type: string
+          resolved_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          reference_id?: string | null
+          request_type: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          reason?: string | null
+          reference_id?: string | null
+          request_type?: string
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       shift_signups: {
         Row: {
