@@ -13,6 +13,7 @@ import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as TrustMethodRouteImport } from './routes/trust-method'
 import { Route as RefundRequestRouteImport } from './routes/refund-request'
 import { Route as PrivacyCenterRouteImport } from './routes/privacy-center'
+import { Route as PilotRouteImport } from './routes/pilot'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as KitchenRouteImport } from './routes/kitchen'
@@ -59,6 +60,11 @@ const RefundRequestRoute = RefundRequestRouteImport.update({
 const PrivacyCenterRoute = PrivacyCenterRouteImport.update({
   id: '/privacy-center',
   path: '/privacy-center',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PilotRoute = PilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/kitchen': typeof KitchenRoute
   '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/pilot': typeof PilotRoute
   '/privacy-center': typeof PrivacyCenterRoute
   '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/pilot': typeof PilotRoute
   '/privacy-center': typeof PrivacyCenterRoute
   '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
@@ -273,6 +281,7 @@ export interface FileRoutesById {
   '/kitchen': typeof KitchenRoute
   '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/pilot': typeof PilotRoute
   '/privacy-center': typeof PrivacyCenterRoute
   '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
@@ -308,6 +317,7 @@ export interface FileRouteTypes {
     | '/kitchen'
     | '/legal'
     | '/partners'
+    | '/pilot'
     | '/privacy-center'
     | '/refund-request'
     | '/trust-method'
@@ -339,6 +349,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/pilot'
     | '/privacy-center'
     | '/refund-request'
     | '/trust-method'
@@ -372,6 +383,7 @@ export interface FileRouteTypes {
     | '/kitchen'
     | '/legal'
     | '/partners'
+    | '/pilot'
     | '/privacy-center'
     | '/refund-request'
     | '/trust-method'
@@ -406,6 +418,7 @@ export interface RootRouteChildren {
   KitchenRoute: typeof KitchenRoute
   LegalRoute: typeof LegalRouteWithChildren
   PartnersRoute: typeof PartnersRoute
+  PilotRoute: typeof PilotRoute
   PrivacyCenterRoute: typeof PrivacyCenterRoute
   RefundRequestRoute: typeof RefundRequestRoute
   TrustMethodRoute: typeof TrustMethodRoute
@@ -442,6 +455,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy-center'
       fullPath: '/privacy-center'
       preLoaderRoute: typeof PrivacyCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pilot': {
+      id: '/pilot'
+      path: '/pilot'
+      fullPath: '/pilot'
+      preLoaderRoute: typeof PilotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -694,6 +714,7 @@ const rootRouteChildren: RootRouteChildren = {
   KitchenRoute: KitchenRoute,
   LegalRoute: LegalRouteWithChildren,
   PartnersRoute: PartnersRoute,
+  PilotRoute: PilotRoute,
   PrivacyCenterRoute: PrivacyCenterRoute,
   RefundRequestRoute: RefundRequestRoute,
   TrustMethodRoute: TrustMethodRoute,
