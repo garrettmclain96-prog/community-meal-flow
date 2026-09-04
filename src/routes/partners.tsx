@@ -235,7 +235,12 @@ function DispatchQueue({
       </div>
       <div className="mt-8 grid gap-5">
         {referrals.map((referral) => (
-          <ReferralCard key={referral.id} referral={referral} onChanged={onChanged} />
+          <ReferralCard
+            key={referral.id}
+            referral={referral}
+            onChanged={onChanged}
+            assertAccepted={assertAccepted}
+          />
         ))}
         {!referrals.length && (
           <div className="editorial-card p-7 text-muted-foreground">
