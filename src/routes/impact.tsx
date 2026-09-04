@@ -98,14 +98,30 @@ function ImpactPage() {
   const perMeal = template?.cost_per_meal ?? kitchen?.cost_per_meal ?? 0;
   const amount = useMemo(() => Math.round(perMeal * meals * 100), [perMeal, meals]);
 
-  function fund() {
+  async function fund() {
     if (!kitchenId) return;
+    try {
+      await paymentLegal.assertAccepted();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Agreement required");
+      return;
+    }
     openCheckout({
       kind: "meal_funding",
       kitchenId,
       templateId: templateId || null,
       meals,
     });
+  }
+
+  async function startSponsorship(priceId: string) {
+    try {
+      await paymentLegal.assertAccepted();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Agreement required");
+      return;
+    }
+    openCheckout({ kind: "sponsorship", priceId });
   }
 
   async function manageSponsorship() {
