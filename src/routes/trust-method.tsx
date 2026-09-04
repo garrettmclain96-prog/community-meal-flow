@@ -283,18 +283,13 @@ function TrustMethodPage() {
                 <li>
                   <strong className="text-foreground">Claim it:</strong> start the operator claim in
                   the kitchen network and we verify you run the organization before handing over
-                  control.
+                  control. Once claimed, you can correct any detail of the listing yourself — or ask
+                  us to remove it entirely.
                 </li>
                 <li>
-                  <strong className="text-foreground">Correct or remove it:</strong> email{" "}
-                  <a
-                    className="text-primary underline underline-offset-4"
-                    href="mailto:listings@provisionloop.org?subject=Directory%20listing%20correction%20or%20removal"
-                  >
-                    listings@provisionloop.org
-                  </a>{" "}
-                  from an address at your organization with the listing name and the change you
-                  want.
+                  <strong className="text-foreground">Correct or remove it:</strong> use the claim
+                  flow to reach us. A monitored contact channel for correction and removal requests
+                  will be published here before the public pilot opens.
                 </li>
               </ul>
             </div>
@@ -302,12 +297,6 @@ function TrustMethodPage() {
               <Link to="/kitchen" className="button-primary justify-center py-4">
                 Claim a listing
               </Link>
-              <a
-                className="button-secondary justify-center py-4"
-                href="mailto:listings@provisionloop.org?subject=Directory%20listing%20correction%20or%20removal"
-              >
-                Request a correction or removal
-              </a>
             </div>
           </div>
         </section>
