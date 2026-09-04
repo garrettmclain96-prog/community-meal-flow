@@ -138,11 +138,19 @@ function SignedOut() {
 
 function PartnerApplication({ onCreated }: { onCreated: () => void }) {
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: PARTNER_DOCS,
+    requireSignature: true,
+    context: "partner_application",
+    intro:
+      "Applying for dispatch access is a data-handling commitment, so it is signed. Acceptance is saved before the application is submitted.",
+  });
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     setBusy(true);
     try {
+      await legal.assertAccepted();
       await applyPartner({
         name: String(form.get("name") ?? ""),
         kind: String(form.get("kind") ?? "nonprofit"),
