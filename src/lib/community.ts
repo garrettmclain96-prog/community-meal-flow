@@ -7,6 +7,14 @@ import { supabase } from "@/integrations/supabase/client";
  * household data never leaves the household's own rows.
  */
 
+export type ProviderState = "directory" | "verified" | "funding_enabled";
+
+export const PROVIDER_STATE_LABEL: Record<ProviderState, string> = {
+  directory: "Directory listing — not affiliated",
+  verified: "Operator verified",
+  funding_enabled: "Funding enabled",
+};
+
 export interface KitchenRow {
   id: string;
   name: string;
@@ -19,31 +27,58 @@ export interface KitchenRow {
   website: string | null;
   summary: string | null;
   claimed: boolean;
+  payout_status: string;
+  /** Honest network state, derived server-data-side. Never inferred from copy. */
+  providerState: ProviderState;
 }
 
-export interface TemplateRow {
-  id: string;
-  kitchen_id: string;
-  name: string;
-  description: string | null;
-  servings_per_batch: number;
-  cost_per_meal: number;
-  dietary_tags: string[];
-  active: boolean;
+/** A provider can only receive money once an operator claimed it AND payouts are live. */
+export function isFundable(k: { claimed: boolean; payout_status: string }): boolean {
+  return k.claimed === true && k.payout_status === "ready";
 }
 
+function withState<T extends { claimed: boolean; payout_status: string; cost_per_meal: unknown }>(
+  k: T,
+): T & { cost_per_meal: number; providerState: ProviderState } {
+  return {
+    ...k,
+    cost_per_meal: Number(k.cost_per_meal),
+    providerState: isFundable(k) ? "funding_enabled" : k.claimed ? "verified" : "directory",
+  };
+}
+
+const KITCHEN_COLUMNS =
+  "id, name, kind, city, neighborhood, daily_capacity_meals, cost_per_meal, address, website, summary, claimed, payout_status";
+
+/** Full public directory — discovery only. Includes unaffiliated directory listings. */
 export async function listKitchens(): Promise<KitchenRow[]> {
   const { data, error } = await supabase
     .from("kitchens")
-    .select(
-      "id, name, kind, city, neighborhood, daily_capacity_meals, cost_per_meal, address, website, summary, claimed",
-    )
+    .select(KITCHEN_COLUMNS)
     .eq("approved", true)
     .eq("active", true)
     .order("name");
   if (error) throw error;
-  return (data ?? []).map((k) => ({ ...k, cost_per_meal: Number(k.cost_per_meal) }));
+  return (data ?? []).map(withState);
 }
+
+/**
+ * Providers that may actually receive funding. UI must use this for any
+ * funding decision; the server re-checks the same conditions on checkout.
+ */
+export async function listFundableKitchens(): Promise<KitchenRow[]> {
+  const { data, error } = await supabase
+    .from("kitchens")
+    .select(KITCHEN_COLUMNS)
+    .eq("approved", true)
+    .eq("active", true)
+    .eq("claimed", true)
+    .eq("payout_status", "ready")
+    .order("name");
+  if (error) throw error;
+  return (data ?? []).map(withState);
+}
+
 
 export async function listTemplates(kitchenId?: string): Promise<TemplateRow[]> {
   let q = supabase.from("meal_templates").select("*").eq("active", true);
