@@ -83,13 +83,26 @@ function PartnersPage() {
           {workspace.data && !workspace.data.organization.approved && (
             <PendingApproval name={workspace.data.organization.name} />
           )}
-          {workspace.data?.organization.approved && (
-            <DispatchQueue
-              name={workspace.data.organization.name}
-              referrals={workspace.data.referrals}
-              onChanged={refresh}
-            />
-          )}
+          {workspace.data?.organization.approved &&
+            (legal.satisfied ? (
+              <DispatchQueue
+                name={workspace.data.organization.name}
+                referrals={workspace.data.referrals}
+                onChanged={refresh}
+              />
+            ) : (
+              <div className="mx-auto max-w-3xl">
+                <p className="kicker text-primary">Agreement required</p>
+                <h2 className="mt-2 font-display text-3xl font-black">
+                  Sign before request details open
+                </h2>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {workspace.data.organization.name} is verified. Identifiable request details stay
+                  hidden until the signed agreement is recorded to your account.
+                </p>
+                <div className="mt-6">{legal.gate}</div>
+              </div>
+            ))}
         </section>
       </main>
       <SiteFooter />
