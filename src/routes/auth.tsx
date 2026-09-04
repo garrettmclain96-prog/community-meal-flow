@@ -63,6 +63,8 @@ function AuthPage() {
   const [displayName, setDisplayName] = useState("");
   const [role, setRole] = useState<AppRole>("household");
   const [busy, setBusy] = useState(false);
+  const [legal, setLegal] = useState<LegalAcceptanceValue>(EMPTY_ACCEPTANCE);
+  const legalReady = isAcceptanceComplete(legal, false);
 
   useEffect(() => {
     if (!loading && session) void navigate({ to: redirect, replace: true });
@@ -70,9 +72,15 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (mode === "signup" && !legalReady) {
+      toast.error("Please accept the Terms of Service v1.0 and Privacy Policy v1.0 to continue.");
+      return;
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
+        // Queued now, written to the account by the post-authentication flush.
+        queuePendingAcceptance({ keys: BASE_DOCS, context: "account_signup" });
         const { error } = await supabase.auth.signUp({
           email,
           password,
