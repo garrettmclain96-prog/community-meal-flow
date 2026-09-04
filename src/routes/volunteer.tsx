@@ -179,6 +179,16 @@ function VolunteerPage() {
               <Stat label="Runs waiting for a driver" value={String(openRuns.length)} />
             </div>
 
+            {!legal.satisfied && (
+              <div className="mt-10 rounded-xl border border-border bg-surface p-6">
+                <h2 className="font-display text-2xl font-bold">Sign the volunteer release</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  You can browse shifts and runs now. Claiming one requires the signed release.
+                </p>
+                <div className="mt-5">{legal.gate}</div>
+              </div>
+            )}
+
             <section className="mt-14 grid gap-8 lg:grid-cols-[1fr_1.2fr]">
               <VolunteerProfileForm
                 profile={me ?? null}
