@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 
 import { supabase } from "@/integrations/supabase/client";
+import { flushPendingAcceptances } from "@/lib/legal/acceptance";
 
 export type AppRole =
   "household" | "kitchen" | "nonprofit" | "sponsor" | "city_admin" | "platform_admin";
