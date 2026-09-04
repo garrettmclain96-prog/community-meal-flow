@@ -730,6 +730,14 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: KITCHEN_DOCS,
+    requireSignature: true,
+    context: "kitchen_claim",
+    intro:
+      "Claiming a listing means you have authority over that organization. Your signed acceptance is saved before the claim is submitted.",
+  });
+
 
   const listings = useQuery({
     queryKey: ["unclaimed-kitchens"],
