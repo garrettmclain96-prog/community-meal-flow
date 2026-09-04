@@ -229,8 +229,9 @@ function VolunteerPage() {
                                 <ActionButton
                                   label="Claim this run"
                                   onClick={async () => {
-                                    if (!me) throw new Error("Save your volunteer profile first");
-                                    await claimRun(r.id);
+                                     if (!me) throw new Error("Save your volunteer profile first");
+                                     await legal.assertAccepted();
+                                     await claimRun(r.id);
                                     await refresh();
                                     toast.success("Run claimed — thank you");
                                   }}
