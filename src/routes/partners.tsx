@@ -89,6 +89,7 @@ function PartnersPage() {
                 name={workspace.data.organization.name}
                 referrals={workspace.data.referrals}
                 onChanged={refresh}
+                assertAccepted={legal.assertAccepted}
               />
             ) : (
               <div className="mx-auto max-w-3xl">
