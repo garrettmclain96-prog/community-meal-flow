@@ -13,6 +13,7 @@ import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as TrustMethodRouteImport } from './routes/trust-method'
 import { Route as RefundRequestRouteImport } from './routes/refund-request'
 import { Route as PrivacyCenterRouteImport } from './routes/privacy-center'
+import { Route as PilotRouteImport } from './routes/pilot'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as KitchenRouteImport } from './routes/kitchen'
@@ -21,6 +22,7 @@ import { Route as HelpRouteImport } from './routes/help'
 import { Route as CivicRouteImport } from './routes/civic'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as LegalIndexRouteImport } from './routes/legal.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
@@ -61,6 +63,11 @@ const PrivacyCenterRoute = PrivacyCenterRouteImport.update({
   path: '/privacy-center',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PilotRoute = PilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PartnersRoute = PartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
@@ -99,6 +106,11 @@ const AuthRoute = AuthRouteImport.update({
 const AppRoute = AppRouteImport.update({
   id: '/app',
   path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -200,6 +212,7 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/civic': typeof CivicRoute
@@ -208,6 +221,7 @@ export interface FileRoutesByFullPath {
   '/kitchen': typeof KitchenRoute
   '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/pilot': typeof PilotRoute
   '/privacy-center': typeof PrivacyCenterRoute
   '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
@@ -233,12 +247,14 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/civic': typeof CivicRoute
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/pilot': typeof PilotRoute
   '/privacy-center': typeof PrivacyCenterRoute
   '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
@@ -265,6 +281,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/civic': typeof CivicRoute
@@ -273,6 +290,7 @@ export interface FileRoutesById {
   '/kitchen': typeof KitchenRoute
   '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/pilot': typeof PilotRoute
   '/privacy-center': typeof PrivacyCenterRoute
   '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
@@ -300,6 +318,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/app'
     | '/auth'
     | '/civic'
@@ -308,6 +327,7 @@ export interface FileRouteTypes {
     | '/kitchen'
     | '/legal'
     | '/partners'
+    | '/pilot'
     | '/privacy-center'
     | '/refund-request'
     | '/trust-method'
@@ -333,12 +353,14 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/auth'
     | '/civic'
     | '/help'
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/pilot'
     | '/privacy-center'
     | '/refund-request'
     | '/trust-method'
@@ -364,6 +386,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/app'
     | '/auth'
     | '/civic'
@@ -372,6 +395,7 @@ export interface FileRouteTypes {
     | '/kitchen'
     | '/legal'
     | '/partners'
+    | '/pilot'
     | '/privacy-center'
     | '/refund-request'
     | '/trust-method'
@@ -398,6 +422,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
   CivicRoute: typeof CivicRoute
@@ -406,6 +431,7 @@ export interface RootRouteChildren {
   KitchenRoute: typeof KitchenRoute
   LegalRoute: typeof LegalRouteWithChildren
   PartnersRoute: typeof PartnersRoute
+  PilotRoute: typeof PilotRoute
   PrivacyCenterRoute: typeof PrivacyCenterRoute
   RefundRequestRoute: typeof RefundRequestRoute
   TrustMethodRoute: typeof TrustMethodRoute
@@ -442,6 +468,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy-center'
       fullPath: '/privacy-center'
       preLoaderRoute: typeof PrivacyCenterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pilot': {
+      id: '/pilot'
+      path: '/pilot'
+      fullPath: '/pilot'
+      preLoaderRoute: typeof PilotRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -498,6 +531,13 @@ declare module '@tanstack/react-router' {
       path: '/app'
       fullPath: '/app'
       preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -686,6 +726,7 @@ const LegalRouteWithChildren = LegalRoute._addFileChildren(LegalRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
   CivicRoute: CivicRoute,
@@ -694,6 +735,7 @@ const rootRouteChildren: RootRouteChildren = {
   KitchenRoute: KitchenRoute,
   LegalRoute: LegalRouteWithChildren,
   PartnersRoute: PartnersRoute,
+  PilotRoute: PilotRoute,
   PrivacyCenterRoute: PrivacyCenterRoute,
   RefundRequestRoute: RefundRequestRoute,
   TrustMethodRoute: TrustMethodRoute,

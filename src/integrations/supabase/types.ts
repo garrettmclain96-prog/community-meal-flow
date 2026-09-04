@@ -534,6 +534,7 @@ export type Database = {
           created_at: string
           daily_capacity_meals: number
           id: string
+          is_test: boolean
           kind: string
           kind_detail: string | null
           latitude: number | null
@@ -559,6 +560,7 @@ export type Database = {
           created_at?: string
           daily_capacity_meals?: number
           id?: string
+          is_test?: boolean
           kind?: string
           kind_detail?: string | null
           latitude?: number | null
@@ -584,6 +586,7 @@ export type Database = {
           created_at?: string
           daily_capacity_meals?: number
           id?: string
+          is_test?: boolean
           kind?: string
           kind_detail?: string | null
           latitude?: number | null
@@ -933,6 +936,51 @@ export type Database = {
           },
         ]
       }
+      pilot_signups: {
+        Row: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          interest: string
+          internal_note: string | null
+          note: string | null
+          postal_code: string | null
+          resolved_at: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          full_name: string
+          id?: string
+          interest: string
+          internal_note?: string | null
+          note?: string | null
+          postal_code?: string | null
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          interest?: string
+          internal_note?: string | null
+          note?: string | null
+          postal_code?: string | null
+          resolved_at?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       price_observations: {
         Row: {
           household_id: string
@@ -977,6 +1025,7 @@ export type Database = {
           created_at: string
           details: string | null
           id: string
+          internal_note: string | null
           request_type: string
           resolved_at: string | null
           status: string
@@ -988,6 +1037,7 @@ export type Database = {
           created_at?: string
           details?: string | null
           id?: string
+          internal_note?: string | null
           request_type: string
           resolved_at?: string | null
           status?: string
@@ -999,6 +1049,7 @@ export type Database = {
           created_at?: string
           details?: string | null
           id?: string
+          internal_note?: string | null
           request_type?: string
           resolved_at?: string | null
           status?: string
@@ -1127,6 +1178,7 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          internal_note: string | null
           reason: string | null
           reference_id: string | null
           request_type: string
@@ -1138,6 +1190,7 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          internal_note?: string | null
           reason?: string | null
           reference_id?: string | null
           request_type: string
@@ -1149,6 +1202,7 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          internal_note?: string | null
           reason?: string | null
           reference_id?: string | null
           request_type?: string
