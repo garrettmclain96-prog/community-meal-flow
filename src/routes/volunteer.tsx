@@ -54,6 +54,14 @@ const inputCls =
 function VolunteerPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const legal = useLegalGate({
+    documents: VOLUNTEER_DOCS,
+    requireSignature: true,
+    context: "volunteer_activity",
+    intro:
+      "Claiming a shift or delivery run requires the signed volunteer release at its current version.",
+  });
+
 
   const profile = useQuery({
     queryKey: ["volunteer", user?.id],
