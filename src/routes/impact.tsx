@@ -7,6 +7,8 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { PAYMENT_DOCS } from "@/lib/legal/registry";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { createSponsorPortalSession } from "@/lib/payments.functions";
