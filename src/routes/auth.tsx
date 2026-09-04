@@ -5,6 +5,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
+import {
+  EMPTY_ACCEPTANCE,
+  LegalAcceptance,
+  isAcceptanceComplete,
+  type LegalAcceptanceValue,
+} from "@/components/LegalAcceptance";
+import { queuePendingAcceptance } from "@/lib/legal/acceptance";
+import { BASE_DOCS } from "@/lib/legal/registry";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => ({

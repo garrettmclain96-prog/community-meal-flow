@@ -39,6 +39,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const uid = session?.user.id;
     if (!uid) return;
     let cancelled = false;
+    // Acceptance captured at sign-up (before an account existed) is written now.
+    void flushPendingAcceptances(uid);
     void supabase
       .from("user_roles")
       .select("role")
