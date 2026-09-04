@@ -255,9 +255,11 @@ function DispatchQueue({
 function ReferralCard({
   referral,
   onChanged,
+  assertAccepted,
 }: {
   referral: PartnerReferral;
   onChanged: () => void;
+  assertAccepted: () => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
   const [outcome, setOutcome] = useState("");
@@ -265,6 +267,7 @@ function ReferralCard({
   async function advance(status: string) {
     setBusy(true);
     try {
+      await assertAccepted();
       await updateReferral({ referralId: referral.id, status, outcome, meals });
       toast.success(status === "fulfilled" ? "Fulfillment verified" : `Referral ${status}`);
       onChanged();
