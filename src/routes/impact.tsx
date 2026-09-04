@@ -419,6 +419,18 @@ function ImpactPage() {
             </p>
           )}
 
+          {user && !paymentLegal.satisfied && (
+            <div className="mt-6 rounded-xl border border-border bg-surface p-4 text-xs leading-5 text-muted-foreground">
+              <p className="font-semibold text-foreground">Before you pay</p>
+              <p className="mt-1">
+                Platform fee: <strong className="text-foreground">$0.00</strong>. Recurring
+                sponsorships run through Stripe in test mode. Payments are{" "}
+                <strong className="text-foreground">not tax-deductible</strong>.
+              </p>
+              <div className="mt-4">{paymentLegal.gate}</div>
+            </div>
+          )}
+
           <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {SPONSORSHIP_TIERS.map((tier) => (
               <div key={tier.priceId} className="editorial-card flex flex-col p-6">
