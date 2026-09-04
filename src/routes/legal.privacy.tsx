@@ -31,15 +31,15 @@ const SECTIONS: LegalSection[] = [
         <p>These are the categories the application actually uses today — no placeholders.</p>
         <ul>
           <li>
-            <strong>Account and contact data.</strong> Email address, password credential held by our
-            authentication provider (never in plain text and never visible to us), display name, and
-            the role or roles you chose.
+            <strong>Account and contact data.</strong> Email address, password credential held by
+            our authentication provider (never in plain text and never visible to us), display name,
+            and the role or roles you chose.
           </li>
           <li>
-            <strong>Household assistance data.</strong> First name, optional email and phone, service
-            area, household size, need type, urgency and free-text notes. Free-text notes can contain{" "}
-            <strong>sensitive details</strong> — health, disability, immigration, family or religious
-            information — because people describe their situation in their own words.
+            <strong>Household assistance data.</strong> First name, optional email and phone,
+            service area, household size, need type, urgency and free-text notes. Free-text notes
+            can contain <strong>sensitive details</strong> — health, disability, immigration, family
+            or religious information — because people describe their situation in their own words.
           </li>
           <li>
             <strong>Kitchen and business data.</strong> Business name, kind, address, service area,
@@ -59,9 +59,7 @@ const SECTIONS: LegalSection[] = [
             <strong>Transaction identifiers.</strong> Payment session and customer identifiers,
             subscription identifiers, amounts in cents, meal counts, neighborhood, payment
             environment and payout/transfer identifiers.{" "}
-            <strong>
-              We never receive or store your card number, CVC or bank account number
-            </strong>{" "}
+            <strong>We never receive or store your card number, CVC or bank account number</strong>{" "}
             — those go directly to Stripe.
           </li>
           <li>
@@ -88,8 +86,8 @@ const SECTIONS: LegalSection[] = [
     body: (
       <ul>
         <li>
-          <strong>Account data</strong> — to authenticate you, apply your role permissions and secure
-          the account.
+          <strong>Account data</strong> — to authenticate you, apply your role permissions and
+          secure the account.
         </li>
         <li>
           <strong>Assistance data</strong> — solely to route a request to an approved partner
@@ -100,8 +98,8 @@ const SECTIONS: LegalSection[] = [
           orders, and to send payouts to the operator.
         </li>
         <li>
-          <strong>Partner data</strong> — to review applications, gate access to identifiable request
-          data, and record fulfillment.
+          <strong>Partner data</strong> — to review applications, gate access to identifiable
+          request data, and record fulfillment.
         </li>
         <li>
           <strong>Volunteer data</strong> — to staff shifts and dispatch delivery runs, and to log
@@ -109,8 +107,8 @@ const SECTIONS: LegalSection[] = [
         </li>
         <li>
           <strong>Transaction identifiers</strong> — to create checkouts, confirm payment through a
-          signed webhook, credit the ledger only for paid meals, pay kitchens, and handle refunds and
-          disputes.
+          signed webhook, credit the ledger only for paid meals, pay kitchens, and handle refunds
+          and disputes.
         </li>
         <li>
           <strong>Security logs</strong> — to detect abuse, debug failures and meet legal
@@ -128,9 +126,9 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          We ask for the least we need to route help. Assistance requests do not require a full legal
-          name, a home address, an income figure, an identity document or a benefits number, and you
-          should not include one.
+          We ask for the least we need to route help. Assistance requests do not require a full
+          legal name, a home address, an income figure, an identity document or a benefits number,
+          and you should not include one.
         </p>
         <p>
           Because free-text notes can contain sensitive details, they are treated as sensitive:
@@ -211,8 +209,8 @@ const SECTIONS: LegalSection[] = [
         <p>Our retention principle is: keep it while it is doing the job, then remove it.</p>
         <ul>
           <li>
-            <strong>Account data</strong> — while the account exists, then deleted on request subject
-            to the exceptions below.
+            <strong>Account data</strong> — while the account exists, then deleted on request
+            subject to the exceptions below.
           </li>
           <li>
             <strong>Assistance requests and referrals</strong> — while open, plus a limited period
@@ -253,10 +251,10 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p>
         Data is encrypted in transit. Access is controlled per row by database row-level security
-        policies tied to your account and role, privileged operations run only on the server, secrets
-        are never shipped to the browser, and payment credentials never touch our systems. No system
-        is perfectly secure; we will notify affected people without undue delay if a breach affecting
-        their personal data occurs.
+        policies tied to your account and role, privileged operations run only on the server,
+        secrets are never shipped to the browser, and payment credentials never touch our systems.
+        No system is perfectly secure; we will notify affected people without undue delay if a
+        breach affecting their personal data occurs.
       </p>
     ),
   },
@@ -303,14 +301,15 @@ const SECTIONS: LegalSection[] = [
           reasonably necessary, telling you why.
         </p>
         <p>
-          <strong>Appeal.</strong> If we refuse a request, you may appeal it in the Privacy Center by
-          choosing &ldquo;Appeal&rdquo;. We will respond in writing within 60 days with our decision
-          and reasons. If the appeal is denied you may complain to the Texas Attorney General.
+          <strong>Appeal.</strong> If we refuse a request, you may appeal it in the Privacy Center
+          by choosing &ldquo;Appeal&rdquo;. We will respond in writing within 60 days with our
+          decision and reasons. If the appeal is denied you may complain to the Texas Attorney
+          General.
         </p>
         <p className="legal-callout">
-          Pilot limitation: privacy requests are queued for review by a person. There is no automated
-          fulfillment pipeline and no admin request queue yet — building one is a launch blocker, and
-          we will not pretend a request completed itself.
+          Pilot limitation: privacy requests are queued for review by a person. There is no
+          automated fulfillment pipeline and no admin request queue yet — building one is a launch
+          blocker, and we will not pretend a request completed itself.
         </p>
       </>
     ),
@@ -385,8 +384,8 @@ function PrivacyPage() {
         <p className="text-sm">
           The short version: assistance requests are private and stay private, sponsors and the
           public only ever see aggregates, we never touch your card number, we do not sell data or
-          run targeted advertising, and you can access, correct, delete, port, opt out or appeal from
-          the Privacy Center.
+          run targeted advertising, and you can access, correct, delete, port, opt out or appeal
+          from the Privacy Center.
         </p>
       }
       sections={SECTIONS}

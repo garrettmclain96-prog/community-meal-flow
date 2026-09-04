@@ -16,8 +16,8 @@ const SECTIONS: LegalSection[] = [
     heading: "Who this covers",
     body: (
       <p>
-        This agreement applies to you personally and to the business you represent when you register a
-        kitchen or claim an existing directory listing on ProvisionLoop. It sits on top of the{" "}
+        This agreement applies to you personally and to the business you represent when you register
+        a kitchen or claim an existing directory listing on ProvisionLoop. It sits on top of the{" "}
         <Link to="/legal/terms">Terms of Service</Link> and{" "}
         <Link to="/legal/privacy">Privacy Policy</Link>.
       </p>
@@ -28,10 +28,10 @@ const SECTIONS: LegalSection[] = [
     heading: "Independent business — no agency, no partnership",
     body: (
       <p className="legal-callout">
-        You operate an independent business. Nothing here creates an employment relationship, agency,
-        joint venture, franchise or partnership between you and ProvisionLoop. Neither side may bind
-        the other or hold itself out as authorized to act for the other. You control your own staff,
-        premises, hours, methods and menu.
+        You operate an independent business. Nothing here creates an employment relationship,
+        agency, joint venture, franchise or partnership between you and ProvisionLoop. Neither side
+        may bind the other or hold itself out as authorized to act for the other. You control your
+        own staff, premises, hours, methods and menu.
       </p>
     ),
   },
@@ -45,9 +45,9 @@ const SECTIONS: LegalSection[] = [
           authorized by it to control its listing, pricing, capacity and payouts.
         </p>
         <p>
-          Claiming a listing you have no authority over is a serious breach: we will remove the claim,
-          may suspend the account, and may notify the organization. Unclaimed listings receive no
-          money and cannot be selected for funding.
+          Claiming a listing you have no authority over is a serious breach: we will remove the
+          claim, may suspend the account, and may notify the organization. Unclaimed listings
+          receive no money and cannot be selected for funding.
         </p>
       </>
     ),
@@ -68,8 +68,8 @@ const SECTIONS: LegalSection[] = [
             temperature control, hygiene, storage and transport handling.
           </li>
           <li>
-            Truthful allergen practice: describing major allergens in the meals you post, and telling
-            recipients where cross-contact cannot be excluded.
+            Truthful allergen practice: describing major allergens in the meals you post, and
+            telling recipients where cross-contact cannot be excluded.
           </li>
           <li>Meeting any dietary or religious claim you choose to make about a meal.</li>
         </ul>
@@ -90,12 +90,15 @@ const SECTIONS: LegalSection[] = [
           meal. ProvisionLoop does not set or mark up your price.
         </li>
         <li>
-          You set your own daily capacity. Posted capacity must be capacity you can actually deliver.
+          You set your own daily capacity. Posted capacity must be capacity you can actually
+          deliver.
         </li>
         <li>
           Menu templates, descriptions and photographs must be accurate and must be yours to use.
         </li>
-        <li>Keep all of it current, and take a listing inactive rather than leaving it misleading.</li>
+        <li>
+          Keep all of it current, and take a listing inactive rather than leaving it misleading.
+        </li>
       </ul>
     ),
   },
@@ -106,16 +109,16 @@ const SECTIONS: LegalSection[] = [
       <>
         <ul>
           <li>
-            You decide whether to accept an order. Once you accept, you commit to producing the meals
-            as described and on the agreed timing.
+            You decide whether to accept an order. Once you accept, you commit to producing the
+            meals as described and on the agreed timing.
           </li>
           <li>
             You advance the order honestly through its stages, and mark it delivered only when the
             meals genuinely left your control for the recipient or a dispatched run.
           </li>
           <li>
-            Package food safely and appropriately for holding and transport, labelled where labelling
-            is required.
+            Package food safely and appropriately for holding and transport, labelled where
+            labelling is required.
           </li>
           <li>
             Tell us as soon as you know you cannot fulfill an accepted order, so the sponsor can be
@@ -123,8 +126,8 @@ const SECTIONS: LegalSection[] = [
           </li>
         </ul>
         <p className="legal-callout">
-          Falsely marking meals delivered is fraud against sponsors and against the public ledger. It
-          ends participation immediately and may be reported.
+          Falsely marking meals delivered is fraud against sponsors and against the public ledger.
+          It ends participation immediately and may be reported.
         </p>
       </>
     ),
@@ -134,8 +137,8 @@ const SECTIONS: LegalSection[] = [
     heading: "Records",
     body: (
       <p>
-        Keep reasonable records of meals produced and fulfilled under this agreement for at least two
-        years, and make them available to ProvisionLoop on reasonable request where a sponsor
+        Keep reasonable records of meals produced and fulfilled under this agreement for at least
+        two years, and make them available to ProvisionLoop on reasonable request where a sponsor
         dispute, a refund, a payout question or a suspected misstatement requires verification.
       </p>
     ),
@@ -170,12 +173,12 @@ const SECTIONS: LegalSection[] = [
           A payout is queued when an order is marked delivered, and sent to your connected account.
         </li>
         <li>
-          The payout equals the full amount charged for that order. ProvisionLoop currently deducts no
-          platform fee. See <Link to="/legal/fees-tax">Fees &amp; Tax Treatment</Link>.
+          The payout equals the full amount charged for that order. ProvisionLoop currently deducts
+          no platform fee. See <Link to="/legal/fees-tax">Fees &amp; Tax Treatment</Link>.
         </li>
         <li>
-          Payout timing depends on the processor and your bank. We may hold a payout while a dispute,
-          suspected fraud or a fulfillment question is open.
+          Payout timing depends on the processor and your bank. We may hold a payout while a
+          dispute, suspected fraud or a fulfillment question is open.
         </li>
       </ul>
     ),
@@ -187,9 +190,9 @@ const SECTIONS: LegalSection[] = [
       <p>
         If an accepted order is not fulfilled, in whole or in part, the sponsor is refunded or
         redirected for the unfulfilled portion under the{" "}
-        <Link to="/legal/refunds">Refund &amp; Cancellation Policy</Link>. Where a payout has already
-        been sent for meals that were not produced, you agree to return that amount or to have it set
-        off against future payouts.
+        <Link to="/legal/refunds">Refund &amp; Cancellation Policy</Link>. Where a payout has
+        already been sent for meals that were not produced, you agree to return that amount or to
+        have it set off against future payouts.
       </p>
     ),
   },
@@ -230,8 +233,8 @@ const SECTIONS: LegalSection[] = [
         </p>
         <p>
           ProvisionLoop will not state or imply that you endorse ProvisionLoop beyond your actual
-          participation, and will not describe you as a partner, sponsor or certified provider unless
-          you have agreed to that description.
+          participation, and will not describe you as a partner, sponsor or certified provider
+          unless you have agreed to that description.
         </p>
       </>
     ),
@@ -241,10 +244,11 @@ const SECTIONS: LegalSection[] = [
     heading: "Corrections and removal",
     body: (
       <p>
-        You can correct your listing directly in the <Link to="/kitchen">kitchen workspace</Link>, or
-        set it inactive to stop appearing. If you want an unclaimed directory listing corrected or
-        removed, use the claim flow to establish authority first. A monitored contact channel will be
-        published in the <Link to="/legal">Legal Center</Link> before the public pilot opens.
+        You can correct your listing directly in the <Link to="/kitchen">kitchen workspace</Link>,
+        or set it inactive to stop appearing. If you want an unclaimed directory listing corrected
+        or removed, use the claim flow to establish authority first. A monitored contact channel
+        will be published in the <Link to="/legal">Legal Center</Link> before the public pilot
+        opens.
       </p>
     ),
   },
@@ -267,10 +271,10 @@ const SECTIONS: LegalSection[] = [
       <p className="legal-callout">
         You will indemnify ProvisionLoop against third-party claims arising from your food, your
         premises, your staff, your permits or licences, your breach of this agreement, or your
-        unlawful, reckless or intentional conduct. This indemnity does{" "}
-        <strong>not</strong> extend to claims caused by ProvisionLoop&apos;s own negligence, gross
-        negligence, reckless or willful misconduct, and it is limited to the extent Texas law allows
-        indemnification of these matters.
+        unlawful, reckless or intentional conduct. This indemnity does <strong>not</strong> extend
+        to claims caused by ProvisionLoop&apos;s own negligence, gross negligence, reckless or
+        willful misconduct, and it is limited to the extent Texas law allows indemnification of
+        these matters.
       </p>
     ),
   },

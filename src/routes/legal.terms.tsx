@@ -17,10 +17,11 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          ProvisionLoop is a coordination platform for local food assistance. It lets households make
-          private assistance requests, lets community partner organizations route those requests,
-          lets local kitchen operators accept and fulfill paid meal orders, lets volunteers sign up
-          for prep shifts and delivery runs, and publishes aggregate results to a public ledger.
+          ProvisionLoop is a coordination platform for local food assistance. It lets households
+          make private assistance requests, lets community partner organizations route those
+          requests, lets local kitchen operators accept and fulfill paid meal orders, lets
+          volunteers sign up for prep shifts and delivery runs, and publishes aggregate results to a
+          public ledger.
         </p>
         <p>
           ProvisionLoop is not a food provider, not a kitchen, not a charity, not a delivery company
@@ -87,7 +88,10 @@ const SECTIONS: LegalSection[] = [
           </li>
           <li>
             <strong>Volunteer.</strong> Governed additionally by the{" "}
-            <Link to="/legal/volunteer-waiver">Volunteer Assumption of Risk, Release &amp; Waiver</Link>.
+            <Link to="/legal/volunteer-waiver">
+              Volunteer Assumption of Risk, Release &amp; Waiver
+            </Link>
+            .
           </li>
           <li>
             <strong>City / public sector.</strong> Sees aggregate figures only. No recipient
@@ -104,9 +108,9 @@ const SECTIONS: LegalSection[] = [
       <>
         <p className="legal-callout">
           ProvisionLoop is not an emergency, crisis, medical or safety service. Do not use it to
-          report an emergency. If someone is in danger or needs urgent medical help, call 911 or your
-          local emergency number. For food, housing and benefit navigation in Texas you can also dial
-          2-1-1.
+          report an emergency. If someone is in danger or needs urgent medical help, call 911 or
+          your local emergency number. For food, housing and benefit navigation in Texas you can
+          also dial 2-1-1.
         </p>
         <p>
           Requests are reviewed by people during ordinary working hours. There is no guaranteed
@@ -126,8 +130,8 @@ const SECTIONS: LegalSection[] = [
             other benefit. Partner organizations decide independently.
           </li>
           <li>
-            Kitchen capacity, volunteer availability and funding all fluctuate. Any capacity, cost or
-            timing shown in the app is what an operator entered and may change or be withdrawn.
+            Kitchen capacity, volunteer availability and funding all fluctuate. Any capacity, cost
+            or timing shown in the app is what an operator entered and may change or be withdrawn.
           </li>
           <li>
             The platform may be unavailable, interrupted or changed at any time. It is provided
@@ -144,9 +148,9 @@ const SECTIONS: LegalSection[] = [
       <>
         <p>
           Many food programs shown in ProvisionLoop are <strong>directory listings</strong> compiled
-          from public information so people can find help. A directory listing means the organization
-          has <em>not</em> partnered with, endorsed, joined or been vetted by ProvisionLoop, receives
-          no money through the platform, and cannot be selected for funding.
+          from public information so people can find help. A directory listing means the
+          organization has <em>not</em> partnered with, endorsed, joined or been vetted by
+          ProvisionLoop, receives no money through the platform, and cannot be selected for funding.
         </p>
         <p>
           Only a listing whose operator has claimed it <em>and</em> completed payout onboarding can
@@ -168,13 +172,17 @@ const SECTIONS: LegalSection[] = [
       <>
         <p>You agree not to:</p>
         <ul>
-          <li>Claim a listing you have no authority to control, or misrepresent an organization.</li>
+          <li>
+            Claim a listing you have no authority to control, or misrepresent an organization.
+          </li>
           <li>
             Use assistance, referral or recipient information for marketing, fundraising, political,
             religious-recruitment, resale or research purposes.
           </li>
           <li>Attempt to identify a recipient from aggregate or de-identified figures.</li>
-          <li>Post false capacity, false prices, false fulfillment records or false impact claims.</li>
+          <li>
+            Post false capacity, false prices, false fulfillment records or false impact claims.
+          </li>
           <li>
             Scrape, probe, overload, reverse engineer, or bypass access controls, rate limits or the
             funding safety gate.
@@ -214,9 +222,9 @@ const SECTIONS: LegalSection[] = [
         </p>
         <p>
           By submitting content you grant ProvisionLoop a non-exclusive, worldwide, royalty-free
-          licence to host, store, reproduce and display that content only to operate the platform and
-          the features you used it for. This licence ends when you delete the content, except for
-          copies kept in backups until they expire or where the law requires retention.
+          licence to host, store, reproduce and display that content only to operate the platform
+          and the features you used it for. This licence ends when you delete the content, except
+          for copies kept in backups until they expire or where the law requires retention.
         </p>
         <p>
           Do not submit content you have no right to submit. Notify us of an infringement claim
@@ -230,10 +238,10 @@ const SECTIONS: LegalSection[] = [
     heading: "Third parties",
     body: (
       <p>
-        Kitchens, partner organizations, volunteers and payment, hosting and infrastructure providers
-        are independent of ProvisionLoop. ProvisionLoop does not control the food they prepare, the
-        eligibility decisions they make, the vehicles they drive or the services they run, and does
-        not employ them or act as their agent.
+        Kitchens, partner organizations, volunteers and payment, hosting and infrastructure
+        providers are independent of ProvisionLoop. ProvisionLoop does not control the food they
+        prepare, the eligibility decisions they make, the vehicles they drive or the services they
+        run, and does not employ them or act as their agent.
       </p>
     ),
   },
@@ -247,10 +255,10 @@ const SECTIONS: LegalSection[] = [
           the <Link to="/privacy-center">Privacy Center</Link>.
         </p>
         <p>
-          We may suspend or end access — immediately where there is risk of harm, fraud, unauthorized
-          claiming or a legal requirement, and otherwise with notice where practicable. Sections that
-          by their nature survive (content licence for retained copies, disclaimers, limitation of
-          liability, governing law) survive termination.
+          We may suspend or end access — immediately where there is risk of harm, fraud,
+          unauthorized claiming or a legal requirement, and otherwise with notice where practicable.
+          Sections that by their nature survive (content licence for retained copies, disclaimers,
+          limitation of liability, governing law) survive termination.
         </p>
       </>
     ),
@@ -287,8 +295,8 @@ const SECTIONS: LegalSection[] = [
         <p>
           Where liability cannot be excluded, ProvisionLoop&apos;s total aggregate liability arising
           out of or relating to the platform is limited to the greater of (a) the amount you paid
-          through the platform in the twelve months before the event giving rise to the claim, or (b)
-          one hundred U.S. dollars (US$100).
+          through the platform in the twelve months before the event giving rise to the claim, or
+          (b) one hundred U.S. dollars (US$100).
         </p>
         <p className="legal-callout">
           Nothing in these Terms limits or excludes liability that cannot lawfully be limited or
@@ -366,8 +374,8 @@ function TermsPage() {
       docKey="terms"
       intro={
         <p className="text-sm">
-          These Terms govern your use of ProvisionLoop during its Texas pilot. Read section 4 (not an
-          emergency service), section 6 (directory listings may be unaffiliated) and section 13
+          These Terms govern your use of ProvisionLoop during its Texas pilot. Read section 4 (not
+          an emergency service), section 6 (directory listings may be unaffiliated) and section 13
           (limitation of liability) closely — they change what you can expect from the platform.
         </p>
       }

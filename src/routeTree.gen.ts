@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as TrustMethodRouteImport } from './routes/trust-method'
+import { Route as RefundRequestRouteImport } from './routes/refund-request'
+import { Route as PrivacyCenterRouteImport } from './routes/privacy-center'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as LegalRouteImport } from './routes/legal'
 import { Route as KitchenRouteImport } from './routes/kitchen'
@@ -47,6 +49,16 @@ const VolunteerRoute = VolunteerRouteImport.update({
 const TrustMethodRoute = TrustMethodRouteImport.update({
   id: '/trust-method',
   path: '/trust-method',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RefundRequestRoute = RefundRequestRouteImport.update({
+  id: '/refund-request',
+  path: '/refund-request',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyCenterRoute = PrivacyCenterRouteImport.update({
+  id: '/privacy-center',
+  path: '/privacy-center',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -196,6 +208,8 @@ export interface FileRoutesByFullPath {
   '/kitchen': typeof KitchenRoute
   '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/privacy-center': typeof PrivacyCenterRoute
+  '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
@@ -225,6 +239,8 @@ export interface FileRoutesByTo {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/privacy-center': typeof PrivacyCenterRoute
+  '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
@@ -257,6 +273,8 @@ export interface FileRoutesById {
   '/kitchen': typeof KitchenRoute
   '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
+  '/privacy-center': typeof PrivacyCenterRoute
+  '/refund-request': typeof RefundRequestRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
@@ -290,6 +308,8 @@ export interface FileRouteTypes {
     | '/kitchen'
     | '/legal'
     | '/partners'
+    | '/privacy-center'
+    | '/refund-request'
     | '/trust-method'
     | '/volunteer'
     | '/app/cook'
@@ -319,6 +339,8 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/privacy-center'
+    | '/refund-request'
     | '/trust-method'
     | '/volunteer'
     | '/app/cook'
@@ -350,6 +372,8 @@ export interface FileRouteTypes {
     | '/kitchen'
     | '/legal'
     | '/partners'
+    | '/privacy-center'
+    | '/refund-request'
     | '/trust-method'
     | '/volunteer'
     | '/app/cook'
@@ -382,6 +406,8 @@ export interface RootRouteChildren {
   KitchenRoute: typeof KitchenRoute
   LegalRoute: typeof LegalRouteWithChildren
   PartnersRoute: typeof PartnersRoute
+  PrivacyCenterRoute: typeof PrivacyCenterRoute
+  RefundRequestRoute: typeof RefundRequestRoute
   TrustMethodRoute: typeof TrustMethodRoute
   VolunteerRoute: typeof VolunteerRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
@@ -402,6 +428,20 @@ declare module '@tanstack/react-router' {
       path: '/trust-method'
       fullPath: '/trust-method'
       preLoaderRoute: typeof TrustMethodRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/refund-request': {
+      id: '/refund-request'
+      path: '/refund-request'
+      fullPath: '/refund-request'
+      preLoaderRoute: typeof RefundRequestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-center': {
+      id: '/privacy-center'
+      path: '/privacy-center'
+      fullPath: '/privacy-center'
+      preLoaderRoute: typeof PrivacyCenterRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -654,6 +694,8 @@ const rootRouteChildren: RootRouteChildren = {
   KitchenRoute: KitchenRoute,
   LegalRoute: LegalRouteWithChildren,
   PartnersRoute: PartnersRoute,
+  PrivacyCenterRoute: PrivacyCenterRoute,
+  RefundRequestRoute: RefundRequestRoute,
   TrustMethodRoute: TrustMethodRoute,
   VolunteerRoute: VolunteerRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,

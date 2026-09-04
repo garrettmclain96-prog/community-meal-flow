@@ -43,22 +43,23 @@ function LegalCenterPage() {
           The rules of the loop, written plainly.
         </h1>
         <p className="mt-4 max-w-[62ch] text-base text-muted-foreground">
-          Every agreement below is versioned. Version 1.0 is effective {LEGAL_EFFECTIVE_DATE} and was
-          last updated {LEGAL_LAST_UPDATED}. These are platform terms for the Texas pilot — they are
-          not legal or tax advice to you.
+          Every agreement below is versioned. Version 1.0 is effective {LEGAL_EFFECTIVE_DATE} and
+          was last updated {LEGAL_LAST_UPDATED}. These are platform terms for the Texas pilot — they
+          are not legal or tax advice to you.
         </p>
 
         <div className="editorial-card mt-8 p-5">
           <p className="kicker text-primary">Pilot status</p>
           <ul className="mt-3 grid gap-2 text-sm">
             <li>
-              <strong>Live payments are disabled.</strong> All checkout currently runs in the payment
-              processor&apos;s test environment. No real money moves through the platform yet.
+              <strong>Live payments are disabled.</strong> All checkout currently runs in the
+              payment processor&apos;s test environment. No real money moves through the platform
+              yet.
             </li>
             <li>
               <strong>Launch gate.</strong> The operating legal entity and a monitored legal contact
-              channel must be published in this Legal Center before any live-money launch. Neither is
-              published yet, and we will not invent one.
+              channel must be published in this Legal Center before any live-money launch. Neither
+              is published yet, and we will not invent one.
             </li>
             <li>
               <strong>Requests are reviewed by a person.</strong> Privacy and refund requests are

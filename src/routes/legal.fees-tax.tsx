@@ -24,8 +24,9 @@ const SECTIONS: LegalSection[] = [
         </p>
         <p>
           A platform fee is a configurable part of a future version of this document. If one is ever
-          introduced it will be disclosed in advance as a new version of this page, shown in checkout
-          before you pay, and will never be applied retroactively to a payment already made.
+          introduced it will be disclosed in advance as a new version of this page, shown in
+          checkout before you pay, and will never be applied retroactively to a payment already
+          made.
         </p>
       </>
     ),
@@ -69,8 +70,8 @@ const SECTIONS: LegalSection[] = [
         </p>
         <p>
           What the code does today, precisely: the payout recorded for a delivered order equals the{" "}
-          <strong>full amount charged for that order</strong>, and that full amount is transferred to
-          the kitchen&apos;s connected payout account.{" "}
+          <strong>full amount charged for that order</strong>, and that full amount is transferred
+          to the kitchen&apos;s connected payout account.{" "}
           <strong>Processing costs are not deducted from the kitchen&apos;s payout</strong> — they
           are absorbed by the ProvisionLoop account. If that ever changes, it changes here first, as
           a new version.
@@ -87,7 +88,9 @@ const SECTIONS: LegalSection[] = [
           A payout is queued only when an order is marked <strong>delivered</strong>, and only for a
           kitchen whose operator has claimed the listing and completed payout onboarding.
         </li>
-        <li>Payouts are sent to the operator&apos;s connected account with the payment processor.</li>
+        <li>
+          Payouts are sent to the operator&apos;s connected account with the payment processor.
+        </li>
         <li>
           Operators are independent businesses responsible for their own taxes and their own tax
           reporting. See the{" "}
@@ -102,20 +105,20 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p className="legal-callout">
-          ProvisionLoop makes <strong>no claim</strong> that any payment made through the platform is
-          a charitable contribution or is tax-deductible. ProvisionLoop does not represent itself as a
-          nonprofit, a tax-exempt organization, a fiscal sponsor or a tax adviser.
+          ProvisionLoop makes <strong>no claim</strong> that any payment made through the platform
+          is a charitable contribution or is tax-deductible. ProvisionLoop does not represent itself
+          as a nonprofit, a tax-exempt organization, a fiscal sponsor or a tax adviser.
         </p>
         <p>
           Under IRS Publication 526, a charitable contribution deduction is generally available only
-          for a gift to a qualified organization, under an applicable arrangement, and reduced by the
-          value of anything you receive in return. A payment to a for-profit local kitchen for meal
-          production, coordinated through a platform, does not by itself meet that standard.
+          for a gift to a qualified organization, under an applicable arrangement, and reduced by
+          the value of anything you receive in return. A payment to a for-profit local kitchen for
+          meal production, coordinated through a platform, does not by itself meet that standard.
         </p>
         <p>
-          Receipts and confirmations issued through the platform are <strong>payment records</strong>
-          . They are not charitable contribution acknowledgments and they contain no statement of
-          deductibility, because none is warranted.
+          Receipts and confirmations issued through the platform are{" "}
+          <strong>payment records</strong>. They are not charitable contribution acknowledgments and
+          they contain no statement of deductibility, because none is warranted.
         </p>
         <p>
           Your own situation may differ — for example if a qualified organization is directly
@@ -132,8 +135,7 @@ const SECTIONS: LegalSection[] = [
       <p>
         The payment processor issues the payment receipt. Your funding history and its identifiers
         stay visible in your account. Use one of those identifiers — never a card number — when you
-        contact us through the{" "}
-        <Link to="/refund-request">refund and cancellation form</Link>.
+        contact us through the <Link to="/refund-request">refund and cancellation form</Link>.
       </p>
     ),
   },
@@ -156,9 +158,9 @@ function FeesTaxPage() {
       docKey="fees_tax"
       intro={
         <p className="text-sm">
-          Current pilot platform fee: <strong>$0</strong>. You pay the operator&apos;s posted cost per
-          meal times the number of meals, calculated on the server. Payments are not represented as
-          charitable contributions and are not represented as tax-deductible.
+          Current pilot platform fee: <strong>$0</strong>. You pay the operator&apos;s posted cost
+          per meal times the number of meals, calculated on the server. Payments are not represented
+          as charitable contributions and are not represented as tax-deductible.
         </p>
       }
       sections={SECTIONS}

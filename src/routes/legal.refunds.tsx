@@ -17,10 +17,10 @@ const SECTIONS: LegalSection[] = [
     body: (
       <>
         <p>
-          When you fund meals you are paying a specific kitchen to produce a specific number of meals
-          at that operator&apos;s own posted cost per meal. When you take a recurring sponsorship you
-          are paying a fixed monthly amount that funds kitchens with the largest unmet demand at each
-          renewal.
+          When you fund meals you are paying a specific kitchen to produce a specific number of
+          meals at that operator&apos;s own posted cost per meal. When you take a recurring
+          sponsorship you are paying a fixed monthly amount that funds kitchens with the largest
+          unmet demand at each renewal.
         </p>
         <p>
           Payments are not charitable contributions. See{" "}
@@ -67,8 +67,8 @@ const SECTIONS: LegalSection[] = [
           further charges after it.
         </li>
         <li>
-          A billing period that has already completed is generally not prorated, because the meals it
-          funded have already been commissioned. Exceptions are made where the law requires it or
+          A billing period that has already completed is generally not prorated, because the meals
+          it funded have already been commissioned. Exceptions are made where the law requires it or
           where a billing error occurred.
         </li>
         <li>
@@ -104,9 +104,9 @@ const SECTIONS: LegalSection[] = [
     heading: "Timing",
     body: (
       <p>
-        Once a refund is issued, how quickly it appears is controlled by Stripe and your bank or card
-        issuer, not by ProvisionLoop. Card refunds commonly take five to ten business days to post
-        after they are issued.
+        Once a refund is issued, how quickly it appears is controlled by Stripe and your bank or
+        card issuer, not by ProvisionLoop. Card refunds commonly take five to ten business days to
+        post after they are issued.
       </p>
     ),
   },
@@ -136,14 +136,16 @@ const SECTIONS: LegalSection[] = [
             Choose the request type, paste the payment or subscription identifier from your account,
             and describe what happened.
           </li>
-          <li>Submit. Your request is stored privately and only you and our reviewers can see it.</li>
+          <li>
+            Submit. Your request is stored privately and only you and our reviewers can see it.
+          </li>
         </ol>
         <p className="legal-callout">
           <strong>Pilot limitation, stated honestly:</strong> submitting the form does not
           automatically issue a refund. There is no automated refund pipeline and no operational
-          admin queue in the product yet — requests are marked{" "}
-          <em>queued for manual review</em> and a person acts on them. Building that admin queue is a
-          launch blocker before live money is accepted.
+          admin queue in the product yet — requests are marked <em>queued for manual review</em> and
+          a person acts on them. Building that admin queue is a launch blocker before live money is
+          accepted.
         </p>
       </>
     ),

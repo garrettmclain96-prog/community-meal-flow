@@ -35,8 +35,8 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p className="legal-callout">
         You may use assistance and referral data <strong>only</strong> to evaluate, route, schedule,
-        fulfill and verify the assistance for the specific request it belongs to. Any other use — new
-        programs, research, evaluation studies, fundraising, marketing, membership drives,
+        fulfill and verify the assistance for the specific request it belongs to. Any other use —
+        new programs, research, evaluation studies, fundraising, marketing, membership drives,
         recruitment, political or religious outreach, resale or transfer — is prohibited without a
         separate, valid, informed permission from the person the data is about.
       </p>
@@ -50,8 +50,8 @@ const SECTIONS: LegalSection[] = [
         <p>
           Request details, contact information and free-text notes are confidential. Notes commonly
           contain sensitive information — health, disability, immigration, family or religious
-          circumstances — because people describe their situation in their own words. Treat all of it
-          as sensitive.
+          circumstances — because people describe their situation in their own words. Treat all of
+          it as sensitive.
         </p>
         <p>
           Do not repost, screenshot, forward outside authorized personnel, publish or discuss
@@ -114,9 +114,9 @@ const SECTIONS: LegalSection[] = [
         If you learn of a suspected or actual unauthorized access, disclosure, loss or misuse of
         assistance or referral data, notify ProvisionLoop{" "}
         <strong>without undue delay and, where practicable, within 24 hours</strong> of becoming
-        aware. Include what happened, what data and how many people are affected, what you have done,
-        and what you plan to do. Cooperate fully with investigation, containment and any legally
-        required notification.
+        aware. Include what happened, what data and how many people are affected, what you have
+        done, and what you plan to do. Cooperate fully with investigation, containment and any
+        legally required notification.
       </p>
     ),
   },
@@ -126,10 +126,10 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p>
         If a person asks you to access, correct, delete or port their data, or appeals a decision,
-        handle it under your own obligations and tell ProvisionLoop promptly where ProvisionLoop holds
-        the data. Each party will give the other the information and assistance reasonably needed to
-        respond within the legal deadline. Requests reaching ProvisionLoop come through the{" "}
-        <Link to="/privacy-center">Privacy Center</Link>.
+        handle it under your own obligations and tell ProvisionLoop promptly where ProvisionLoop
+        holds the data. Each party will give the other the information and assistance reasonably
+        needed to respond within the legal deadline. Requests reaching ProvisionLoop come through
+        the <Link to="/privacy-center">Privacy Center</Link>.
       </p>
     ),
   },
@@ -153,8 +153,9 @@ const SECTIONS: LegalSection[] = [
       <p>
         You may use your own service providers (case management, email, storage) only where they are
         bound by written confidentiality and security obligations at least as protective as this
-        agreement, and only where their processing is necessary for the assistance. ProvisionLoop&apos;s
-        own processors are listed in the <Link to="/legal/privacy">Privacy Policy</Link>.
+        agreement, and only where their processing is necessary for the assistance.
+        ProvisionLoop&apos;s own processors are listed in the{" "}
+        <Link to="/legal/privacy">Privacy Policy</Link>.
       </p>
     ),
   },
@@ -164,8 +165,8 @@ const SECTIONS: LegalSection[] = [
     body: (
       <p>
         Both parties may publish aggregate or de-identified figures — meals, neighborhoods, time
-        windows, coverage. Neither party may attempt to re-identify an individual from those figures,
-        or publish an aggregate so small that it identifies someone in practice.
+        windows, coverage. Neither party may attempt to re-identify an individual from those
+        figures, or publish an aggregate so small that it identifies someone in practice.
       </p>
     ),
   },
@@ -185,8 +186,8 @@ const SECTIONS: LegalSection[] = [
     heading: "Audit and cooperation",
     body: (
       <p>
-        On reasonable written notice and no more than once a year absent an incident, each party will
-        answer reasonable written questions about its handling of assistance data under this
+        On reasonable written notice and no more than once a year absent an incident, each party
+        will answer reasonable written questions about its handling of assistance data under this
         agreement. This is a cooperation obligation, not a right to inspect unrelated systems or
         client files.
       </p>
@@ -210,9 +211,9 @@ const SECTIONS: LegalSection[] = [
     heading: "Termination and governing law",
     body: (
       <p>
-        Either party may end this agreement at any time; ProvisionLoop may suspend access immediately
-        where request data is at risk. Confidentiality, minimum-necessary use, incident notice,
-        retention and deletion survive termination. Texas law governs, consistent with the{" "}
+        Either party may end this agreement at any time; ProvisionLoop may suspend access
+        immediately where request data is at risk. Confidentiality, minimum-necessary use, incident
+        notice, retention and deletion survive termination. Texas law governs, consistent with the{" "}
         <Link to="/legal/terms">Terms of Service</Link>.
       </p>
     ),
@@ -225,9 +226,9 @@ function PartnerDataPage() {
       docKey="partner_data"
       intro={
         <p className="text-sm">
-          Identifiable assistance requests are the most sensitive data on the platform. Use them only
-          for the request they belong to, keep them inside named authorized accounts, never let a
-          sponsor near them, and tell us within 24 hours if something goes wrong.
+          Identifiable assistance requests are the most sensitive data on the platform. Use them
+          only for the request they belong to, keep them inside named authorized accounts, never let
+          a sponsor near them, and tell us within 24 hours if something goes wrong.
         </p>
       }
       sections={SECTIONS}

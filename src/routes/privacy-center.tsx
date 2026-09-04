@@ -33,7 +33,11 @@ export const Route = createFileRoute("/privacy-center")({
 
 const TYPES: Array<{ id: PrivacyRequestType; label: string; blurb: string }> = [
   { id: "access", label: "Access", blurb: "Get a copy of the personal data we hold about you." },
-  { id: "correction", label: "Correction", blurb: "Fix personal data that is wrong or out of date." },
+  {
+    id: "correction",
+    label: "Correction",
+    blurb: "Fix personal data that is wrong or out of date.",
+  },
   { id: "deletion", label: "Deletion", blurb: "Delete personal data we are not required to keep." },
   { id: "portability", label: "Portability", blurb: "Receive your data in a portable format." },
   {
@@ -72,7 +76,12 @@ function PrivacyCenterPage() {
     if (!user) return;
     setBusy(true);
     try {
-      await submitPrivacyRequest({ userId: user.id, requestType, details, contactPreference: contact });
+      await submitPrivacyRequest({
+        userId: user.id,
+        requestType,
+        details,
+        contactPreference: contact,
+      });
       toast.success("Request submitted — queued for manual review.");
       setDetails("");
       await refresh();
@@ -90,16 +99,16 @@ function PrivacyCenterPage() {
         <p className="kicker text-primary">Your data</p>
         <h1 className="mt-2 font-display text-4xl font-black tracking-tight">Privacy Center</h1>
         <p className="mt-3 max-w-2xl text-sm text-muted-foreground">
-          Submit a request about the personal data ProvisionLoop holds about you. What we collect and
-          why is set out in the <Link to="/legal/privacy">Privacy Policy</Link>.
+          Submit a request about the personal data ProvisionLoop holds about you. What we collect
+          and why is set out in the <Link to="/legal/privacy">Privacy Policy</Link>.
         </p>
 
         <div className="editorial-card mt-6 max-w-2xl p-4 text-sm">
           <strong>Pilot limitation, stated honestly.</strong> Requests are stored privately and{" "}
-          <em>queued for manual review</em> by a person. There is no automated fulfilment pipeline and
-          no operational admin queue in the product yet — building it is a launch blocker before the
-          public pilot opens. Under Texas law we respond within 45 days, extendable once by 60 days,
-          and you may appeal a refusal.
+          <em>queued for manual review</em> by a person. There is no automated fulfilment pipeline
+          and no operational admin queue in the product yet — building it is a launch blocker before
+          the public pilot opens. Under Texas law we respond within 45 days, extendable once by 60
+          days, and you may appeal a refusal.
         </div>
 
         {loading ? (

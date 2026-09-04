@@ -32,14 +32,22 @@ export const Route = createFileRoute("/refund-request")({
 });
 
 const TYPES: Array<{ id: RefundRequestType; label: string; blurb: string }> = [
-  { id: "refund", label: "Refund a one-time funding", blurb: "Meals you funded that were not produced." },
+  {
+    id: "refund",
+    label: "Refund a one-time funding",
+    blurb: "Meals you funded that were not produced.",
+  },
   {
     id: "cancel_subscription",
     label: "Cancel a sponsorship",
     blurb: "Stop future renewals of a recurring sponsorship.",
   },
   { id: "duplicate", label: "Duplicate charge", blurb: "You were charged more than once." },
-  { id: "unauthorized", label: "Unauthorized charge", blurb: "You did not authorize this payment." },
+  {
+    id: "unauthorized",
+    label: "Unauthorized charge",
+    blurb: "You did not authorize this payment.",
+  },
   { id: "error", label: "Amount entered in error", blurb: "Wrong meal count or wrong kitchen." },
 ];
 
@@ -100,7 +108,8 @@ function RefundRequestPage() {
 
         <div className="editorial-card mt-6 max-w-2xl p-4 text-sm">
           <strong>Never send card details.</strong> Do not enter a card number, CVC, expiry or bank
-          account number here. Use only the payment or subscription identifier shown in your account.
+          account number here. Use only the payment or subscription identifier shown in your
+          account.
           <br />
           <br />
           Requests are <em>queued for manual review</em> — submitting this form does not
@@ -189,7 +198,9 @@ function RefundRequestPage() {
                 <ul className="mt-2 divide-y divide-border rounded-lg border border-border bg-surface">
                   {rows.map((row) => (
                     <li key={row.id} className="p-3 text-sm">
-                      <p className="font-medium capitalize">{row.request_type.replace(/_/g, " ")}</p>
+                      <p className="font-medium capitalize">
+                        {row.request_type.replace(/_/g, " ")}
+                      </p>
                       <p className="text-xs text-muted-foreground">
                         {new Date(row.created_at).toLocaleString()} ·{" "}
                         {row.status.replace(/_/g, " ")}
