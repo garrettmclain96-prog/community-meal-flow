@@ -792,6 +792,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
                   e.preventDefault();
                   setBusy(true);
                   try {
+                    await legal.assertAccepted();
                     await claimKitchen(k.id, role, note);
                     toast.success(`${k.name} is yours — check your capacity and pricing`);
                     onClaimed();
