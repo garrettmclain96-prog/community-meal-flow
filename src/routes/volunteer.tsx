@@ -452,6 +452,14 @@ function VolunteerProfileForm({
   const [canDrive, setCanDrive] = useState(profile?.can_drive ?? false);
   const [agreed, setAgreed] = useState(Boolean(profile?.agreement_accepted_at));
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: VOLUNTEER_DOCS,
+    requireSignature: true,
+    context: "volunteer_registration",
+    intro:
+      "Volunteering carries physical risk, so the release is signed. Acceptance is saved before your profile is created.",
+  });
+
 
   const toggle = (list: string[], set: (v: string[]) => void, value: string) =>
     set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
