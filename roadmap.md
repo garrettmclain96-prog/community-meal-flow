@@ -85,4 +85,5 @@
 - `/trust-method` public transparency page; linked from footer and next to funding decisions.
 
 ## Open
-- Point the directory correction/removal mailto on /trust-method at a real monitored inbox.
+- [ ] Publish a monitored contact channel for listing corrections/removals before the public pilot
+      opens (trust page currently directs operators to the claim flow).
