@@ -288,11 +288,24 @@ function ImpactPage() {
                   </p>
                 </div>
 
+                {user && (
+                  <div className="rounded-xl border border-border bg-surface p-4 text-xs leading-5 text-muted-foreground">
+                    <p className="font-semibold text-foreground">Before you pay</p>
+                    <p className="mt-1">
+                      Platform fee: <strong className="text-foreground">$0.00</strong>. Payment
+                      processing is handled by Stripe in test mode — no live money moves. This
+                      payment is <strong className="text-foreground">not tax-deductible</strong>;
+                      ProvisionLoop is not a charity and issues no donation receipt.
+                    </p>
+                    {paymentLegal.gate && <div className="mt-4">{paymentLegal.gate}</div>}
+                  </div>
+                )}
+
                 {user ? (
                   <button
                     type="button"
-                    onClick={fund}
-                    disabled={!kitchenId || busy}
+                    onClick={() => void fund()}
+                    disabled={!kitchenId || busy || !paymentLegal.satisfied}
                     className="button-primary w-full py-4 disabled:opacity-60"
                   >
                     {isOpen ? "Checkout open below" : `Fund ${meals} meals — ${money(amount)}`}
