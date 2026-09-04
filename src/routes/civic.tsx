@@ -234,7 +234,11 @@ function CivicPage() {
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="font-semibold">{k.name}</p>
                           <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
-                            {k.claimed ? k.kind : "unclaimed listing"}
+                            {k.claimed && k.payout_status === "ready"
+                              ? "Funding enabled"
+                              : k.claimed
+                                ? "Operator verified"
+                                : "Directory listing — not affiliated"}
                           </span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
@@ -262,10 +266,10 @@ function CivicPage() {
               Method: funded and delivered counts come from the public impact ledger, attributed to
               the kitchen's neighborhood. Weekly capacity is the sum of each approved kitchen's
               daily capacity across seven days. Sponsor dollars are estimated at each area's highest
-              posted cost per meal. Unclaimed listings are real local programs added by
-              ProvisionLoop and not yet verified by their operator; they can receive funding but
-              cannot receive a payout until the operator claims the listing and completes payout
-              onboarding.
+              posted cost per meal. Directory listings are real local programs mapped by
+              ProvisionLoop from public information; they are not affiliated with ProvisionLoop and
+              cannot receive funding. A provider becomes fundable only after its operator claims the
+              listing and completes payout onboarding.
             </p>
           </>
         )}
