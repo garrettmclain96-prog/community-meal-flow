@@ -94,9 +94,9 @@ function HomePage() {
                 <span className="text-primary">LOCAL POWER.</span>
               </h1>
               <p className="mt-7 max-w-xl text-lg font-medium leading-8 text-muted-foreground md:text-xl">
-Accountable local food infrastructure: private requests route through verified partners,
-                paid local kitchen capacity, and volunteer dispatch — then close on a public ledger.
-                Not a donation marketplace. A coordination loop that finishes.
+                Accountable local food infrastructure: private requests route through verified
+                partners, paid local kitchen capacity, and volunteer dispatch — then close on a
+                public ledger. Not a donation marketplace. A coordination loop that finishes.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Link to="/impact" className="button-primary px-6 py-4">
@@ -254,7 +254,7 @@ Accountable local food infrastructure: private requests route through verified p
             )}
             {!kitchens.isLoading && (kitchens.data?.length ?? 0) === 0 && (
               <p className="text-sm text-muted-foreground">
-Mapped providers will appear here as the directory grows.
+                Mapped providers will appear here as the directory grows.
               </p>
             )}
           </div>

@@ -118,7 +118,10 @@ function TrustMethodPage() {
           <div className="mt-10 grid border-2 border-foreground sm:grid-cols-2 lg:grid-cols-4">
             <Fact label="Providers mapped" value={t ? String(t.providersMapped) : "—"} />
             <Fact label="Operator verified" value={t ? String(t.verifiedOperators) : "—"} />
-            <Fact label="Funding-enabled kitchens" value={t ? String(t.fundingEnabledKitchens) : "—"} />
+            <Fact
+              label="Funding-enabled kitchens"
+              value={t ? String(t.fundingEnabledKitchens) : "—"}
+            />
             <Fact label="Meals delivered (ledger)" value={t ? String(t.mealsDelivered) : "—"} />
           </div>
         </section>
@@ -213,7 +216,9 @@ function TrustMethodPage() {
           <div className="grid gap-10 lg:grid-cols-2">
             <div>
               <p className="kicker text-primary">Payments &amp; environment status</p>
-              <h2 className="mt-4 font-display text-3xl font-black">Where the money is right now.</h2>
+              <h2 className="mt-4 font-display text-3xl font-black">
+                Where the money is right now.
+              </h2>
               <ul className="mt-5 space-y-3 text-sm leading-6 text-muted-foreground">
                 <li>
                   Payments run through Stripe. Card details never touch ProvisionLoop servers, and

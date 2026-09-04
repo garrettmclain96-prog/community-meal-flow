@@ -90,7 +90,6 @@ export interface TemplateRow {
   active: boolean;
 }
 
-
 export async function listTemplates(kitchenId?: string): Promise<TemplateRow[]> {
   let q = supabase.from("meal_templates").select("*").eq("active", true);
   if (kitchenId) q = q.eq("kitchen_id", kitchenId);
@@ -119,7 +118,10 @@ export interface ImpactTotals {
 }
 
 export async function loadImpactTotals(): Promise<ImpactTotals> {
-  const approved = supabase.from("kitchens").select("id", { count: "exact", head: true }).eq("approved", true);
+  const approved = supabase
+    .from("kitchens")
+    .select("id", { count: "exact", head: true })
+    .eq("approved", true);
   const [events, mapped, verified, fundable] = await Promise.all([
     supabase
       .from("impact_events")
@@ -167,7 +169,6 @@ export async function loadImpactTotals(): Promise<ImpactTotals> {
     recent: rows.slice(0, 12),
   };
 }
-
 
 // Funding now happens exclusively through paid checkout
 // (see src/lib/payments.functions.ts). The old unpaid RPC path is revoked.

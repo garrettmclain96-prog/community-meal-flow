@@ -88,7 +88,7 @@ export function SiteFooter() {
             <span className="text-primary">LOOP</span>
           </div>
           <p className="mt-4 max-w-sm text-sm leading-6 text-background/70">
-Accountable local food infrastructure: private requests, verified partners, paid local
+            Accountable local food infrastructure: private requests, verified partners, paid local
             kitchen capacity and a public aggregate ledger—starting in Galveston County.
           </p>
         </div>
