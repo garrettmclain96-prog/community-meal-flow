@@ -22,13 +22,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Fund real meals through Galveston County kitchens, find nearby food support, volunteer, and follow every completed delivery on a public ledger.",
+          "Accountable local food infrastructure in Galveston County: fund verified kitchens, find nearby food support, volunteer for dispatch and follow every delivery on a public ledger.",
       },
       { property: "og:title", content: "ProvisionLoop — Local meals. Public proof." },
       {
         property: "og:description",
         content:
-          "Community-funded meals that support local kitchens and reach people through trusted local programs.",
+          "Closed-loop community food coordination: verified kitchens, volunteer dispatch and a public aggregate ledger.",
       },
       { property: "og:image", content: heroTable },
       { property: "og:type", content: "website" },
@@ -43,7 +43,7 @@ const PATHS = [
     number: "01",
     icon: HandHeart,
     title: "Fund local meals",
-    body: "Choose a participating kitchen or send funding where current capacity needs it most.",
+    body: "Send funding to a kitchen whose operator has verified the listing and enabled payouts.",
     action: "Fund a meal",
   },
   {
