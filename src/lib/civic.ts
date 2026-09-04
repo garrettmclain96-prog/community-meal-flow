@@ -53,6 +53,7 @@ export interface CivicSnapshot {
     daily_capacity_meals: number;
     cost_per_meal: number;
     claimed: boolean;
+    payout_status: string;
     website: string | null;
     summary: string | null;
   }>;
@@ -72,7 +73,7 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
     supabase
       .from("kitchens")
       .select(
-        "id, name, kind, city, neighborhood, address, latitude, longitude, daily_capacity_meals, cost_per_meal, claimed, website, summary",
+        "id, name, kind, city, neighborhood, address, latitude, longitude, daily_capacity_meals, cost_per_meal, claimed, payout_status, website, summary",
       )
       .eq("approved", true)
       .eq("active", true)

@@ -10,7 +10,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { createSponsorPortalSession } from "@/lib/payments.functions";
-import { listKitchens, listTemplates, loadImpactTotals } from "@/lib/community";
+import { ProviderStateBadge, TrustLink } from "@/components/ProviderStateBadge";
+import { listFundableKitchens, listTemplates, loadImpactTotals } from "@/lib/community";
 
 const SPONSORSHIP_TIERS = [
   {
@@ -71,7 +72,7 @@ function ImpactPage() {
   const { openCheckout, closeCheckout, isOpen, checkoutElement } = useStripeCheckout();
 
   const totals = useQuery({ queryKey: ["impact-totals"], queryFn: loadImpactTotals });
-  const kitchens = useQuery({ queryKey: ["kitchens"], queryFn: listKitchens });
+  const kitchens = useQuery({ queryKey: ["fundable-kitchens"], queryFn: listFundableKitchens });
   const templates = useQuery({
     queryKey: ["templates", kitchenId],
     queryFn: () => listTemplates(kitchenId),
@@ -133,6 +134,7 @@ function ImpactPage() {
           TURN LOCAL DOLLARS INTO DINNER.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
+          Funding reaches only kitchens whose operator claimed the listing and enabled payouts.
           Every figure below is read live from the impact ledger. Sponsors see outcomes and
           aggregate neighborhood impact; they never see who received a meal.
         </p>
@@ -140,7 +142,7 @@ function ImpactPage() {
         <div className="mt-10 grid border-2 border-foreground sm:grid-cols-2 lg:grid-cols-4">
           <Stat label="Meals funded" value={totals.data?.mealsFunded ?? 0} />
           <Stat label="Meals delivered" value={totals.data?.mealsDelivered ?? 0} />
-          <Stat label="Kitchens live" value={totals.data?.kitchens ?? 0} />
+          <Stat label="Funding-enabled kitchens" value={totals.data?.fundingEnabledKitchens ?? 0} />
           <Stat label="Neighborhoods reached" value={totals.data?.neighborhoods.length ?? 0} />
         </div>
 
@@ -153,13 +155,24 @@ function ImpactPage() {
               <p className="mt-4 text-sm text-muted-foreground">Loading kitchens…</p>
             )}
             {kitchens.data?.length === 0 && (
-              <p className="mt-4 text-sm text-muted-foreground">
-                No kitchens have joined yet. A restaurant or community kitchen can register in{" "}
-                <Link to="/kitchen" className="underline underline-offset-4">
-                  ProvisionLoop Kitchen
-                </Link>
-                , and it becomes fundable here immediately.
-              </p>
+              <div className="mt-4 space-y-3 text-sm text-muted-foreground">
+                <p>
+                  No kitchen is accepting funding yet. Only providers whose operator has claimed the
+                  listing and finished payout onboarding can be funded — the directory listings on{" "}
+                  <Link to="/help" className="underline underline-offset-4">
+                    Find food
+                  </Link>{" "}
+                  are mapped local programs, not ProvisionLoop partners.
+                </p>
+                <p>
+                  If you run a kitchen, claim or register it in{" "}
+                  <Link to="/kitchen" className="underline underline-offset-4">
+                    the kitchen network
+                  </Link>
+                  ; funding opens once payouts are live.
+                </p>
+                <TrustLink />
+              </div>
             )}
 
             {(kitchens.data?.length ?? 0) > 0 && (
@@ -238,9 +251,12 @@ function ImpactPage() {
                   <p className="kicker text-muted-foreground">
                     {kitchen ? "Total" : "Choose a kitchen for pricing"}
                   </p>
-                  <p className="font-display text-4xl font-black">
-                    {kitchen ? money(amount) : "—"}
-                  </p>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="font-display text-4xl font-black">
+                      {kitchen ? money(amount) : "—"}
+                    </p>
+                    {kitchen && <ProviderStateBadge state={kitchen.providerState} />}
+                  </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {kitchen
                       ? `${meals} meals at $${perMeal.toFixed(2)} — the kitchen's own posted cost, not a platform markup.`
@@ -268,8 +284,10 @@ function ImpactPage() {
                 )}
                 <p className="text-xs text-muted-foreground">
                   Meals only enter the public ledger once the payment clears. The kitchen is paid
-                  out from that payment after the meals are delivered.
+                  out from that payment after the meals are delivered. Unclaimed directory listings
+                  can never be funded.
                 </p>
+                <TrustLink />
 
                 {isOpen && (
                   <p className="text-xs text-ember-text">
@@ -336,6 +354,10 @@ function ImpactPage() {
               <h2 className="mt-2 font-display text-3xl font-bold tracking-tight">
                 Commit monthly, and kitchens can staff against it.
               </h2>
+              <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+                Recurring sponsorships route only to funding-enabled kitchens. While none are live,
+                checkout is paused rather than collecting money we cannot route. <TrustLink />
+              </p>
             </div>
             {sponsorship.data && (
               <button

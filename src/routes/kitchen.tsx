@@ -734,9 +734,10 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
     <section className="mt-10 rounded-xl border border-border bg-surface p-6">
       <h2 className="font-display text-2xl font-bold">Already feeding people here?</h2>
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
-        These Galveston-area programs are listed on ProvisionLoop from public information and have
-        not been claimed yet. If you run one, claim it — the listing becomes your account, with
-        capacity, pricing, funded orders and payouts under your control.
+        These Galveston-area programs are mapped in the ProvisionLoop directory from public
+        information. They are not affiliated with ProvisionLoop and cannot receive funding. If you
+        run one, claim it — the listing becomes your account, and funding opens once payout
+        onboarding is complete.
       </p>
 
       <ul className="mt-5 grid gap-3 md:grid-cols-2">
@@ -745,7 +746,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-semibold">{k.name}</p>
               <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
-                unclaimed
+                Directory listing — not affiliated
               </span>
             </div>
             <p className="mt-1 text-xs text-muted-foreground">
