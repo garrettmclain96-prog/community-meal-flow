@@ -428,8 +428,9 @@ function ImpactPage() {
                 {user ? (
                   <button
                     type="button"
-                    onClick={() => openCheckout({ kind: "sponsorship", priceId: tier.priceId })}
-                    className="mt-5 rounded-xl border border-primary px-4 py-2.5 text-sm font-semibold"
+                    onClick={() => void startSponsorship(tier.priceId)}
+                    disabled={!paymentLegal.satisfied}
+                    className="mt-5 rounded-xl border border-primary px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
                   >
                     Start sponsorship
                   </button>
