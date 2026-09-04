@@ -97,6 +97,12 @@ function ImpactPage() {
   const template = templates.data?.find((t) => t.id === templateId) ?? null;
   const perMeal = template?.cost_per_meal ?? kitchen?.cost_per_meal ?? 0;
   const amount = useMemo(() => Math.round(perMeal * meals * 100), [perMeal, meals]);
+  const paymentLegal = useLegalGate({
+    documents: PAYMENT_DOCS,
+    context: "payment_checkout",
+    intro:
+      "Before payment: ProvisionLoop charges a $0 platform fee on this pilot, and your payment is not a tax-deductible charitable contribution.",
+  });
 
   async function fund() {
     if (!kitchenId) return;
