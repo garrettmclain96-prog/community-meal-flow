@@ -1,13 +1,13 @@
-# TableForward 2.0 → Parent Platform + MealForge
+# ProvisionLoop 2.0 → Parent Platform + MealForge
 
-TableForward stays exactly as it is: the cinematic Civic Ledger public experience at `/`. Everything new is added around it. Nothing existing gets replaced with mockups.
+ProvisionLoop stays exactly as it is: the cinematic Civic Ledger public experience at `/`. Everything new is added around it. Nothing existing gets replaced with mockups.
 
 This is a very large program, so it ships in stages. This plan covers the full architecture and defines Stage 1 precisely — the part I build now.
 
 ## Brand architecture
 
 ```text
-TableForward (parent)
+ProvisionLoop (parent)
 ├── /            public Civic Ledger site (exists today)
 ├── /app         MealForge — household food intelligence (warm, premium food app)
 ├── /impact      donors, sponsors, businesses
@@ -16,7 +16,7 @@ TableForward (parent)
 └── /civic       cities and public-sector
 ```
 
-Separate surfaces, one shared backend. MealForge shares tokens and typography with TableForward but reads warmer and simpler — lighter surfaces, softer edges, less telemetry. The civic/ledger aesthetic stays on the public and civic/impact surfaces.
+Separate surfaces, one shared backend. MealForge shares tokens and typography with ProvisionLoop but reads warmer and simpler — lighter surfaces, softer edges, less telemetry. The civic/ledger aesthetic stays on the public and civic/impact surfaces.
 
 Public nav gains four prominent entries: Plan My Meals, Fund Meals, Join as a Kitchen, Partner With Us.
 
