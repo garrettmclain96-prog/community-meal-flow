@@ -91,12 +91,18 @@ export const createMealFundingCheckout = createServerFn({ method: "POST" })
 
     const { data: kitchen, error: kitchenError } = await supabase
       .from("kitchens")
-      .select("id, name, neighborhood, city, cost_per_meal")
+      .select("id, name, neighborhood, city, cost_per_meal, claimed, payout_status")
       .eq("id", data.kitchenId)
       .eq("approved", true)
       .eq("active", true)
       .maybeSingle();
     if (kitchenError || !kitchen) return { error: "That kitchen is not available right now." };
+
+    // Funding safety gate: unclaimed directory listings and operators without
+    // live payouts can never be funded, regardless of what the client sent.
+    if (!kitchen.claimed || kitchen.payout_status !== "ready") {
+      return { error: "This kitchen is not yet accepting funding." };
+    }
 
     let perMeal = Number(kitchen.cost_per_meal);
     let mealName = "Kitchen's choice";
@@ -183,6 +189,20 @@ export const createSponsorshipCheckout = createServerFn({ method: "POST" })
       const stripe = createStripeClient(data.environment);
       const { supabase, userId } = context;
       const { data: userResult } = await supabase.auth.getUser();
+
+      const { count: fundableCount } = await supabase
+        .from("kitchens")
+        .select("id", { count: "exact", head: true })
+        .eq("approved", true)
+        .eq("active", true)
+        .eq("claimed", true)
+        .eq("payout_status", "ready");
+      if (!fundableCount) {
+        return {
+          error:
+            "No kitchen in this network is accepting funding yet, so recurring sponsorships are paused.",
+        };
+      }
 
       const prices = await stripe.prices.list({ lookup_keys: [data.priceId] });
       if (!prices.data.length) return { error: "That sponsorship is not available." };
