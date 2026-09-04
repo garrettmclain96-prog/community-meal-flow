@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
 import { Route as TrustMethodRouteImport } from './routes/trust-method'
 import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as LegalRouteImport } from './routes/legal'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as HelpRouteImport } from './routes/help'
@@ -19,7 +20,10 @@ import { Route as CivicRouteImport } from './routes/civic'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as LegalIndexRouteImport } from './routes/legal.index'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
 import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
 import { Route as AppShopRouteImport } from './routes/app.shop'
 import { Route as AppSetupRouteImport } from './routes/app.setup'
@@ -43,6 +47,11 @@ const TrustMethodRoute = TrustMethodRouteImport.update({
 const PartnersRoute = PartnersRouteImport.update({
   id: '/partners',
   path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const KitchenRoute = KitchenRouteImport.update({
@@ -80,10 +89,25 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalIndexRoute = LegalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => LegalRoute,
+} as any)
 const AppIndexRoute = AppIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AppRoute,
+} as any)
+const LegalTermsRoute = LegalTermsRouteImport.update({
+  id: '/terms',
+  path: '/terms',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => LegalRoute,
 } as any)
 const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
   id: '/checkout/return',
@@ -140,6 +164,7 @@ export interface FileRoutesByFullPath {
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
+  '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
@@ -151,7 +176,10 @@ export interface FileRoutesByFullPath {
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/app/': typeof AppIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -172,7 +200,10 @@ export interface FileRoutesByTo {
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/app': typeof AppIndexRoute
+  '/legal': typeof LegalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -184,6 +215,7 @@ export interface FileRoutesById {
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
+  '/legal': typeof LegalRouteWithChildren
   '/partners': typeof PartnersRoute
   '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
@@ -195,7 +227,10 @@ export interface FileRoutesById {
   '/app/setup': typeof AppSetupRoute
   '/app/shop': typeof AppShopRoute
   '/checkout/return': typeof CheckoutReturnRoute
+  '/legal/privacy': typeof LegalPrivacyRoute
+  '/legal/terms': typeof LegalTermsRoute
   '/app/': typeof AppIndexRoute
+  '/legal/': typeof LegalIndexRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -208,6 +243,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/impact'
     | '/kitchen'
+    | '/legal'
     | '/partners'
     | '/trust-method'
     | '/volunteer'
@@ -219,7 +255,10 @@ export interface FileRouteTypes {
     | '/app/setup'
     | '/app/shop'
     | '/checkout/return'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/app/'
+    | '/legal/'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -240,7 +279,10 @@ export interface FileRouteTypes {
     | '/app/setup'
     | '/app/shop'
     | '/checkout/return'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/app'
+    | '/legal'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -251,6 +293,7 @@ export interface FileRouteTypes {
     | '/help'
     | '/impact'
     | '/kitchen'
+    | '/legal'
     | '/partners'
     | '/trust-method'
     | '/volunteer'
@@ -262,7 +305,10 @@ export interface FileRouteTypes {
     | '/app/setup'
     | '/app/shop'
     | '/checkout/return'
+    | '/legal/privacy'
+    | '/legal/terms'
     | '/app/'
+    | '/legal/'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -274,6 +320,7 @@ export interface RootRouteChildren {
   HelpRoute: typeof HelpRoute
   ImpactRoute: typeof ImpactRoute
   KitchenRoute: typeof KitchenRoute
+  LegalRoute: typeof LegalRouteWithChildren
   PartnersRoute: typeof PartnersRoute
   TrustMethodRoute: typeof TrustMethodRoute
   VolunteerRoute: typeof VolunteerRoute
@@ -302,6 +349,13 @@ declare module '@tanstack/react-router' {
       path: '/partners'
       fullPath: '/partners'
       preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/kitchen': {
@@ -353,12 +407,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/': {
+      id: '/legal/'
+      path: '/'
+      fullPath: '/legal/'
+      preLoaderRoute: typeof LegalIndexRouteImport
+      parentRoute: typeof LegalRoute
+    }
     '/app/': {
       id: '/app/'
       path: '/'
       fullPath: '/app/'
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
+    }
+    '/legal/terms': {
+      id: '/legal/terms'
+      path: '/terms'
+      fullPath: '/legal/terms'
+      preLoaderRoute: typeof LegalTermsRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof LegalRoute
     }
     '/checkout/return': {
       id: '/checkout/return'
@@ -450,6 +525,20 @@ const AppRouteChildren: AppRouteChildren = {
 
 const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
 
+interface LegalRouteChildren {
+  LegalPrivacyRoute: typeof LegalPrivacyRoute
+  LegalTermsRoute: typeof LegalTermsRoute
+  LegalIndexRoute: typeof LegalIndexRoute
+}
+
+const LegalRouteChildren: LegalRouteChildren = {
+  LegalPrivacyRoute: LegalPrivacyRoute,
+  LegalTermsRoute: LegalTermsRoute,
+  LegalIndexRoute: LegalIndexRoute,
+}
+
+const LegalRouteWithChildren = LegalRoute._addFileChildren(LegalRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
@@ -458,6 +547,7 @@ const rootRouteChildren: RootRouteChildren = {
   HelpRoute: HelpRoute,
   ImpactRoute: ImpactRoute,
   KitchenRoute: KitchenRoute,
+  LegalRoute: LegalRouteWithChildren,
   PartnersRoute: PartnersRoute,
   TrustMethodRoute: TrustMethodRoute,
   VolunteerRoute: VolunteerRoute,
