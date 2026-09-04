@@ -471,9 +471,10 @@ function RegisterKitchen({ onCreated }: { onCreated: () => void }) {
           />
         </Field>
       </div>
+      {legal.gate && <div className="mt-6">{legal.gate}</div>}
       <button
         type="submit"
-        disabled={busy}
+        disabled={busy || !legal.satisfied}
         className="mt-6 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
       >
         {busy ? "Saving…" : "Register kitchen"}
