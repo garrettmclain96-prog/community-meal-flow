@@ -370,10 +370,24 @@ function RegisterKitchen({ onCreated }: { onCreated: () => void }) {
   const [capacity, setCapacity] = useState(40);
   const [cost, setCost] = useState(6.5);
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: KITCHEN_DOCS,
+    requireSignature: true,
+    context: "kitchen_registration",
+    intro:
+      "Registering a kitchen is an operator commitment, so it is signed. Your acceptance is saved before the kitchen is created.",
+  });
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
+    try {
+      await legal.assertAccepted();
+    } catch (err) {
+      setBusy(false);
+      toast.error(err instanceof Error ? err.message : "Agreement required");
+      return;
+    }
     const { error } = await supabase.from("kitchens").insert({
       owner_id: user!.id,
       name,
