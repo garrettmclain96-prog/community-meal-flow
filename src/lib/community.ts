@@ -79,6 +79,17 @@ export async function listFundableKitchens(): Promise<KitchenRow[]> {
   return (data ?? []).map(withState);
 }
 
+export interface TemplateRow {
+  id: string;
+  kitchen_id: string;
+  name: string;
+  description: string | null;
+  servings_per_batch: number;
+  cost_per_meal: number;
+  dietary_tags: string[];
+  active: boolean;
+}
+
 
 export async function listTemplates(kitchenId?: string): Promise<TemplateRow[]> {
   let q = supabase.from("meal_templates").select("*").eq("active", true);
