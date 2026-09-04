@@ -738,7 +738,6 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
       "Claiming a listing means you have authority over that organization. Your signed acceptance is saved before the claim is submitted.",
   });
 
-
   const listings = useQuery({
     queryKey: ["unclaimed-kitchens"],
     queryFn: async () => {

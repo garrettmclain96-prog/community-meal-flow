@@ -62,7 +62,6 @@ function VolunteerPage() {
       "Claiming a shift or delivery run requires the signed volunteer release at its current version.",
   });
 
-
   const profile = useQuery({
     queryKey: ["volunteer", user?.id],
     enabled: Boolean(user),
@@ -239,9 +238,9 @@ function VolunteerPage() {
                                 <ActionButton
                                   label="Claim this run"
                                   onClick={async () => {
-                                     if (!me) throw new Error("Save your volunteer profile first");
-                                     await legal.assertAccepted();
-                                     await claimRun(r.id);
+                                    if (!me) throw new Error("Save your volunteer profile first");
+                                    await legal.assertAccepted();
+                                    await claimRun(r.id);
                                     await refresh();
                                     toast.success("Run claimed — thank you");
                                   }}
@@ -325,9 +324,9 @@ function VolunteerPage() {
                               <ActionButton
                                 label="Sign up"
                                 onClick={async () => {
-                                   if (!me) throw new Error("Save your volunteer profile first");
-                                   await legal.assertAccepted();
-                                   await joinShift(s.id, me.id);
+                                  if (!me) throw new Error("Save your volunteer profile first");
+                                  await legal.assertAccepted();
+                                  await joinShift(s.id, me.id);
                                   await refresh();
                                   toast.success("You're on the roster");
                                 }}
@@ -459,7 +458,6 @@ function VolunteerProfileForm({
     intro:
       "Volunteering carries physical risk, so the release is signed. Acceptance is saved before your profile is created.",
   });
-
 
   const toggle = (list: string[], set: (v: string[]) => void, value: string) =>
     set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
