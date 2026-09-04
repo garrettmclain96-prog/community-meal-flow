@@ -44,6 +44,13 @@ function PartnersPage() {
     enabled: Boolean(user),
   });
   const refresh = () => void queryClient.invalidateQueries({ queryKey: ["partner-workspace"] });
+  const legal = useLegalGate({
+    documents: PARTNER_DOCS,
+    requireSignature: true,
+    context: "partner_workspace_access",
+    intro:
+      "Identifiable assistance requests are only shown once an authorized person at your organization signs the data-handling agreement.",
+  });
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
