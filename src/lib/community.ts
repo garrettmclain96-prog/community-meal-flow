@@ -102,7 +102,12 @@ export async function listTemplates(kitchenId?: string): Promise<TemplateRow[]> 
 export interface ImpactTotals {
   mealsFunded: number;
   mealsDelivered: number;
-  kitchens: number;
+  /** Every approved provider in the public directory, affiliated or not. */
+  providersMapped: number;
+  /** Providers an operator claimed and that can actually receive funding. */
+  fundingEnabledKitchens: number;
+  /** Providers an operator claimed, regardless of payout readiness. */
+  verifiedOperators: number;
   neighborhoods: Array<{ neighborhood: string; meals: number }>;
   recent: Array<{
     id: string;
@@ -114,13 +119,26 @@ export interface ImpactTotals {
 }
 
 export async function loadImpactTotals(): Promise<ImpactTotals> {
-  const [events, kitchens] = await Promise.all([
+  const approved = supabase.from("kitchens").select("id", { count: "exact", head: true }).eq("approved", true);
+  const [events, mapped, verified, fundable] = await Promise.all([
     supabase
       .from("impact_events")
       .select("id, kind, meals, neighborhood, occurred_at")
       .order("occurred_at", { ascending: false })
       .limit(1000),
-    supabase.from("kitchens").select("id", { count: "exact", head: true }).eq("approved", true),
+    approved,
+    supabase
+      .from("kitchens")
+      .select("id", { count: "exact", head: true })
+      .eq("approved", true)
+      .eq("claimed", true),
+    supabase
+      .from("kitchens")
+      .select("id", { count: "exact", head: true })
+      .eq("approved", true)
+      .eq("active", true)
+      .eq("claimed", true)
+      .eq("payout_status", "ready"),
   ]);
   if (events.error) throw events.error;
 
@@ -140,13 +158,16 @@ export async function loadImpactTotals(): Promise<ImpactTotals> {
   return {
     mealsFunded: funded,
     mealsDelivered: delivered,
-    kitchens: kitchens.count ?? 0,
+    providersMapped: mapped.count ?? 0,
+    verifiedOperators: verified.count ?? 0,
+    fundingEnabledKitchens: fundable.count ?? 0,
     neighborhoods: [...byHood.entries()]
       .map(([neighborhood, meals]) => ({ neighborhood, meals }))
       .sort((a, b) => b.meals - a.meals),
     recent: rows.slice(0, 12),
   };
 }
+
 
 // Funding now happens exclusively through paid checkout
 // (see src/lib/payments.functions.ts). The old unpaid RPC path is revoked.
