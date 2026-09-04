@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { BASE_DOCS, type LegalDocKey } from "@/lib/legal/registry";
 import { supabase } from "@/integrations/supabase/client";
 import { advanceOrder, listTemplates } from "@/lib/community";
 import { SHIFT_ROLES, claimKitchen, listShiftsForKitchen, listSignups } from "@/lib/volunteer";
@@ -39,6 +41,8 @@ export const Route = createFileRoute("/kitchen")({
 });
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+
+const KITCHEN_DOCS: LegalDocKey[] = [...BASE_DOCS, "kitchen_agreement"];
 
 function KitchenPage() {
   const { user } = useAuth();
