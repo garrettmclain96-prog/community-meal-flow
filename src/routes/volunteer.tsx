@@ -5,7 +5,11 @@ import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { BASE_DOCS, type LegalDocKey } from "@/lib/legal/registry";
 import { listKitchens } from "@/lib/community";
+
+const VOLUNTEER_DOCS: LegalDocKey[] = [...BASE_DOCS, "volunteer_waiver"];
 import {
   AVAILABILITY_BLOCKS,
   VOLUNTEER_SKILLS,
