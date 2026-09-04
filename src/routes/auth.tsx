@@ -132,7 +132,8 @@ function AuthPage() {
         <button
           type="button"
           onClick={google}
-          className="mt-7 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
+          disabled={mode === "signup" && !legalReady}
+          className="mt-7 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted disabled:opacity-50"
         >
           Continue with Google
         </button>
@@ -208,9 +209,18 @@ function AuthPage() {
             />
           </label>
 
+          {mode === "signup" && (
+            <LegalAcceptance
+              documents={BASE_DOCS}
+              value={legal}
+              onChange={setLegal}
+              intro="Creating an account requires accepting these two documents at their current version."
+            />
+          )}
+
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || (mode === "signup" && !legalReady)}
             className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
           >
             {busy ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}
