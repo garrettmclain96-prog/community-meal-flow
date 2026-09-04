@@ -216,10 +216,12 @@ function DispatchQueue({
   name,
   referrals,
   onChanged,
+  assertAccepted,
 }: {
   name: string;
   referrals: PartnerReferral[];
   onChanged: () => void;
+  assertAccepted: () => Promise<void>;
 }) {
   return (
     <div>
