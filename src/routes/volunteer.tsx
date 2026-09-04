@@ -314,8 +314,9 @@ function VolunteerPage() {
                               <ActionButton
                                 label="Sign up"
                                 onClick={async () => {
-                                  if (!me) throw new Error("Save your volunteer profile first");
-                                  await joinShift(s.id, me.id);
+                                   if (!me) throw new Error("Save your volunteer profile first");
+                                   await legal.assertAccepted();
+                                   await joinShift(s.id, me.id);
                                   await refresh();
                                   toast.success("You're on the roster");
                                 }}
