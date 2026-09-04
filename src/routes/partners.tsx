@@ -5,12 +5,16 @@ import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { BASE_DOCS, type LegalDocKey } from "@/lib/legal/registry";
 import {
   applyPartner,
   getPartnerWorkspace,
   type PartnerReferral,
   updateReferral,
 } from "@/lib/partners";
+
+const PARTNER_DOCS: LegalDocKey[] = [...BASE_DOCS, "partner_data"];
 
 export const Route = createFileRoute("/partners")({
   head: () => ({
