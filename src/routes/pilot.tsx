@@ -179,7 +179,11 @@ function PilotPage() {
                   Policy to your account, so it has to be attributable to a real login rather than a
                   device.
                 </p>
-                <Link to="/auth" className="button-primary mt-5 inline-flex">
+                <Link
+                  to="/auth"
+                  search={{ redirect: "/pilot" }}
+                  className="button-primary mt-5 inline-flex"
+                >
                   Sign in or create an account
                 </Link>
               </div>
