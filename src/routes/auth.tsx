@@ -104,7 +104,12 @@ function AuthPage() {
   }
 
   async function google() {
+    if (mode === "signup" && !legalReady) {
+      toast.error("Please accept the Terms of Service v1.0 and Privacy Policy v1.0 to continue.");
+      return;
+    }
     try {
+      if (mode === "signup") queuePendingAcceptance({ keys: BASE_DOCS, context: "account_signup" });
       await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Google sign-in unavailable");
