@@ -7,6 +7,8 @@ import { PaymentTestModeBanner } from "@/components/PaymentTestModeBanner";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useStripeCheckout } from "@/hooks/useStripeCheckout";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { PAYMENT_DOCS } from "@/lib/legal/registry";
 import { supabase } from "@/integrations/supabase/client";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { createSponsorPortalSession } from "@/lib/payments.functions";
@@ -97,15 +99,37 @@ function ImpactPage() {
   const template = templates.data?.find((t) => t.id === templateId) ?? null;
   const perMeal = template?.cost_per_meal ?? kitchen?.cost_per_meal ?? 0;
   const amount = useMemo(() => Math.round(perMeal * meals * 100), [perMeal, meals]);
+  const paymentLegal = useLegalGate({
+    documents: PAYMENT_DOCS,
+    context: "payment_checkout",
+    intro:
+      "Before payment: ProvisionLoop charges a $0 platform fee on this pilot, and your payment is not a tax-deductible charitable contribution.",
+  });
 
-  function fund() {
+  async function fund() {
     if (!kitchenId) return;
+    try {
+      await paymentLegal.assertAccepted();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Agreement required");
+      return;
+    }
     openCheckout({
       kind: "meal_funding",
       kitchenId,
       templateId: templateId || null,
       meals,
     });
+  }
+
+  async function startSponsorship(priceId: string) {
+    try {
+      await paymentLegal.assertAccepted();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Agreement required");
+      return;
+    }
+    openCheckout({ kind: "sponsorship", priceId });
   }
 
   async function manageSponsorship() {
@@ -264,11 +288,24 @@ function ImpactPage() {
                   </p>
                 </div>
 
+                {user && (
+                  <div className="rounded-xl border border-border bg-surface p-4 text-xs leading-5 text-muted-foreground">
+                    <p className="font-semibold text-foreground">Before you pay</p>
+                    <p className="mt-1">
+                      Platform fee: <strong className="text-foreground">$0.00</strong>. Payment
+                      processing is handled by Stripe in test mode — no live money moves. This
+                      payment is <strong className="text-foreground">not tax-deductible</strong>;
+                      ProvisionLoop is not a charity and issues no donation receipt.
+                    </p>
+                    {paymentLegal.gate && <div className="mt-4">{paymentLegal.gate}</div>}
+                  </div>
+                )}
+
                 {user ? (
                   <button
                     type="button"
-                    onClick={fund}
-                    disabled={!kitchenId || busy}
+                    onClick={() => void fund()}
+                    disabled={!kitchenId || busy || !paymentLegal.satisfied}
                     className="button-primary w-full py-4 disabled:opacity-60"
                   >
                     {isOpen ? "Checkout open below" : `Fund ${meals} meals — ${money(amount)}`}
@@ -382,6 +419,18 @@ function ImpactPage() {
             </p>
           )}
 
+          {user && !paymentLegal.satisfied && (
+            <div className="mt-6 rounded-xl border border-border bg-surface p-4 text-xs leading-5 text-muted-foreground">
+              <p className="font-semibold text-foreground">Before you pay</p>
+              <p className="mt-1">
+                Platform fee: <strong className="text-foreground">$0.00</strong>. Recurring
+                sponsorships run through Stripe in test mode. Payments are{" "}
+                <strong className="text-foreground">not tax-deductible</strong>.
+              </p>
+              <div className="mt-4">{paymentLegal.gate}</div>
+            </div>
+          )}
+
           <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             {SPONSORSHIP_TIERS.map((tier) => (
               <div key={tier.priceId} className="editorial-card flex flex-col p-6">
@@ -391,8 +440,9 @@ function ImpactPage() {
                 {user ? (
                   <button
                     type="button"
-                    onClick={() => openCheckout({ kind: "sponsorship", priceId: tier.priceId })}
-                    className="mt-5 rounded-xl border border-primary px-4 py-2.5 text-sm font-semibold"
+                    onClick={() => void startSponsorship(tier.priceId)}
+                    disabled={!paymentLegal.satisfied}
+                    className="mt-5 rounded-xl border border-primary px-4 py-2.5 text-sm font-semibold disabled:opacity-60"
                   >
                     Start sponsorship
                   </button>

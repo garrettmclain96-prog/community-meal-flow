@@ -5,6 +5,14 @@ import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
+import {
+  EMPTY_ACCEPTANCE,
+  LegalAcceptance,
+  isAcceptanceComplete,
+  type LegalAcceptanceValue,
+} from "@/components/LegalAcceptance";
+import { queuePendingAcceptance } from "@/lib/legal/acceptance";
+import { BASE_DOCS } from "@/lib/legal/registry";
 
 export const Route = createFileRoute("/auth")({
   validateSearch: (search: Record<string, unknown>) => ({
@@ -55,6 +63,8 @@ function AuthPage() {
   const [displayName, setDisplayName] = useState("");
   const [role, setRole] = useState<AppRole>("household");
   const [busy, setBusy] = useState(false);
+  const [legal, setLegal] = useState<LegalAcceptanceValue>(EMPTY_ACCEPTANCE);
+  const legalReady = isAcceptanceComplete(legal, false);
 
   useEffect(() => {
     if (!loading && session) void navigate({ to: redirect, replace: true });
@@ -62,9 +72,15 @@ function AuthPage() {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
+    if (mode === "signup" && !legalReady) {
+      toast.error("Please accept the Terms of Service v1.0 and Privacy Policy v1.0 to continue.");
+      return;
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
+        // Queued now, written to the account by the post-authentication flush.
+        queuePendingAcceptance({ keys: BASE_DOCS, context: "account_signup" });
         const { error } = await supabase.auth.signUp({
           email,
           password,
@@ -88,7 +104,12 @@ function AuthPage() {
   }
 
   async function google() {
+    if (mode === "signup" && !legalReady) {
+      toast.error("Please accept the Terms of Service v1.0 and Privacy Policy v1.0 to continue.");
+      return;
+    }
     try {
+      if (mode === "signup") queuePendingAcceptance({ keys: BASE_DOCS, context: "account_signup" });
       await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Google sign-in unavailable");
@@ -111,10 +132,17 @@ function AuthPage() {
         <button
           type="button"
           onClick={google}
-          className="mt-7 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted"
+          disabled={mode === "signup" && !legalReady}
+          className="mt-7 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted disabled:opacity-50"
         >
           Continue with Google
         </button>
+        {mode === "signup" && !legalReady && (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Accept the <Link to="/legal/terms">Terms v1.0</Link> and{" "}
+            <Link to="/legal/privacy">Privacy Policy v1.0</Link> below to enable account creation.
+          </p>
+        )}
 
         <div className="my-5 flex items-center gap-3 text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
           <span className="h-px flex-1 bg-border" /> or email{" "}
@@ -187,9 +215,18 @@ function AuthPage() {
             />
           </label>
 
+          {mode === "signup" && (
+            <LegalAcceptance
+              documents={BASE_DOCS}
+              value={legal}
+              onChange={setLegal}
+              intro="Creating an account requires accepting these two documents at their current version."
+            />
+          )}
+
           <button
             type="submit"
-            disabled={busy}
+            disabled={busy || (mode === "signup" && !legalReady)}
             className="w-full rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground transition hover:opacity-90 disabled:opacity-60"
           >
             {busy ? "Working…" : mode === "signin" ? "Sign in" : "Create account"}

@@ -5,6 +5,8 @@ import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { BASE_DOCS, type LegalDocKey } from "@/lib/legal/registry";
 import { supabase } from "@/integrations/supabase/client";
 import { advanceOrder, listTemplates } from "@/lib/community";
 import { SHIFT_ROLES, claimKitchen, listShiftsForKitchen, listSignups } from "@/lib/volunteer";
@@ -39,6 +41,8 @@ export const Route = createFileRoute("/kitchen")({
 });
 
 const money = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+
+const KITCHEN_DOCS: LegalDocKey[] = [...BASE_DOCS, "kitchen_agreement"];
 
 function KitchenPage() {
   const { user } = useAuth();
@@ -370,10 +374,24 @@ function RegisterKitchen({ onCreated }: { onCreated: () => void }) {
   const [capacity, setCapacity] = useState(40);
   const [cost, setCost] = useState(6.5);
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: KITCHEN_DOCS,
+    requireSignature: true,
+    context: "kitchen_registration",
+    intro:
+      "Registering a kitchen is an operator commitment, so it is signed. Your acceptance is saved before the kitchen is created.",
+  });
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setBusy(true);
+    try {
+      await legal.assertAccepted();
+    } catch (err) {
+      setBusy(false);
+      toast.error(err instanceof Error ? err.message : "Agreement required");
+      return;
+    }
     const { error } = await supabase.from("kitchens").insert({
       owner_id: user!.id,
       name,
@@ -453,9 +471,10 @@ function RegisterKitchen({ onCreated }: { onCreated: () => void }) {
           />
         </Field>
       </div>
+      {legal.gate && <div className="mt-6">{legal.gate}</div>}
       <button
         type="submit"
-        disabled={busy}
+        disabled={busy || !legal.satisfied}
         className="mt-6 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
       >
         {busy ? "Saving…" : "Register kitchen"}
@@ -711,6 +730,13 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
   const [role, setRole] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: KITCHEN_DOCS,
+    requireSignature: true,
+    context: "kitchen_claim",
+    intro:
+      "Claiming a listing means you have authority over that organization. Your signed acceptance is saved before the claim is submitted.",
+  });
 
   const listings = useQuery({
     queryKey: ["unclaimed-kitchens"],
@@ -765,6 +791,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
                   e.preventDefault();
                   setBusy(true);
                   try {
+                    await legal.assertAccepted();
                     await claimKitchen(k.id, role, note);
                     toast.success(`${k.name} is yours — check your capacity and pricing`);
                     onClaimed();
@@ -790,10 +817,11 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
                   onChange={(e) => setNote(e.target.value)}
                   className={`${inputCls} min-h-16`}
                 />
+                {legal.gate}
                 <div className="flex gap-2">
                   <button
                     type="submit"
-                    disabled={busy}
+                    disabled={busy || !legal.satisfied}
                     className="rounded-full bg-ember px-4 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50"
                   >
                     {busy ? "Claiming…" : "Confirm claim"}

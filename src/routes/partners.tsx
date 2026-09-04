@@ -5,12 +5,16 @@ import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { BASE_DOCS, type LegalDocKey } from "@/lib/legal/registry";
 import {
   applyPartner,
   getPartnerWorkspace,
   type PartnerReferral,
   updateReferral,
 } from "@/lib/partners";
+
+const PARTNER_DOCS: LegalDocKey[] = [...BASE_DOCS, "partner_data"];
 
 export const Route = createFileRoute("/partners")({
   head: () => ({
@@ -40,6 +44,13 @@ function PartnersPage() {
     enabled: Boolean(user),
   });
   const refresh = () => void queryClient.invalidateQueries({ queryKey: ["partner-workspace"] });
+  const legal = useLegalGate({
+    documents: PARTNER_DOCS,
+    requireSignature: true,
+    context: "partner_workspace_access",
+    intro:
+      "Identifiable assistance requests are only shown once an authorized person at your organization signs the data-handling agreement.",
+  });
 
   return (
     <div className="min-h-dvh bg-background text-foreground">
@@ -72,13 +83,27 @@ function PartnersPage() {
           {workspace.data && !workspace.data.organization.approved && (
             <PendingApproval name={workspace.data.organization.name} />
           )}
-          {workspace.data?.organization.approved && (
-            <DispatchQueue
-              name={workspace.data.organization.name}
-              referrals={workspace.data.referrals}
-              onChanged={refresh}
-            />
-          )}
+          {workspace.data?.organization.approved &&
+            (legal.satisfied ? (
+              <DispatchQueue
+                name={workspace.data.organization.name}
+                referrals={workspace.data.referrals}
+                onChanged={refresh}
+                assertAccepted={legal.assertAccepted}
+              />
+            ) : (
+              <div className="mx-auto max-w-3xl">
+                <p className="kicker text-primary">Agreement required</p>
+                <h2 className="mt-2 font-display text-3xl font-black">
+                  Sign before request details open
+                </h2>
+                <p className="mt-3 text-sm text-muted-foreground">
+                  {workspace.data.organization.name} is verified. Identifiable request details stay
+                  hidden until the signed agreement is recorded to your account.
+                </p>
+                <div className="mt-6">{legal.gate}</div>
+              </div>
+            ))}
         </section>
       </main>
       <SiteFooter />
@@ -114,11 +139,19 @@ function SignedOut() {
 
 function PartnerApplication({ onCreated }: { onCreated: () => void }) {
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: PARTNER_DOCS,
+    requireSignature: true,
+    context: "partner_application",
+    intro:
+      "Applying for dispatch access is a data-handling commitment, so it is signed. Acceptance is saved before the application is submitted.",
+  });
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     setBusy(true);
     try {
+      await legal.assertAccepted();
       await applyPartner({
         name: String(form.get("name") ?? ""),
         kind: String(form.get("kind") ?? "nonprofit"),
@@ -159,7 +192,8 @@ function PartnerApplication({ onCreated }: { onCreated: () => void }) {
         Separate areas with commas. Request access stays locked until an administrator verifies the
         organization.
       </p>
-      <button type="submit" disabled={busy} className="button-primary mt-6">
+      {legal.gate && <div className="mt-6">{legal.gate}</div>}
+      <button type="submit" disabled={busy || !legal.satisfied} className="button-primary mt-6">
         {busy ? "Submitting…" : "Submit for verification"}
       </button>
     </form>
@@ -183,10 +217,12 @@ function DispatchQueue({
   name,
   referrals,
   onChanged,
+  assertAccepted,
 }: {
   name: string;
   referrals: PartnerReferral[];
   onChanged: () => void;
+  assertAccepted: () => Promise<void>;
 }) {
   return (
     <div>
@@ -199,7 +235,12 @@ function DispatchQueue({
       </div>
       <div className="mt-8 grid gap-5">
         {referrals.map((referral) => (
-          <ReferralCard key={referral.id} referral={referral} onChanged={onChanged} />
+          <ReferralCard
+            key={referral.id}
+            referral={referral}
+            onChanged={onChanged}
+            assertAccepted={assertAccepted}
+          />
         ))}
         {!referrals.length && (
           <div className="editorial-card p-7 text-muted-foreground">
@@ -214,9 +255,11 @@ function DispatchQueue({
 function ReferralCard({
   referral,
   onChanged,
+  assertAccepted,
 }: {
   referral: PartnerReferral;
   onChanged: () => void;
+  assertAccepted: () => Promise<void>;
 }) {
   const [busy, setBusy] = useState(false);
   const [outcome, setOutcome] = useState("");
@@ -224,6 +267,7 @@ function ReferralCard({
   async function advance(status: string) {
     setBusy(true);
     try {
+      await assertAccepted();
       await updateReferral({ referralId: referral.id, status, outcome, meals });
       toast.success(status === "fulfilled" ? "Fulfillment verified" : `Referral ${status}`);
       onChanged();

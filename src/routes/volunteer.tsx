@@ -5,7 +5,11 @@ import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { useAuth } from "@/hooks/useAuth";
+import { useLegalGate } from "@/hooks/useLegalGate";
+import { BASE_DOCS, type LegalDocKey } from "@/lib/legal/registry";
 import { listKitchens } from "@/lib/community";
+
+const VOLUNTEER_DOCS: LegalDocKey[] = [...BASE_DOCS, "volunteer_waiver"];
 import {
   AVAILABILITY_BLOCKS,
   VOLUNTEER_SKILLS,
@@ -50,6 +54,13 @@ const inputCls =
 function VolunteerPage() {
   const { user } = useAuth();
   const qc = useQueryClient();
+  const legal = useLegalGate({
+    documents: VOLUNTEER_DOCS,
+    requireSignature: true,
+    context: "volunteer_activity",
+    intro:
+      "Claiming a shift or delivery run requires the signed volunteer release at its current version.",
+  });
 
   const profile = useQuery({
     queryKey: ["volunteer", user?.id],
@@ -167,6 +178,16 @@ function VolunteerPage() {
               <Stat label="Runs waiting for a driver" value={String(openRuns.length)} />
             </div>
 
+            {!legal.satisfied && (
+              <div className="mt-10 rounded-xl border border-border bg-surface p-6">
+                <h2 className="font-display text-2xl font-bold">Sign the volunteer release</h2>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  You can browse shifts and runs now. Claiming one requires the signed release.
+                </p>
+                <div className="mt-5">{legal.gate}</div>
+              </div>
+            )}
+
             <section className="mt-14 grid gap-8 lg:grid-cols-[1fr_1.2fr]">
               <VolunteerProfileForm
                 profile={me ?? null}
@@ -218,6 +239,7 @@ function VolunteerPage() {
                                   label="Claim this run"
                                   onClick={async () => {
                                     if (!me) throw new Error("Save your volunteer profile first");
+                                    await legal.assertAccepted();
                                     await claimRun(r.id);
                                     await refresh();
                                     toast.success("Run claimed — thank you");
@@ -303,6 +325,7 @@ function VolunteerPage() {
                                 label="Sign up"
                                 onClick={async () => {
                                   if (!me) throw new Error("Save your volunteer profile first");
+                                  await legal.assertAccepted();
                                   await joinShift(s.id, me.id);
                                   await refresh();
                                   toast.success("You're on the roster");
@@ -428,6 +451,13 @@ function VolunteerProfileForm({
   const [canDrive, setCanDrive] = useState(profile?.can_drive ?? false);
   const [agreed, setAgreed] = useState(Boolean(profile?.agreement_accepted_at));
   const [busy, setBusy] = useState(false);
+  const legal = useLegalGate({
+    documents: VOLUNTEER_DOCS,
+    requireSignature: true,
+    context: "volunteer_registration",
+    intro:
+      "Volunteering carries physical risk, so the release is signed. Acceptance is saved before your profile is created.",
+  });
 
   const toggle = (list: string[], set: (v: string[]) => void, value: string) =>
     set(list.includes(value) ? list.filter((v) => v !== value) : [...list, value]);
@@ -440,6 +470,7 @@ function VolunteerProfileForm({
     }
     setBusy(true);
     try {
+      await legal.assertAccepted();
       await upsertVolunteer(user!.id, {
         full_name: name,
         email: user!.email ?? null,
@@ -550,9 +581,10 @@ function VolunteerProfileForm({
         </label>
       </div>
 
+      {legal.gate && <div className="mt-6">{legal.gate}</div>}
       <button
         type="submit"
-        disabled={busy}
+        disabled={busy || !legal.satisfied}
         className="mt-6 rounded-xl bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground disabled:opacity-60"
       >
         {busy ? "Saving…" : profile ? "Save profile" : "Join as a volunteer"}
