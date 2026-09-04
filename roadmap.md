@@ -79,11 +79,13 @@
       public URL
 
 ## Trust & funding integrity (done)
+
 - Funding safety gate: `listFundableKitchens()` (approved + active + claimed + payout_status=ready) drives the funding UI; server re-checks the same conditions in one-time and subscription checkout and returns "This kitchen is not yet accepting funding."
 - Honest network states everywhere: Directory listing — not affiliated / Operator verified / Funding enabled.
 - Home + impact metrics split "providers mapped" from "funding-enabled kitchens"; ledger totals unchanged.
 - `/trust-method` public transparency page; linked from footer and next to funding decisions.
 
 ## Open
+
 - [ ] Publish a monitored contact channel for listing corrections/removals before the public pilot
       opens (trust page currently directs operators to the claim flow).
