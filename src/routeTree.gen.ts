@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
+import { Route as TrustMethodRouteImport } from './routes/trust-method'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as ImpactRouteImport } from './routes/impact'
@@ -32,6 +33,11 @@ import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/publi
 const VolunteerRoute = VolunteerRouteImport.update({
   id: '/volunteer',
   path: '/volunteer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrustMethodRoute = TrustMethodRouteImport.update({
+  id: '/trust-method',
+  path: '/trust-method',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -135,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
@@ -155,6 +162,7 @@ export interface FileRoutesByTo {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
   '/partners': typeof PartnersRoute
+  '/trust-method': typeof TrustMethodRoute
   '/volunteer': typeof VolunteerRoute
   '/app/cook': typeof AppCookRoute
   '/app/import': typeof AppImportRoute
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/trust-method'
     | '/volunteer'
     | '/app/cook'
     | '/app/import'
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/trust-method'
     | '/volunteer'
     | '/app/cook'
     | '/app/import'
@@ -241,6 +252,7 @@ export interface FileRouteTypes {
     | '/impact'
     | '/kitchen'
     | '/partners'
+    | '/trust-method'
     | '/volunteer'
     | '/app/cook'
     | '/app/import'
@@ -263,6 +275,7 @@ export interface RootRouteChildren {
   ImpactRoute: typeof ImpactRoute
   KitchenRoute: typeof KitchenRoute
   PartnersRoute: typeof PartnersRoute
+  TrustMethodRoute: typeof TrustMethodRoute
   VolunteerRoute: typeof VolunteerRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
@@ -275,6 +288,13 @@ declare module '@tanstack/react-router' {
       path: '/volunteer'
       fullPath: '/volunteer'
       preLoaderRoute: typeof VolunteerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trust-method': {
+      id: '/trust-method'
+      path: '/trust-method'
+      fullPath: '/trust-method'
+      preLoaderRoute: typeof TrustMethodRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -439,6 +459,7 @@ const rootRouteChildren: RootRouteChildren = {
   ImpactRoute: ImpactRoute,
   KitchenRoute: KitchenRoute,
   PartnersRoute: PartnersRoute,
+  TrustMethodRoute: TrustMethodRoute,
   VolunteerRoute: VolunteerRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,

@@ -12,6 +12,7 @@ import {
 
 import heroTable from "@/assets/hero-table.jpg";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
+import { ProviderStateBadge } from "@/components/ProviderStateBadge";
 import { listKitchens, loadImpactTotals } from "@/lib/community";
 
 export const Route = createFileRoute("/")({
@@ -93,8 +94,9 @@ function HomePage() {
                 <span className="text-primary">LOCAL POWER.</span>
               </h1>
               <p className="mt-7 max-w-xl text-lg font-medium leading-8 text-muted-foreground md:text-xl">
-                Fund meals through local kitchens. Get food to people through trusted programs. See
-                what happened after every dollar moved.
+Accountable local food infrastructure: private requests route through verified partners,
+                paid local kitchen capacity, and volunteer dispatch — then close on a public ledger.
+                Not a donation marketplace. A coordination loop that finishes.
               </p>
               <div className="mt-9 flex flex-col gap-3 sm:flex-row">
                 <Link to="/impact" className="button-primary px-6 py-4">
@@ -113,10 +115,18 @@ function HomePage() {
                   label="Delivered"
                   value={totals ? totals.mealsDelivered.toLocaleString() : "—"}
                 />
-                <LiveStat label="Kitchens" value={totals ? String(totals.kitchens) : "—"} />
+                <LiveStat
+                  label="Funding-enabled kitchens"
+                  value={totals ? String(totals.fundingEnabledKitchens) : "—"}
+                />
               </div>
               <p className="mt-3 text-xs text-muted-foreground">
-                Live pilot totals from the public ProvisionLoop ledger. No demo numbers.
+                Live pilot totals from the public ProvisionLoop ledger — no demo numbers.{" "}
+                {totals ? `${totals.providersMapped} providers mapped in the directory; ` : ""}
+                only funding-enabled kitchens can receive money.{" "}
+                <Link to="/trust-method" className="underline underline-offset-4">
+                  Trust &amp; method
+                </Link>
               </p>
             </div>
 
@@ -211,6 +221,11 @@ function HomePage() {
             <div>
               <p className="kicker text-primary">Galveston network</p>
               <h2 className="display-title mt-4 text-5xl md:text-6xl">LOCAL CAPACITY, VISIBLE.</h2>
+              <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+                Mapped providers, labeled honestly. Directory listings are real local programs we
+                mapped for discovery — they are not affiliated with ProvisionLoop and cannot be
+                funded here.
+              </p>
             </div>
             <Link to="/kitchen" className="button-secondary">
               View all kitchens <ArrowRight className="size-4" />
@@ -225,21 +240,21 @@ function HomePage() {
                 <div className="grid size-12 shrink-0 place-items-center bg-foreground text-background">
                   <Building2 className="size-5" />
                 </div>
-                <div className="min-w-0">
+                <div className="min-w-0 flex-1">
                   <p className="truncate font-display text-lg font-extrabold">{kitchen.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")} · $
-                    {kitchen.cost_per_meal.toFixed(2)}/meal
+                    {kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}
                   </p>
                 </div>
+                <ProviderStateBadge state={kitchen.providerState} />
               </div>
             ))}
             {kitchens.isLoading && (
-              <p className="text-sm text-muted-foreground">Loading participating programs…</p>
+              <p className="text-sm text-muted-foreground">Loading mapped providers…</p>
             )}
             {!kitchens.isLoading && (kitchens.data?.length ?? 0) === 0 && (
               <p className="text-sm text-muted-foreground">
-                Participating kitchens will appear here as operators complete verification.
+Mapped providers will appear here as the directory grows.
               </p>
             )}
           </div>
