@@ -354,6 +354,10 @@ function ImpactPage() {
               <h2 className="mt-2 font-display text-3xl font-bold tracking-tight">
                 Commit monthly, and kitchens can staff against it.
               </h2>
+              <p className="mt-2 max-w-xl text-sm text-muted-foreground">
+                Recurring sponsorships route only to funding-enabled kitchens. While none are live,
+                checkout is paused rather than collecting money we cannot route. <TrustLink />
+              </p>
             </div>
             {sponsorship.data && (
               <button
