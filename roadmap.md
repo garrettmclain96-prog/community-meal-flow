@@ -90,6 +90,50 @@
 - [x] Linked the monitored address from `src/lib/contact.ts` on Trust & Method, footer and Legal Center; no claim required for correction/removal requests.
 - [x] Added `/pilot` navigation and test-kitchen badges to the five pilot surfaces.
 - [x] Added private build-time `/design` dashboard and requirements/task traceability.
-- [ ] Resolve database access, confirm Garrett’s account and grant platform_admin; see tasks.md.
+- [x] Garrett's account holds platform_admin (confirmed by owner 2026-09-06).
+
+## GOD MODE — owner command center (ready, not started)
+
+Requested 2026-09-06. No code written yet; this is the execution plan.
+
+- [ ] **Data layer** `src/lib/god-mode.functions.ts`: `getGodModeSnapshot` server fn,
+      `requireSupabaseAuth` → `has_role(platform_admin)` via `context.supabase` (same
+      pattern as `design.functions.ts`) → `Cache-Control: private, no-store` → then
+      `await import("@/integrations/supabase/client.server")` for aggregate counts only.
+      Return counts, never emails/PII. Sections: funding (`sponsor_checkouts` by status,
+      `funded_orders` by status + `paid`, `payouts` by status, `impact_events` last 10,
+      `subscriptions` by status, `sponsorship_allocations` total); kitchens (`kitchens`
+      total / claimed / is_test / funding-enabled, `kitchen_claims` pending); ops
+      (`delivery_runs` by status, `volunteers` active, `volunteer_shifts` upcoming,
+      `shift_signups`); partners (`partner_organizations` approved/pending,
+      `partner_referrals` by status, `assistance_requests` by status — counts only);
+      queues (`privacy_requests` / `refund_requests` / `pilot_signups` by status);
+      readiness (parse `tasks.md` + `design.md` checkboxes via `import.meta.glob ?raw`
+      in a `createServerOnlyFn`, reuse `design-docs.ts` parser); health (DB query ok,
+      auth ok, env presence booleans only: STRIPE key + mode from `sk_test_` prefix,
+      webhook secret, OPENAI key). Every block carries `{ ok, error? }` for graceful
+      partial failure. If the admin client fails with the `Expected 3 parts in JWT`
+      key-format error, fall back to a SECURITY DEFINER `god_mode_snapshot()` RPC
+      gated on `has_role`, granted to `authenticated` only (revoke from anon/public).
+- [ ] **Route** `src/routes/god-mode.tsx` (public file route, client-side gate like
+      `/admin`): `robots noindex, nofollow`; states sign-in / not authorized / error /
+      loading / data. Mission-control visual language distinct from the public site:
+      compact sticky command header with live clock + health pips, horizontally
+      scrollable segmented section nav on phone, KPI tiles with mono numerals, status
+      bars per queue, "Operations Queue" primary action → `/admin`, plus wired actions
+      only: `/admin` (privacy/refund/pilot tabs), `/design`, `/kitchen`, `/partners`,
+      `/volunteer`, `/civic`, `/impact`. Labels: TEST / SANDBOX / ESTIMATE / UNAVAILABLE
+      where applicable. iPhone-first: single column, 44px targets, no desktop-only grids.
+- [ ] **Entry point**: `AccountButton` shows a "GOD MODE" link when
+      `hasRole("platform_admin")`; add the same to the mobile nav block in `SiteHeader`.
+      Never rendered for other roles.
+- [ ] **Public visual refresh** (`src/styles.css`, `index.tsx`, `SiteHeader.tsx`):
+      stronger hero treatment, section contrast, nav polish and spacing so the new
+      deploy is unmistakable vs the stale published build. Keep tokens, brand and routes.
+- [ ] **Verify**: `bunx prettier --write`, `tsgo`, `bun run lint`, `bun run build`,
+      Playwright smoke of `/god-mode` (signed-out, non-admin, admin via injected session
+      when `LOVABLE_BROWSER_AUTH_STATUS=injected`) at 390px and 1280px; update
+      `design.md` (v1.2.0 + changelog), `requirements.md` (FR-704 God Mode),
+      `tasks.md`, and add `docs/adr/0004-owner-command-center.md`.
 
 Execution evidence and remaining verification: [tasks.md](./tasks.md).
