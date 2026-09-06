@@ -1,0 +1,79 @@
+name: Fix kitchen verification UX
+
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-kitchen-verification-ux.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Patch kitchen verification UX
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('src/routes/kitchen.tsx')
+          text = path.read_text()
+
+          def once(old, new, label):
+              global text
+              if text.count(old) != 1:
+                  raise SystemExit(f'{label}: expected exactly one match, got {text.count(old)}')
+              text = text.replace(old, new, 1)
+
+          once(
+              '  const kitchenId = mine.data?.id ?? "";\n',
+              '  const kitchenId = mine.data?.id ?? "";\n  const operational = Boolean(\n    mine.data?.approved && mine.data?.active && mine.data?.claimed,\n  );\n',
+              'operational state',
+          )
+
+          needle = '    enabled: Boolean(kitchenId),'
+          if text.count(needle) < 4:
+              raise SystemExit(f'query gating: expected at least four matches, got {text.count(needle)}')
+          for _ in range(4):
+              text = text.replace(needle, '    enabled: Boolean(kitchenId) && operational,', 1)
+
+          once(
+              '        {mine.data && (\n          <>\n            <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">',
+              '        {mine.data && !operational && (\n          <section className="editorial-card mt-10 max-w-2xl border-amber-500/40 p-6">\n            <p className="kicker text-amber-700 dark:text-amber-300">Pending verification</p>\n            <h2 className="mt-2 font-display text-2xl font-black">\n              Your kitchen registration is under review.\n            </h2>\n            <p className="mt-3 text-sm leading-6 text-muted-foreground">\n              This provider remains private and unfundable until a ProvisionLoop platform\n              administrator approves it. Meal publishing, volunteer shifts, orders and payouts are\n              locked until verification is complete.\n            </p>\n          </section>\n        )}\n\n        {mine.data && operational && (\n          <>\n            <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">',
+              'pending registration panel',
+          )
+
+          once(
+              '    toast.success("Kitchen registered");',
+              '    toast.success("Kitchen submitted for verification");',
+              'registration toast',
+          )
+
+          once(
+              '        information. They are not affiliated with ProvisionLoop and cannot receive funding. If you\n        run one, claim it — the listing becomes your account, and funding opens once payout\n        onboarding is complete.',
+              '        information. They are not affiliated with ProvisionLoop and cannot receive funding. If you\n        run one, submit a claim for manual verification. Ownership is granted only after a platform\n        administrator approves the claim; funding remains disabled until verification and payout\n        onboarding are complete.',
+              'claim explanation',
+          )
+
+          once(
+              '                    toast.success(`${k.name} is yours — check your capacity and pricing`);',
+              '                    toast.success("Claim submitted for verification");',
+              'claim toast',
+          )
+
+          text = text.replace('{busy ? "Claiming…" : "Confirm claim"}', '{busy ? "Submitting…" : "Submit claim"}', 1)
+
+          path.write_text(text)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/routes/kitchen.tsx
+          git commit -m "fix: show pending provider verification state"
+          git push origin HEAD:main
