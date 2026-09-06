@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { AlertTriangle, CheckCircle2 } from "lucide-react";
 
 import { INGREDIENT_BY_ID } from "@/lib/food/ingredients";
 import { useMealForge } from "@/lib/food/store";
@@ -73,7 +74,7 @@ function KitchenPage() {
                 </span>
                 <button
                   onClick={() => removePantryItem(item.id)}
-                  className="text-xs text-muted-foreground hover:text-ember-text"
+                  className="min-h-10 px-2 text-xs text-muted-foreground hover:text-ember-text"
                 >
                   Remove
                 </button>
@@ -85,27 +86,64 @@ function KitchenPage() {
 
       <section>
         <div className="flex items-end justify-between gap-3">
-          <h2 className="text-[11px] uppercase tracking-widest text-muted-foreground">
-            Recipes · {state.recipes.length}
-          </h2>
+          <div>
+            <h2 className="text-[11px] uppercase tracking-widest text-muted-foreground">
+              Recipes · {state.recipes.length}
+            </h2>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Recipes with unresolved ingredients stay in your library but are excluded from automatic planning until their ingredient data is complete.
+            </p>
+          </div>
           <Link
             to="/app/import"
-            className="rounded-sm border border-border px-3 py-1.5 text-xs font-semibold hover:border-ember/50"
+            className="shrink-0 rounded-sm border border-border px-3 py-1.5 text-xs font-semibold hover:border-ember/50"
           >
             Import a recipe
           </Link>
         </div>
-        <ul className="mt-2 divide-y divide-border rounded-lg border border-border bg-surface">
-          {state.recipes.map((r) => (
-            <li key={r.id} className="p-3 text-sm">
-              <p className="font-medium">{r.title}</p>
-              <p className="text-xs text-muted-foreground">
-                {r.servings} servings · {r.totalTimeMinutes} min · {r.ingredients.length}{" "}
-                ingredients · {r.source.extractionMethod} · {Math.round(r.source.confidence * 100)}%
-                confidence
-              </p>
-            </li>
-          ))}
+        <ul className="mt-3 divide-y divide-border rounded-lg border border-border bg-surface">
+          {state.recipes.map((r) => {
+            const unresolved = r.source.unmatchedIngredients?.filter((line) => line.trim()) ?? [];
+            return (
+              <li key={r.id} className="p-3 text-sm">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="font-medium">{r.title}</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      {r.servings} servings · {r.totalTimeMinutes} min · {r.ingredients.length}{" "}
+                      matched ingredients · {r.source.extractionMethod} · {Math.round(r.source.confidence * 100)}%
+                      confidence
+                    </p>
+                  </div>
+                  {unresolved.length > 0 ? (
+                    <span className="inline-flex shrink-0 items-center gap-1 border border-amber-500/40 bg-amber-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:text-amber-300">
+                      <AlertTriangle className="size-3" /> Needs mapping
+                    </span>
+                  ) : (
+                    <span className="inline-flex shrink-0 items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-primary">
+                      <CheckCircle2 className="size-3" /> Plan-ready
+                    </span>
+                  )}
+                </div>
+
+                {unresolved.length > 0 && (
+                  <details className="mt-3 border-l-2 border-amber-500/50 pl-3">
+                    <summary className="cursor-pointer text-xs font-bold text-amber-700 dark:text-amber-300">
+                      {unresolved.length} unresolved ingredient line{unresolved.length === 1 ? "" : "s"}
+                    </summary>
+                    <ul className="mt-2 space-y-1 text-xs text-muted-foreground">
+                      {unresolved.map((line, index) => (
+                        <li key={`${line}_${index}`}>{line}</li>
+                      ))}
+                    </ul>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      MealForge will not cost or auto-select this recipe until every required ingredient can be identified safely.
+                    </p>
+                  </details>
+                )}
+              </li>
+            );
+          })}
         </ul>
       </section>
     </div>
