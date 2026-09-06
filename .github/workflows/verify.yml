@@ -29,6 +29,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
+      - name: Production build / route generation
+        run: bun run build
+
       - name: Typecheck
         id: typecheck
         shell: bash
@@ -60,6 +63,3 @@ jobs:
 
       - name: Tests
         run: bun run test
-
-      - name: Production build
-        run: bun run build
