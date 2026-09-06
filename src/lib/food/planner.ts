@@ -1,3 +1,4 @@
+import { findCustomConstraint } from "./constraints";
 import { INGREDIENT_BY_ID } from "./ingredients";
 import { bestPackage, type PriceObservation } from "./pricing";
 import type { Household, PantryItem, Recipe } from "./types";
@@ -137,11 +138,26 @@ export function isRecipeAllowed(recipe: Recipe, household: Household): string | 
   for (const item of recipe.ingredients) {
     if (item.optional) continue;
     const ing = INGREDIENT_BY_ID[item.ingredientId];
-    if (!ing) continue;
+    if (!ing) {
+      const customAllergy = findCustomConstraint(item, household.allergies);
+      if (customAllergy) return `matches allergy/intolerance: ${customAllergy}`;
+      const customAvoid = findCustomConstraint(item, household.avoidTags);
+      if (customAvoid) return `contains excluded ingredient: ${customAvoid}`;
+      continue;
+    }
+
+    // Structured metadata remains the highest-confidence check.
     const allergen = ing.allergens.find((a) => household.allergies.includes(a));
     if (allergen) return `contains ${allergen.replace("_", " ")}`;
     const avoided = ing.diet.find((d) => household.avoidTags.includes(d));
     if (avoided) return `contains ${avoided}`;
+
+    // User-defined constraints also match ingredient names, aliases, ids, and
+    // verbatim imported ingredient lines when available.
+    const customAllergy = findCustomConstraint(item, household.allergies);
+    if (customAllergy) return `matches allergy/intolerance: ${customAllergy}`;
+    const customAvoid = findCustomConstraint(item, household.avoidTags);
+    if (customAvoid) return `contains excluded ingredient: ${customAvoid}`;
   }
   if (recipe.totalTimeMinutes > household.maxCookMinutes) {
     return `takes ${recipe.totalTimeMinutes} min`;
