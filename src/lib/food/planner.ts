@@ -185,6 +185,10 @@ export interface MealPlan {
   targetServings: number;
   storeId: string;
   excluded: Exclusion[];
+  requestedDinners: number;
+  uniqueEligibleRecipes: number;
+  repeatedMeals: number;
+  constraintLimited: boolean;
   /** budget shortfall, in USD — the community assistance bridge reads this */
   gap: number;
   generatedAt: string;
@@ -272,75 +276,150 @@ export interface PlanRequest {
   history?: string[];
 }
 
+function chooseBestMeal({
+  eligible,
+  chosen,
+  virtualPantry,
+  targetServings,
+  storeId,
+  observations,
+  household,
+  history,
+  budget,
+  dinners,
+  allowRepeats,
+}: {
+  eligible: Recipe[];
+  chosen: PlannedMeal[];
+  virtualPantry: PantryItem[];
+  targetServings: number;
+  storeId: string;
+  observations: PriceObservation[];
+  household: Household;
+  history: string[];
+  budget: number;
+  dinners: number;
+  allowRepeats: boolean;
+}): PlannedMeal | null {
+  const used = new Set(chosen.map((meal) => meal.recipe.id));
+  let best: PlannedMeal | null = null;
+
+  for (const recipe of eligible) {
+    if (!allowRepeats && used.has(recipe.id)) continue;
+
+    const cost = costRecipe(recipe, {
+      storeId,
+      observations,
+      pantry: virtualPantry,
+      targetServings,
+    });
+    const { score, reasons } = scoreCandidate({
+      recipe,
+      cost,
+      household,
+      chosen,
+      history,
+    });
+
+    const repeatCount = chosen.filter((meal) => meal.recipe.id === recipe.id).length;
+    const remainingBudget = budget - chosen.reduce((sum, meal) => sum + meal.cost.purchaseCost, 0);
+    const slotsLeft = Math.max(1, dinners - chosen.length);
+    const overBudget = cost.purchaseCost > (remainingBudget / slotsLeft) * 1.6;
+    let adjusted = overBudget ? score - 25 : score;
+    const nextReasons = [...reasons];
+
+    if (repeatCount > 0) {
+      adjusted -= repeatCount * 30;
+      nextReasons.push("repeated because your current constraints limit unique options");
+    }
+
+    if (!best || adjusted > best.score) {
+      best = { recipe, cost, score: Math.round(adjusted * 10) / 10, reasons: nextReasons };
+    }
+  }
+
+  return best;
+}
+
+function applyMealToVirtualPantry(meal: PlannedMeal, virtualPantry: PantryItem[]) {
+  for (const line of meal.cost.lines) {
+    if (line.fromPantryBase > 0) {
+      consumeVirtual(virtualPantry, line.ingredientId, line.fromPantryBase);
+    }
+    if (line.remainderBase > 0) {
+      virtualPantry.push({
+        id: `remainder_${meal.recipe.id}_${line.ingredientId}_${virtualPantry.length}`,
+        ingredientId: line.ingredientId,
+        quantity: { amount: line.remainderBase, unit: packageUnit(line.ingredientId) },
+        origin: "package_remainder",
+        addedAt: new Date().toISOString(),
+      });
+    }
+  }
+}
+
 /**
- * Greedy constrained selection with a budget-repair pass: candidates are
- * re-costed against the pantry as the week fills up, so package remainders
- * from earlier meals reduce the cost of later ones.
+ * Greedy constrained selection with a budget-repair pass. Unique recipes are
+ * preferred. If the household asks for more dinners than the current hard
+ * constraints allow uniquely, MealForge deliberately repeats the best eligible
+ * meals instead of silently returning an incomplete week.
  */
 export function buildMealPlan(req: PlanRequest): MealPlan {
   const { household, recipes, storeId, observations, dinners, budget } = req;
   const targetServings = householdServings(household);
   const excluded: Exclusion[] = [];
 
-  const eligible = recipes.filter((r) => {
-    const reason = isRecipeAllowed(r, household);
-    if (reason) excluded.push({ recipeId: r.id, reason });
+  const eligible = recipes.filter((recipe) => {
+    const reason = isRecipeAllowed(recipe, household);
+    if (reason) excluded.push({ recipeId: recipe.id, reason });
     return !reason;
   });
 
   // virtual pantry: real stock plus package remainders accumulated this week
-  const virtualPantry: PantryItem[] = req.pantry.map((p) => ({ ...p }));
+  const virtualPantry: PantryItem[] = req.pantry.map((item) => ({ ...item }));
   const chosen: PlannedMeal[] = [];
-  const used = new Set<string>();
+  const history = req.history ?? [];
 
-  for (let slot = 0; slot < dinners; slot++) {
-    let best: PlannedMeal | null = null;
-
-    for (const recipe of eligible) {
-      if (used.has(recipe.id)) continue;
-      const cost = costRecipe(recipe, {
-        storeId,
-        observations,
-        pantry: virtualPantry,
-        targetServings,
-      });
-      const { score, reasons } = scoreCandidate({
-        recipe,
-        cost,
-        household,
-        chosen,
-        history: req.history ?? [],
-      });
-
-      const remainingBudget = budget - chosen.reduce((s, m) => s + m.cost.purchaseCost, 0);
-      const slotsLeft = dinners - slot;
-      const overBudget = cost.purchaseCost > (remainingBudget / Math.max(1, slotsLeft)) * 1.6;
-      const adjusted = overBudget ? score - 25 : score;
-
-      if (!best || adjusted > best.score) best = { recipe, cost, score: adjusted, reasons };
-    }
-
+  while (chosen.length < dinners && chosen.length < eligible.length) {
+    const best = chooseBestMeal({
+      eligible,
+      chosen,
+      virtualPantry,
+      targetServings,
+      storeId,
+      observations,
+      household,
+      history,
+      budget,
+      dinners,
+      allowRepeats: false,
+    });
     if (!best) break;
-    used.add(best.recipe.id);
     chosen.push(best);
-
-    // consume what the meal uses, bank the package remainders
-    for (const line of best.cost.lines) {
-      if (line.fromPantryBase > 0)
-        consumeVirtual(virtualPantry, line.ingredientId, line.fromPantryBase);
-      if (line.remainderBase > 0) {
-        virtualPantry.push({
-          id: `remainder_${best.recipe.id}_${line.ingredientId}`,
-          ingredientId: line.ingredientId,
-          quantity: { amount: line.remainderBase, unit: packageUnit(line.ingredientId) },
-          origin: "package_remainder",
-          addedAt: new Date().toISOString(),
-        });
-      }
-    }
+    applyMealToVirtualPantry(best, virtualPantry);
   }
 
-  const totalCost = Math.round(chosen.reduce((s, m) => s + m.cost.purchaseCost, 0) * 100) / 100;
+  while (chosen.length < dinners && eligible.length > 0) {
+    const best = chooseBestMeal({
+      eligible,
+      chosen,
+      virtualPantry,
+      targetServings,
+      storeId,
+      observations,
+      household,
+      history,
+      budget,
+      dinners,
+      allowRepeats: true,
+    });
+    if (!best) break;
+    chosen.push(best);
+    applyMealToVirtualPantry(best, virtualPantry);
+  }
+
+  const totalCost = Math.round(chosen.reduce((sum, meal) => sum + meal.cost.purchaseCost, 0) * 100) / 100;
+  const distinctChosen = new Set(chosen.map((meal) => meal.recipe.id)).size;
 
   return {
     meals: chosen,
@@ -349,6 +428,10 @@ export function buildMealPlan(req: PlanRequest): MealPlan {
     targetServings,
     storeId,
     excluded,
+    requestedDinners: dinners,
+    uniqueEligibleRecipes: eligible.length,
+    repeatedMeals: Math.max(0, chosen.length - distinctChosen),
+    constraintLimited: eligible.length < dinners,
     gap: Math.round(Math.max(0, totalCost - budget) * 100) / 100,
     generatedAt: new Date().toISOString(),
   };
