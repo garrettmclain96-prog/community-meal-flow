@@ -10,7 +10,7 @@ import {
 
 import { useAuth } from "@/hooks/useAuth";
 
-import { loadCloudState, pushCloudState } from "./cloud";
+import { loadCatalogPrices, loadCloudState, pushCloudState } from "./cloud";
 import {
   buildGroceryList,
   planRemainderPrefix,
@@ -30,9 +30,9 @@ import type { Household, PantryItem, Recipe } from "./types";
 /**
  * Local-first persistence layer.
  *
- * Everything the MealForge experience needs is written through this one
- * repository interface. When Lovable Cloud is enabled, the same interface is
- * re-implemented against Postgres tables and the UI does not change.
+ * Household-owned data is stored locally and mirrored to Postgres when signed
+ * in. Public store-price catalog rows are hydrated separately and never copied
+ * into localStorage or the household's price_observations table.
  */
 
 const KEY = "mealforge.state.v1";
@@ -92,6 +92,7 @@ function load(): MealForgeState {
       ...base,
       ...parsed,
       household: { ...base.household, ...(parsed.household ?? {}) },
+      observations: (parsed.observations ?? []).filter((o) => o.scope !== "catalog"),
       // seeds are code-owned; imported recipes are merged on top
       recipes: [
         ...SEED_RECIPES,
@@ -133,12 +134,33 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     setState(load());
     setReady(true);
+
+    let cancelled = false;
+    void loadCatalogPrices()
+      .then((catalog) => {
+        if (cancelled) return;
+        setState((s) => ({
+          ...s,
+          observations: [...s.observations.filter((o) => o.scope !== "catalog"), ...catalog],
+        }));
+      })
+      .catch(() => {
+        /* baseline estimates remain available if public catalog loading fails */
+      });
+
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
     if (!ready) return;
     try {
-      window.localStorage.setItem(KEY, JSON.stringify(state));
+      const householdOwnedState = {
+        ...state,
+        observations: state.observations.filter((o) => o.scope !== "catalog"),
+      };
+      window.localStorage.setItem(KEY, JSON.stringify(householdOwnedState));
     } catch {
       /* storage full or unavailable — the session still works in memory */
     }
@@ -159,9 +181,20 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
         if (cancelled) return;
         setCloudId(householdId);
         setState((s) => {
-          if (!remote.onboarded && s.onboarded)
+          if (!remote.onboarded && s.onboarded) {
             return { ...s, household: { ...s.household, id: householdId } };
-          return { ...s, ...remote, household: remote.household ?? s.household };
+          }
+
+          const catalog = s.observations.filter((o) => o.scope === "catalog");
+          const householdObservations = (remote.observations ?? s.observations).filter(
+            (o) => o.scope !== "catalog",
+          );
+          return {
+            ...s,
+            ...remote,
+            household: remote.household ?? s.household,
+            observations: [...householdObservations, ...catalog],
+          };
         });
       })
       .catch(() => {
@@ -210,16 +243,22 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const addPriceObservation = useCallback((observation: PriceObservation) => {
+    const normalized: PriceObservation = {
+      ...observation,
+      provenance: "RECENT_OBSERVED",
+      scope: "household",
+    };
     setState((s) => ({
       ...s,
       observations: [
-        observation,
+        normalized,
         ...s.observations.filter(
           (o) =>
             !(
-              o.ingredientId === observation.ingredientId &&
-              o.storeId === observation.storeId &&
-              o.packageLabel === observation.packageLabel
+              o.scope !== "catalog" &&
+              o.ingredientId === normalized.ingredientId &&
+              o.storeId === normalized.storeId &&
+              o.packageLabel === normalized.packageLabel
             ),
         ),
       ],
