@@ -115,6 +115,12 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
       .filter((row) => row.status === "paid")
       .reduce((sum, row) => sum + row.amount_cents, 0);
 
+    const stripeSandboxConfigured = Boolean(process.env["STRIPE_SANDBOX_API_KEY"]);
+    const stripeLiveConfigured = Boolean(process.env["STRIPE_LIVE_API_KEY"]);
+    const webhookSandboxConfigured = Boolean(process.env["PAYMENTS_SANDBOX_WEBHOOK_SECRET"]);
+    const webhookLiveConfigured = Boolean(process.env["PAYMENTS_LIVE_WEBHOOK_SECRET"]);
+    const lovableGatewayConfigured = Boolean(process.env["LOVABLE_API_KEY"]);
+
     return {
       authorized: true as const,
       generatedAt: new Date().toISOString(),
@@ -122,9 +128,21 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
       health: {
         database: errors.length === 0,
         auth: true,
-        stripeConfigured: Boolean(process.env["STRIPE_SECRET_KEY"]),
-        stripeMode: process.env["STRIPE_SECRET_KEY"]?.startsWith("sk_live_") ? "live" : "test",
-        webhookConfigured: Boolean(process.env["STRIPE_WEBHOOK_SECRET"]),
+        stripeConfigured: stripeSandboxConfigured || stripeLiveConfigured,
+        stripeMode:
+          stripeLiveConfigured && stripeSandboxConfigured
+            ? "live + sandbox"
+            : stripeLiveConfigured
+              ? "live"
+              : stripeSandboxConfigured
+                ? "sandbox"
+                : "unconfigured",
+        webhookConfigured: webhookSandboxConfigured || webhookLiveConfigured,
+        stripeSandboxConfigured,
+        stripeLiveConfigured,
+        webhookSandboxConfigured,
+        webhookLiveConfigured,
+        lovableGatewayConfigured,
         openAiConfigured: Boolean(process.env["OPENAI_API_KEY"]),
       },
       funding: {
@@ -142,7 +160,12 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
         claimed: kitchens.filter((row) => row.claimed).length,
         test: kitchens.filter((row) => row.is_test).length,
         fundingEnabled: kitchens.filter(
-          (row) => row.approved && row.active && row.claimed && Boolean(row.payout_account_id),
+          (row) =>
+            row.approved &&
+            row.active &&
+            row.claimed &&
+            row.payout_status === "ready" &&
+            Boolean(row.payout_account_id),
         ).length,
         claimsByStatus: tally(claims),
       },
