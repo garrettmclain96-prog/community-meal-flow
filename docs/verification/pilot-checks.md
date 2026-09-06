@@ -97,3 +97,11 @@ Final build, formatting, typecheck and five tests passed after documentation cha
 Automatic approval review rejected the GitHub push because the implementation
 request did not explicitly authorize publishing this branch. No workaround or PR
 creation was attempted. The branch is local and awaits explicit push authorization.
+
+### Authorized publishing follow-up
+
+Garrett authorized publishing in the next turn. Shell Git lacked a credential;
+the connected GitHub app published all 37 changed files to
+`codex/design-docs-pilot` as commit `27457de`. The earlier approval blocker is
+resolved. Database access, account identity, sandbox and browser checks remain
+blocked as described above. No merge or production deployment has been performed.
