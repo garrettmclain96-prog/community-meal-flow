@@ -2,33 +2,35 @@ import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
+  ArrowUpRight,
   Building2,
   ChefHat,
   HandHeart,
   MapPin,
-  ReceiptText,
+  ShieldCheck,
   Users,
 } from "lucide-react";
 
+import "@/home-refresh.css";
 import heroTable from "@/assets/hero-table.jpg";
-import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { ProviderStateBadge } from "@/components/ProviderStateBadge";
+import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { listKitchens, loadImpactTotals } from "@/lib/community";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ProvisionLoop — Fund Local Meals in Galveston County" },
+      { title: "ProvisionLoop — Local Food Infrastructure for Galveston County" },
       {
         name: "description",
         content:
-          "Accountable local food infrastructure in Galveston County: fund verified kitchens, find nearby food support, volunteer for dispatch and follow every delivery on a public ledger.",
+          "ProvisionLoop coordinates local meal funding, verified kitchen capacity, private assistance, volunteer delivery and public aggregate proof across Galveston County.",
       },
-      { property: "og:title", content: "ProvisionLoop — Local meals. Public proof." },
+      { property: "og:title", content: "ProvisionLoop — Private need. Local capacity. Public proof." },
       {
         property: "og:description",
         content:
-          "Closed-loop community food coordination: verified kitchens, volunteer dispatch and a public aggregate ledger.",
+          "A closed-loop community food network connecting funding, kitchens, partners, volunteers and public accountability.",
       },
       { property: "og:image", content: heroTable },
       { property: "og:type", content: "website" },
@@ -42,32 +44,32 @@ const PATHS = [
     to: "/impact",
     number: "01",
     icon: HandHeart,
-    title: "Fund local meals",
-    body: "Send funding to a kitchen whose operator has verified the listing and enabled payouts.",
-    action: "Fund a meal",
+    title: "Fund meals",
+    body: "Put money behind verified local kitchen capacity and track the aggregate outcome.",
+    action: "Open funding",
   },
   {
     to: "/help",
     number: "02",
     icon: MapPin,
-    title: "Find food help",
-    body: "See nearby Galveston County programs, service details and trusted ways to ask for assistance.",
+    title: "Get food help",
+    body: "Find nearby resources or submit a private request routed through trusted partners.",
     action: "Find support",
   },
   {
     to: "/kitchen",
     number: "03",
     icon: ChefHat,
-    title: "Put your kitchen to work",
-    body: "Restaurants, churches, caterers and community kitchens can turn open capacity into funded orders.",
+    title: "Activate a kitchen",
+    body: "Restaurants, caterers, churches and community kitchens can convert open capacity into funded meals.",
     action: "Join the network",
   },
   {
     to: "/volunteer",
     number: "04",
     icon: Users,
-    title: "Move meals nearby",
-    body: "Browse local prep shifts and delivery runs. Create an account only when you are ready to claim one.",
+    title: "Move the meals",
+    body: "Claim local prep and delivery work that closes the loop from kitchen to community.",
     action: "See opportunities",
   },
 ] as const;
@@ -78,205 +80,177 @@ function HomePage() {
   const totals = impact.data;
 
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="pl-home min-h-dvh">
       <SiteHeader />
 
       <main>
-        <section className="overflow-hidden border-b-2 border-foreground">
-          <div className="site-shell grid min-h-[calc(100dvh-72px)] items-stretch lg:grid-cols-[1.08fr_.92fr]">
-            <div className="flex flex-col justify-center py-16 pr-0 lg:py-24 lg:pr-14">
-              <div className="kicker flex items-center gap-2 text-primary">
-                <span className="size-2 rounded-full bg-primary" /> Galveston County pilot
-              </div>
-              <h1 className="display-title mt-7 max-w-[10ch] text-[clamp(3.7rem,9vw,7.6rem)]">
-                GOOD FOOD.
+        <section className="pl-hero">
+          <div className="site-shell pl-hero-grid">
+            <div className="pl-hero-copy">
+              <div className="pl-eyebrow text-primary">Live civic food network</div>
+              <h1 className="pl-hero-title">
+                NEED IN.
                 <br />
-                <span className="text-primary">LOCAL POWER.</span>
+                <span>MEALS OUT.</span>
               </h1>
-              <p className="mt-7 max-w-xl text-lg font-medium leading-8 text-muted-foreground md:text-xl">
-                Accountable local food infrastructure: private requests route through verified
-                partners, paid local kitchen capacity, and volunteer dispatch — then close on a
-                public ledger. Not a donation marketplace. A coordination loop that finishes.
+              <p className="pl-hero-deck">
+                ProvisionLoop connects private food need to verified local kitchens, accountable
+                funding, volunteer delivery and a public aggregate ledger. It is infrastructure for
+                finishing the job — not another donation page.
               </p>
-              <div className="mt-9 flex flex-col gap-3 sm:flex-row">
-                <Link to="/impact" className="button-primary px-6 py-4">
-                  Fund meals now <ArrowRight className="size-4" />
+
+              <div className="pl-hero-actions">
+                <Link to="/impact" className="pl-hero-primary">
+                  Fund local meals <ArrowUpRight className="size-4" />
                 </Link>
-                <Link to="/help" className="button-secondary px-6 py-4">
-                  I need food help
+                <Link to="/help" className="pl-hero-secondary">
+                  I need food help <ArrowRight className="size-4" />
                 </Link>
               </div>
-              <div className="mt-12 grid grid-cols-3 border-y border-border-strong">
-                <LiveStat
-                  label="Meals funded"
-                  value={totals ? totals.mealsFunded.toLocaleString() : "—"}
-                />
-                <LiveStat
-                  label="Delivered"
-                  value={totals ? totals.mealsDelivered.toLocaleString() : "—"}
-                />
-                <LiveStat
-                  label="Funding-enabled kitchens"
-                  value={totals ? String(totals.fundingEnabledKitchens) : "—"}
-                />
+
+              <div className="pl-live-strip" aria-label="Live ProvisionLoop pilot totals">
+                <LiveStat label="Meals funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
+                <LiveStat label="Meals delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
+                <LiveStat label="Funding-ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
               </div>
-              <p className="mt-3 text-xs text-muted-foreground">
-                Live pilot totals from the public ProvisionLoop ledger — no demo numbers.{" "}
-                {totals ? `${totals.providersMapped} providers mapped in the directory; ` : ""}
-                only funding-enabled kitchens can receive money.{" "}
-                <Link to="/trust-method" className="underline underline-offset-4">
-                  Trust &amp; method
+
+              <p className="mt-4 max-w-xl font-mono text-[10px] uppercase leading-5 tracking-[0.08em] text-[#777269]">
+                Live pilot totals only. No demo numbers. {totals ? `${totals.providersMapped} providers mapped. ` : ""}
+                <Link to="/trust-method" className="text-primary underline underline-offset-4">
+                  See verification method
                 </Link>
               </p>
             </div>
 
-            <div className="relative min-h-[520px] border-x-2 border-t-2 border-foreground lg:min-h-full lg:border-y-0 lg:border-r-2">
-              <img
-                src={heroTable}
-                alt="Neighbors sharing food around one long table"
-                className="absolute inset-0 size-full object-cover saturate-[.85]"
-                width={1024}
-                height={1024}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-foreground/75 via-transparent to-transparent" />
-              <div className="absolute left-5 top-5 bg-secondary px-4 py-3 font-mono text-xs font-semibold text-secondary-foreground shadow-[4px_4px_0_var(--foreground)]">
-                FOOD IS INFRASTRUCTURE.
+            <div className="pl-hero-visual">
+              <img src={heroTable} alt="Neighbors gathered around a shared table" width={1024} height={1024} />
+              <div className="pl-visual-badge">
+                <ShieldCheck className="size-4" /> closed-loop accountability
               </div>
-              <div className="absolute inset-x-5 bottom-5 grid gap-2 bg-background p-5 text-foreground shadow-[6px_6px_0_var(--primary)] sm:grid-cols-[1fr_auto] sm:items-end">
-                <div>
-                  <p className="kicker text-primary">The promise</p>
-                  <p className="mt-2 font-display text-2xl font-black leading-tight">
-                    Every funded meal creates food access and local kitchen revenue.
-                  </p>
-                </div>
-                <ReceiptText className="hidden size-10 text-primary sm:block" />
+              <div className="pl-visual-card">
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary">The system</p>
+                <strong>Private need → local capacity → verified fulfillment → public proof.</strong>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="site-shell py-20">
-          <div className="grid items-end gap-6 md:grid-cols-2">
-            <div>
-              <p className="kicker text-primary">Choose your lane</p>
-              <h2 className="display-title mt-4 text-5xl md:text-6xl">WHAT ARE YOU HERE TO DO?</h2>
+        <section className="pl-section">
+          <div className="site-shell">
+            <div className="grid items-end gap-8 md:grid-cols-[1fr_.72fr]">
+              <div>
+                <p className="pl-section-kicker">Choose your lane</p>
+                <h2 className="pl-section-title">ONE NETWORK. FOUR WAYS IN.</h2>
+              </div>
+              <p className="max-w-lg text-sm leading-7 opacity-65 md:justify-self-end">
+                Start with the outcome you need. ProvisionLoop routes you into the right workflow
+                without forcing everyone through the same dashboard.
+              </p>
             </div>
-            <p className="max-w-lg text-base leading-7 text-muted-foreground md:justify-self-end">
-              No maze of dashboards. Start with the outcome you need and ProvisionLoop routes you
-              into the right workflow.
-            </p>
-          </div>
-          <div className="mt-10 grid gap-4 md:grid-cols-2">
-            {PATHS.map(({ to, number, icon: Icon, title, body, action }) => (
-              <Link
-                key={to}
-                to={to}
-                className="group editorial-card grid min-h-64 p-6 transition hover:-translate-y-1 hover:shadow-[8px_8px_0_var(--primary)] md:p-8"
-              >
-                <div className="flex items-start justify-between">
-                  <span className="kicker">{number}</span>
-                  <Icon className="size-8 text-primary" />
-                </div>
-                <div className="mt-auto pt-12">
-                  <h3 className="font-display text-3xl font-black tracking-tight">{title}</h3>
-                  <p className="mt-3 max-w-md text-sm leading-6 text-muted-foreground">{body}</p>
-                  <span className="mt-6 inline-flex items-center gap-2 text-sm font-extrabold text-primary">
-                    {action}
-                    <ArrowRight className="size-4 transition group-hover:translate-x-1" />
+
+            <div className="pl-lanes">
+              {PATHS.map(({ to, number, icon: Icon, title, body, action }) => (
+                <Link key={to} to={to} className="pl-lane group">
+                  <div className="flex items-start justify-between gap-4">
+                    <span className="pl-lane-number">{number}</span>
+                    <Icon className="pl-lane-icon size-7" />
+                  </div>
+                  <h3>{title}</h3>
+                  <p>{body}</p>
+                  <span className="pl-lane-action">
+                    {action} <ArrowUpRight className="size-3.5 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </span>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
 
-        <section className="section-rule bg-secondary text-secondary-foreground">
-          <div className="site-shell py-20">
-            <p className="kicker">One accountable loop</p>
-            <h2 className="display-title mt-4 max-w-4xl text-5xl md:text-7xl">
+        <section className="pl-section pl-proof-section">
+          <div className="site-shell">
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.19em] opacity-70">The accountability loop</p>
+            <h2 className="mt-4 max-w-[11ch] font-display text-[clamp(3rem,8vw,7rem)] font-black leading-[0.84] tracking-[-0.075em]">
               MONEY IN. MEALS OUT. PROOF ATTACHED.
             </h2>
-            <div className="mt-12 grid border-2 border-foreground bg-background text-foreground md:grid-cols-3">
-              <Step
-                number="1"
-                title="A neighbor funds"
-                body="One-time and monthly funding is tied to a real kitchen cost—not an invented donation estimate."
-              />
-              <Step
-                number="2"
-                title="A kitchen fulfills"
-                body="The kitchen accepts, prepares and releases the order into a tracked delivery workflow."
-              />
-              <Step
-                number="3"
-                title="The ledger closes"
-                body="Delivery creates the impact event and queues the kitchen payout without exposing recipients."
-              />
+
+            <div className="pl-proof-grid">
+              <ProofStep number="01" title="Funding is constrained" body="Only eligible, funding-enabled kitchens can receive meal funding through the platform." />
+              <ProofStep number="02" title="Fulfillment is tracked" body="Orders move through preparation and delivery states instead of disappearing after checkout." />
+              <ProofStep number="03" title="Impact closes publicly" body="Aggregate delivery events feed the public ledger without exposing recipient identities." />
             </div>
           </div>
         </section>
 
-        <section className="site-shell py-20">
-          <div className="flex flex-wrap items-end justify-between gap-6">
-            <div>
-              <p className="kicker text-primary">Galveston network</p>
-              <h2 className="display-title mt-4 text-5xl md:text-6xl">LOCAL CAPACITY, VISIBLE.</h2>
-              <p className="mt-3 max-w-xl text-sm text-muted-foreground">
-                Mapped providers, labeled honestly. Directory listings are real local programs we
-                mapped for discovery — they are not affiliated with ProvisionLoop and cannot be
-                funded here.
-              </p>
-            </div>
-            <Link to="/kitchen" className="button-secondary">
-              View all kitchens <ArrowRight className="size-4" />
-            </Link>
-          </div>
-          <div className="mt-10 grid gap-3 lg:grid-cols-2">
-            {(kitchens.data ?? []).slice(0, 6).map((kitchen) => (
-              <div
-                key={kitchen.id}
-                className="flex items-center gap-4 border-b border-border-strong py-5"
-              >
-                <div className="grid size-12 shrink-0 place-items-center bg-foreground text-background">
-                  <Building2 className="size-5" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate font-display text-lg font-extrabold">{kitchen.name}</p>
-                  <p className="text-sm text-muted-foreground">
-                    {kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}
-                  </p>
-                </div>
-                <ProviderStateBadge state={kitchen.providerState} isTest={kitchen.is_test} />
+        <section className="pl-section">
+          <div className="site-shell">
+            <div className="grid gap-8 md:grid-cols-[1fr_.8fr] md:items-end">
+              <div>
+                <p className="pl-section-kicker">Local capacity</p>
+                <h2 className="pl-section-title">THE NETWORK IS VISIBLE.</h2>
               </div>
-            ))}
-            {kitchens.isLoading && (
-              <p className="text-sm text-muted-foreground">Loading mapped providers…</p>
-            )}
-            {!kitchens.isLoading && (kitchens.data?.length ?? 0) === 0 && (
-              <p className="text-sm text-muted-foreground">
-                Mapped providers will appear here as the directory grows.
-              </p>
-            )}
+              <div className="md:justify-self-end">
+                <p className="max-w-lg text-sm leading-7 opacity-65">
+                  Mapped providers are labeled honestly. A directory listing does not automatically
+                  mean affiliation or funding eligibility.
+                </p>
+                <Link to="/kitchen" className="mt-4 inline-flex items-center gap-2 text-sm font-black text-primary">
+                  Explore kitchen network <ArrowUpRight className="size-4" />
+                </Link>
+              </div>
+            </div>
+
+            <div className="pl-network-grid">
+              {(kitchens.data ?? []).slice(0, 6).map((kitchen) => (
+                <div key={kitchen.id} className="pl-network-row">
+                  <div className="pl-network-icon">
+                    <Building2 className="size-4" />
+                  </div>
+                  <div className="min-w-0">
+                    <p className="pl-network-name">{kitchen.name}</p>
+                    <p className="pl-network-meta">
+                      {kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}
+                    </p>
+                  </div>
+                  <ProviderStateBadge state={kitchen.providerState} isTest={kitchen.is_test} />
+                </div>
+              ))}
+              {kitchens.isLoading && (
+                <div className="pl-network-row text-sm opacity-60">Loading mapped providers…</div>
+              )}
+              {!kitchens.isLoading && (kitchens.data?.length ?? 0) === 0 && (
+                <div className="pl-network-row text-sm opacity-60">Mapped providers will appear here as the directory grows.</div>
+              )}
+            </div>
           </div>
         </section>
 
-        <section className="section-rule bg-primary text-primary-foreground">
-          <div className="site-shell grid gap-8 py-16 md:grid-cols-[1fr_auto] md:items-center">
+        <section className="pl-final-cta">
+          <div className="site-shell pl-final-grid">
             <div>
-              <p className="kicker">Start with one meal</p>
-              <h2 className="display-title mt-4 max-w-4xl text-5xl md:text-7xl">
-                MAKE TONIGHT COUNT.
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Start with one closed loop</p>
+              <h2 className="pl-final-title mt-4">
+                MAKE TONIGHT
+                <br />
+                <span>COUNT.</span>
               </h2>
-              <p className="mt-5 max-w-xl text-base font-semibold leading-7 opacity-80">
-                Fund where the need is highest, or choose the local kitchen you want to support.
-              </p>
             </div>
-            <Link to="/impact" className="button-secondary bg-background px-8 py-5 text-foreground">
-              Fund meals <ArrowRight className="size-5" />
-            </Link>
+            <div>
+              <p className="pl-final-copy">
+                Fund where the network can act, or choose a local kitchen already eligible to receive meal funding.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-3">
+                <Link to="/impact" className="pl-hero-primary">
+                  Fund meals <ArrowUpRight className="size-4" />
+                </Link>
+                <Link to="/civic" className="pl-hero-secondary">
+                  View public proof
+                </Link>
+              </div>
+            </div>
           </div>
         </section>
       </main>
+
       <SiteFooter />
     </div>
   );
@@ -284,23 +258,19 @@ function HomePage() {
 
 function LiveStat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="border-r border-border-strong py-4 pr-2 last:border-r-0 last:pl-4 [&:nth-child(2)]:pl-4">
-      <p className="font-display text-2xl font-black md:text-3xl">{value}</p>
-      <p className="mt-1 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-        {label}
-      </p>
+    <div className="pl-live-stat">
+      <p className="pl-live-value">{value}</p>
+      <p className="pl-live-label">{label}</p>
     </div>
   );
 }
 
-function Step({ number, title, body }: { number: string; title: string; body: string }) {
+function ProofStep({ number, title, body }: { number: string; title: string; body: string }) {
   return (
-    <div className="border-b-2 border-foreground p-7 last:border-b-0 md:border-b-0 md:border-r-2 md:last:border-r-0">
-      <div className="grid size-10 place-items-center rounded-full bg-primary font-display text-lg font-black text-primary-foreground">
-        {number}
-      </div>
-      <h3 className="mt-8 font-display text-2xl font-black">{title}</h3>
-      <p className="mt-3 text-sm leading-6 text-muted-foreground">{body}</p>
-    </div>
+    <article className="pl-proof-step">
+      <p className="pl-proof-num">{number}</p>
+      <h3>{title}</h3>
+      <p>{body}</p>
+    </article>
   );
 }
