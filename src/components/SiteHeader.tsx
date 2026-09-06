@@ -1,133 +1,166 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 
+import "@/brand-refresh.css";
 import { AccountButton } from "@/components/AccountButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
-
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
 
 const NAV = [
-  { to: "/pilot", label: "Pilot" },
-  { to: "/impact", label: "Fund meals" },
-  { to: "/help", label: "Find food" },
-  { to: "/kitchen", label: "For kitchens" },
+  { to: "/impact", label: "Fund" },
+  { to: "/help", label: "Get help" },
+  { to: "/kitchen", label: "Kitchens" },
   { to: "/volunteer", label: "Volunteer" },
+  { to: "/partners", label: "Partners" },
 ] as const;
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
+
   return (
-    <header className="site-header">
-      <div className="site-shell flex h-[72px] items-center justify-between gap-4">
-        <Link to="/" className="brand-mark" onClick={() => setOpen(false)}>
-          <span className="brand-dot" aria-hidden="true" />
-          <span>PROVISION</span>
-          <span className="text-primary">LOOP</span>
-        </Link>
-        <nav className="hidden items-center gap-1 lg:flex" aria-label="Primary navigation">
-          {NAV.map((item) => (
-            <Link key={item.to} to={item.to} className="nav-link">
-              {item.label}
-            </Link>
-          ))}
-          <Link to="/app" className="nav-link">
-            MealForge
-          </Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          <ThemeToggle />
-          <div className="hidden sm:block">
-            <AccountButton />
-          </div>
-          <Link to="/impact" className="button-primary hidden md:inline-flex">
-            Fund a meal
-          </Link>
-          <button
-            type="button"
-            className="icon-button lg:hidden"
-            aria-label={open ? "Close navigation" : "Open navigation"}
-            aria-expanded={open}
-            onClick={() => setOpen((value) => !value)}
-          >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </button>
+    <>
+      <div className="pl-signal-bar">
+        <div className="site-shell pl-signal-inner">
+          <span>Galveston County · pilot network</span>
+          <span className="hidden sm:inline">Local meals · verified capacity · public proof</span>
         </div>
       </div>
-      {open && (
-        <nav className="mobile-nav lg:hidden" aria-label="Mobile navigation">
-          <div className="site-shell grid gap-2 py-4">
+      <header className="pl-site-header">
+        <div className="site-shell pl-header-row flex items-center justify-between gap-4">
+          <Link to="/" className="pl-brand" onClick={() => setOpen(false)}>
+            <span className="pl-brand-symbol">PL</span>
+            <span className="min-w-0">
+              <span className="pl-brand-wordmark">
+                PROVISION<strong>LOOP</strong>
+              </span>
+              <span className="pl-brand-sub">community food infrastructure</span>
+            </span>
+          </Link>
+
+          <nav className="hidden items-center lg:flex" aria-label="Primary navigation">
             {NAV.map((item) => (
-              <Link
-                key={item.to}
-                to={item.to}
-                className="mobile-nav-link"
-                onClick={() => setOpen(false)}
-              >
+              <Link key={item.to} to={item.to} className="pl-nav-link">
                 {item.label}
-                <span aria-hidden="true">↗</span>
               </Link>
             ))}
-            <Link to="/app" className="mobile-nav-link" onClick={() => setOpen(false)}>
-              MealForge <span aria-hidden="true">↗</span>
+            <Link to="/civic" className="pl-nav-link">
+              Public ledger
             </Link>
-            <div className="mt-2 border-t border-border pt-4 sm:hidden">
+            <Link to="/app" className="pl-nav-link">
+              MealForge
+            </Link>
+          </nav>
+
+          <div className="flex items-center gap-2">
+            <div className="hidden xl:block">
               <AccountButton />
             </div>
+            <div className="pl-header-icon hidden sm:block">
+              <ThemeToggle />
+            </div>
+            <Link to="/impact" className="pl-header-action hidden md:inline-flex">
+              Fund a meal <ArrowUpRight className="size-4" />
+            </Link>
+            <button
+              type="button"
+              className="icon-button pl-header-icon lg:hidden"
+              aria-label={open ? "Close navigation" : "Open navigation"}
+              aria-expanded={open}
+              onClick={() => setOpen((value) => !value)}
+            >
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </button>
           </div>
-        </nav>
-      )}
-    </header>
+        </div>
+
+        {open && (
+          <nav className="pl-mobile-nav lg:hidden" aria-label="Mobile navigation">
+            <div className="site-shell py-2">
+              {NAV.map((item, index) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  className="pl-mobile-link"
+                  onClick={() => setOpen(false)}
+                >
+                  {item.label}
+                  <span>0{index + 1} ↗</span>
+                </Link>
+              ))}
+              <Link to="/civic" className="pl-mobile-link" onClick={() => setOpen(false)}>
+                Public ledger <span>06 ↗</span>
+              </Link>
+              <Link to="/app" className="pl-mobile-link" onClick={() => setOpen(false)}>
+                MealForge <span>07 ↗</span>
+              </Link>
+              <div className="flex flex-wrap items-center gap-3 py-4 xl:hidden">
+                <AccountButton />
+                <ThemeToggle />
+              </div>
+            </div>
+          </nav>
+        )}
+      </header>
+    </>
   );
 }
 
 export function SiteFooter() {
   return (
-    <footer className="border-t-2 border-foreground bg-foreground text-background">
-      <div className="site-shell grid gap-10 py-12 md:grid-cols-[1.4fr_1fr_1fr]">
+    <footer className="pl-footer">
+      <div className="site-shell pl-footer-grid">
         <div>
-          <div className="brand-mark text-background">
-            <span className="brand-dot" aria-hidden="true" /> PROVISION
-            <span className="text-primary">LOOP</span>
+          <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-primary">
+            ProvisionLoop · Galveston County
+          </p>
+          <div className="pl-footer-wordmark mt-4">
+            FOOD THAT
+            <br />
+            <span>FINISHES THE LOOP.</span>
           </div>
-          <p className="mt-4 max-w-sm text-sm leading-6 text-background/70">
-            Accountable local food infrastructure: private requests, verified partners, paid local
-            kitchen capacity and a public aggregate ledger—starting in Galveston County.
+          <p className="mt-6 max-w-xl text-sm leading-7 text-[#b8b2a7]">
+            Funding enters through verified local kitchens, moves through accountable fulfillment,
+            and closes with aggregate public proof. Recipient identities stay private.
           </p>
         </div>
+
         <div>
-          <p className="kicker text-primary">Take action</p>
-          <div className="mt-4 grid gap-2 text-sm">
-            <Link to="/impact">Fund meals</Link>
-            <Link to="/help">Find food help</Link>
-            <Link to="/volunteer">Volunteer nearby</Link>
-            <Link to="/pilot">Join the pilot</Link>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Act</p>
+          <div className="mt-5 grid gap-3 text-sm">
+            <Link className="pl-footer-link" to="/impact">Fund meals</Link>
+            <Link className="pl-footer-link" to="/help">Find food help</Link>
+            <Link className="pl-footer-link" to="/volunteer">Volunteer nearby</Link>
+            <Link className="pl-footer-link" to="/pilot">Join the pilot</Link>
           </div>
         </div>
+
         <div>
-          <p className="kicker text-primary">Build with us</p>
-          <div className="mt-4 grid gap-2 text-sm">
-            <Link to="/kitchen">Kitchen network</Link>
-            <Link to="/partners">Community partners</Link>
-            <Link to="/civic">Public ledger</Link>
-            <Link to="/trust-method">Trust &amp; method</Link>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Build</p>
+          <div className="mt-5 grid gap-3 text-sm">
+            <Link className="pl-footer-link" to="/kitchen">Kitchen network</Link>
+            <Link className="pl-footer-link" to="/partners">Community partners</Link>
+            <Link className="pl-footer-link" to="/civic">Public ledger</Link>
+            <Link className="pl-footer-link" to="/trust-method">Trust &amp; method</Link>
           </div>
         </div>
       </div>
-      <div className="border-t border-background/20">
-        <div className="site-shell flex flex-wrap gap-x-5 gap-y-2 py-4 text-xs text-background/70">
-          <a href={SUPPORT_MAILTO}>{SUPPORT_EMAIL}</a>
-          <Link to="/legal">Legal Center</Link>
-          <Link to="/legal/terms">Terms</Link>
-          <Link to="/legal/privacy">Privacy</Link>
-          <Link to="/legal/refunds">Refunds</Link>
-          <Link to="/legal/fees-tax">Fees &amp; tax</Link>
+
+      <div className="border-t border-white/10">
+        <div className="site-shell flex flex-wrap gap-x-5 gap-y-2 py-4 text-xs text-[#8e897f]">
+          <a className="pl-footer-link" href={SUPPORT_MAILTO}>{SUPPORT_EMAIL}</a>
+          <Link className="pl-footer-link" to="/legal">Legal Center</Link>
+          <Link className="pl-footer-link" to="/legal/terms">Terms</Link>
+          <Link className="pl-footer-link" to="/legal/privacy">Privacy</Link>
+          <Link className="pl-footer-link" to="/legal/refunds">Refunds</Link>
+          <Link className="pl-footer-link" to="/legal/fees-tax">Fees &amp; tax</Link>
         </div>
       </div>
-      <div className="border-t border-background/20">
-        <div className="site-shell flex flex-wrap justify-between gap-3 py-5 text-xs text-background/55">
+
+      <div className="border-t border-white/10">
+        <div className="site-shell flex flex-wrap justify-between gap-3 py-5 text-xs text-[#6f6a61]">
           <span>© 2026 ProvisionLoop</span>
-          <span>Recipient identities never appear on the public ledger.</span>
+          <span>Private need. Local capacity. Public accountability.</span>
         </div>
       </div>
     </footer>
