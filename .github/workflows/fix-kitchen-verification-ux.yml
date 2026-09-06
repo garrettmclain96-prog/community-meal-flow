@@ -1,4 +1,4 @@
-name: Fix kitchen verification UX
+name: Fix release repair patch
 
 on:
   push:
@@ -15,65 +15,69 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
-      - name: Patch kitchen verification UX
+
+      - name: Repair TanStack validators and homepage about teaser
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
 
-          path = Path('src/routes/kitchen.tsx')
-          text = path.read_text()
+          for file in [
+              Path('src/lib/chatgpt.functions.ts'),
+              Path('src/lib/food/import.functions.ts'),
+              Path('src/lib/payments.functions.ts'),
+          ]:
+              text = file.read_text()
+              count = text.count('.validator(')
+              text = text.replace('.validator(', '.inputValidator(')
+              file.write_text(text)
+              print(f'{file}: replaced {count} legacy validator call(s)')
 
-          def once(old, new, label):
-              global text
-              if text.count(old) != 1:
-                  raise SystemExit(f'{label}: expected exactly one match, got {text.count(old)}')
-              text = text.replace(old, new, 1)
+          index = Path('src/routes/index.tsx')
+          text = index.read_text()
+          if 'THE GAP ISN&apos;T GENEROSITY. IT&apos;S COORDINATION.' not in text:
+              marker = '        <section className="pl-section pl-proof-section">'
+              teaser = '''        <section className="pl-section border-b-2 border-foreground">
+          <div className="site-shell grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
+            <div>
+              <p className="pl-section-kicker">Why ProvisionLoop?</p>
+              <h2 className="pl-section-title">THE GAP ISN&apos;T GENEROSITY. IT&apos;S COORDINATION.</h2>
+            </div>
+            <div className="lg:justify-self-end">
+              <p className="max-w-xl text-sm leading-7 opacity-70 md:text-base">
+                Communities already have people willing to help, kitchens with usable capacity,
+                organizations that understand local need and volunteers willing to move food. The
+                failure point is what happens between those pieces. ProvisionLoop connects them into
+                one accountable loop.
+              </p>
+              <Link
+                to="/about"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary"
+              >
+                Why ProvisionLoop exists <ArrowUpRight className="size-4" />
+              </Link>
+            </div>
+          </div>
+        </section>
 
-          once(
-              '  const kitchenId = mine.data?.id ?? "";\n',
-              '  const kitchenId = mine.data?.id ?? "";\n  const operational = Boolean(\n    mine.data?.approved && mine.data?.active && mine.data?.claimed,\n  );\n',
-              'operational state',
-          )
-
-          needle = '    enabled: Boolean(kitchenId),'
-          if text.count(needle) < 4:
-              raise SystemExit(f'query gating: expected at least four matches, got {text.count(needle)}')
-          for _ in range(4):
-              text = text.replace(needle, '    enabled: Boolean(kitchenId) && operational,', 1)
-
-          once(
-              '        {mine.data && (\n          <>\n            <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">',
-              '        {mine.data && !operational && (\n          <section className="editorial-card mt-10 max-w-2xl border-amber-500/40 p-6">\n            <p className="kicker text-amber-700 dark:text-amber-300">Pending verification</p>\n            <h2 className="mt-2 font-display text-2xl font-black">\n              Your kitchen registration is under review.\n            </h2>\n            <p className="mt-3 text-sm leading-6 text-muted-foreground">\n              This provider remains private and unfundable until a ProvisionLoop platform\n              administrator approves it. Meal publishing, volunteer shifts, orders and payouts are\n              locked until verification is complete.\n            </p>\n          </section>\n        )}\n\n        {mine.data && operational && (\n          <>\n            <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">',
-              'pending registration panel',
-          )
-
-          once(
-              '    toast.success("Kitchen registered");',
-              '    toast.success("Kitchen submitted for verification");',
-              'registration toast',
-          )
-
-          once(
-              '        information. They are not affiliated with ProvisionLoop and cannot receive funding. If you\n        run one, claim it — the listing becomes your account, and funding opens once payout\n        onboarding is complete.',
-              '        information. They are not affiliated with ProvisionLoop and cannot receive funding. If you\n        run one, submit a claim for manual verification. Ownership is granted only after a platform\n        administrator approves the claim; funding remains disabled until verification and payout\n        onboarding are complete.',
-              'claim explanation',
-          )
-
-          once(
-              '                    toast.success(`${k.name} is yours — check your capacity and pricing`);',
-              '                    toast.success("Claim submitted for verification");',
-              'claim toast',
-          )
-
-          text = text.replace('{busy ? "Claiming…" : "Confirm claim"}', '{busy ? "Submitting…" : "Submit claim"}', 1)
-
-          path.write_text(text)
+'''
+              if marker not in text:
+                  raise SystemExit('homepage marker not found')
+              text = text.replace(marker, teaser + marker, 1)
+              index.write_text(text)
+              print('homepage: added Why ProvisionLoop teaser')
+          else:
+              print('homepage: teaser already present')
           PY
+
       - name: Commit patch
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/routes/kitchen.tsx
-          git commit -m "fix: show pending provider verification state"
+          git add src/lib/chatgpt.functions.ts src/lib/food/import.functions.ts src/lib/payments.functions.ts src/routes/index.tsx
+          if git diff --cached --quiet; then
+            echo "Nothing to patch"
+            exit 0
+          fi
+          git commit -m "fix: repair server validators and add about teaser"
           git push origin HEAD:main
