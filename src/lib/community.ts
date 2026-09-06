@@ -4,7 +4,8 @@ import { supabase } from "@/integrations/supabase/client";
  * Live community-side reads.
  *
  * Impact events and approved kitchens are the only publicly readable surface;
- * household data never leaves the household's own rows.
+ * household data never leaves the household's own rows. Anonymous database
+ * grants are column-scoped so owner and payout identifiers are not exposed.
  */
 
 export type ProviderState = "directory" | "verified" | "funding_enabled";
@@ -76,7 +77,6 @@ export async function listFundableKitchens(): Promise<KitchenRow[]> {
     .eq("active", true)
     .eq("claimed", true)
     .eq("payout_status", "ready")
-    .not("payout_account_id", "is", null)
     .order("name");
   if (error) throw error;
   return (data ?? []).map(withState);
@@ -143,8 +143,7 @@ export async function loadImpactTotals(): Promise<ImpactTotals> {
       .eq("approved", true)
       .eq("active", true)
       .eq("claimed", true)
-      .eq("payout_status", "ready")
-      .not("payout_account_id", "is", null),
+      .eq("payout_status", "ready"),
   ]);
   if (events.error) throw events.error;
   if (mapped.error) throw mapped.error;
