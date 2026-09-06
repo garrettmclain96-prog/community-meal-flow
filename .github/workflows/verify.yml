@@ -59,7 +59,30 @@ jobs:
             gh issue create --title "CI typecheck failure — ${GITHUB_SHA::7}" --body-file ci-issue.md
 
       - name: Lint
-        run: bun run lint
+        id: lint
+        shell: bash
+        run: |
+          set +e
+          bun run lint 2>&1 | tee lint.log
+          status=${PIPESTATUS[0]}
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Report lint failure
+        if: failure() && steps.lint.outputs.status != '0' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo "Automated release verification found lint errors on commit $GITHUB_SHA."
+            echo
+            echo '```text'
+            cat lint.log
+            echo '```'
+          } > ci-lint-issue.md
+          gh issue create --title "CI lint failure — ${GITHUB_SHA::7}" --body-file ci-lint-issue.md --label "bug" || \
+            gh issue create --title "CI lint failure — ${GITHUB_SHA::7}" --body-file ci-lint-issue.md
 
       - name: Tests
         run: bun run test
