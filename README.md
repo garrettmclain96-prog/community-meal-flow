@@ -6,6 +6,16 @@ ProvisionLoop is a community food infrastructure platform for Galveston County, 
 
 The project is currently in **pilot stage**. The goal is to prove a reliable local operating model before scaling it further.
 
+## Founder
+
+ProvisionLoop was founded by **Garrett McLain**, a Galveston-area systems builder and operations problem-solver focused on the gap between intention and execution.
+
+The founder thesis behind ProvisionLoop is straightforward: communities often already have people who care, usable local capacity, organizations that understand need, and people willing to help move resources. What is missing is the connective infrastructure that reliably turns those pieces into a completed outcome.
+
+ProvisionLoop is designed around that problem. If a community can see its need, verify its capacity, move resources intelligently, track fulfillment, and publish aggregate proof without exposing recipients, generosity becomes a system instead of a gamble.
+
+**If it does not close the loop, it is not done.**
+
 ## Live deployment
 
 - **Production:** https://community-meal-flow.vercel.app
@@ -14,6 +24,14 @@ The project is currently in **pilot stage**. The goal is to prove a reliable loc
 - **Repository:** `garrettmclain96-prog/community-meal-flow`
 
 Lovable remains connected as an optional design/editor workflow, but production deployment is handled through Vercel.
+
+## Product experience
+
+ProvisionLoop is intentionally designed as more than a collection of dashboards. The public experience guides each participant through the network as a sequence:
+
+**need enters privately → capacity is verified → money and people move → fulfillment is tracked → aggregate proof closes publicly**
+
+The shared visual system uses the same language, navigation, trust states, forms, actions, and feedback patterns across public workflows so the product feels like one operating system rather than disconnected pages.
 
 ## What ProvisionLoop does
 
@@ -87,7 +105,7 @@ bun run lint
 bun run test
 ```
 
-The latest audited release completed production build, TypeScript verification, lint, and tests successfully.
+The current design/experience release completed production build, TypeScript verification, lint, and tests successfully before deployment through Vercel.
 
 ## Current production status
 
@@ -95,11 +113,12 @@ The Vercel project is linked directly to this GitHub repository and deploys from
 
 Current verified production observations:
 
-- Latest Vercel production deployment: `READY`
+- Vercel production deployment is `READY`
 - Homepage responds successfully over HTTPS
-- `/about` responds successfully over HTTPS
-- No Vercel runtime error clusters were found in the recent audit window
-- Latest inspected Vercel build completed successfully
+- `/about` responds successfully over HTTPS and contains the founder story
+- Current rendered production metadata reflects ProvisionLoop and Garrett McLain rather than legacy project branding
+- Recent Vercel production error/fatal log query returned no matching runtime errors
+- GitHub verification passed production build, TypeScript, lint, and tests for the current experience release
 
 Operational certification still requires real-world external-service testing for any workflow that depends on live credentials or third-party delivery, especially complete Stripe payment → webhook → funded order → fulfillment → payout and outbound email delivery.
 
@@ -107,8 +126,8 @@ Operational certification still requires real-world external-service testing for
 
 | Route | Purpose |
 | --- | --- |
-| `/` | Public homepage |
-| `/about` | Why ProvisionLoop exists and how the model works |
+| `/` | Guided public network experience |
+| `/about` | ProvisionLoop story, operating thesis, and founder |
 | `/impact` | Meal funding |
 | `/help` | Food assistance |
 | `/kitchen` | Kitchen network and provider workflows |
