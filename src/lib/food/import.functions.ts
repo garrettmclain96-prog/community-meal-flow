@@ -98,7 +98,8 @@ function instructionLines(value: unknown): string[] {
 
 function parseYield(value: unknown): number {
   const candidate = Array.isArray(value) ? value[0] : value;
-  if (typeof candidate === "number" && Number.isFinite(candidate)) return Math.max(1, Math.round(candidate));
+  if (typeof candidate === "number" && Number.isFinite(candidate))
+    return Math.max(1, Math.round(candidate));
   if (typeof candidate === "string") {
     const match = candidate.match(/\d+(?:\.\d+)?/);
     if (match) return Math.max(1, Math.round(Number(match[0])));
@@ -140,7 +141,7 @@ function extractJsonLdRecipe(html: string) {
 }
 
 export const importRecipeUrl = createServerFn({ method: "POST" })
-  .validator((data: { url: string }) => {
+  .inputValidator((data: { url: string }) => {
     const url = data.url?.trim();
     if (!url || url.length > 2000) throw new Error("Enter a valid recipe URL.");
     return { url };
@@ -165,9 +166,11 @@ export const importRecipeUrl = createServerFn({ method: "POST" })
       allowedUrl(response.url);
 
       const contentLength = Number(response.headers.get("content-length") ?? 0);
-      if (contentLength > 3_000_000) throw new Error("That recipe page is too large to import safely.");
+      if (contentLength > 3_000_000)
+        throw new Error("That recipe page is too large to import safely.");
       const html = await response.text();
-      if (html.length > 3_000_000) throw new Error("That recipe page is too large to import safely.");
+      if (html.length > 3_000_000)
+        throw new Error("That recipe page is too large to import safely.");
 
       const recipe = extractJsonLdRecipe(html);
       if (!recipe) {
