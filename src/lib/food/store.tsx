@@ -37,7 +37,10 @@ import type { Household, PantryItem, Recipe } from "./types";
 
 const KEY = "mealforge.state.v1";
 
-type PersistedMealPlan = MealPlan & { completedMealSlots?: number[] };
+type PersistedMealPlan = MealPlan & {
+  completedMealSlots?: number[];
+  historySnapshot?: string[];
+};
 
 export interface MealForgeState {
   onboarded: boolean;
@@ -298,16 +301,21 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
+      const nextHistory = [meal.recipe.id, ...s.history.filter((id) => id !== meal.recipe.id)].slice(
+        0,
+        60,
+      );
       const nextPlan = {
         ...plan,
         completedMealSlots: [...completed, slot].sort((a, b) => a - b),
+        historySnapshot: nextHistory,
       } as MealPlan;
 
       return {
         ...s,
         plan: nextPlan,
         pantry: pantry.filter((item) => item.quantity.amount > 0.001),
-        history: [meal.recipe.id, ...s.history.filter((id) => id !== meal.recipe.id)].slice(0, 60),
+        history: nextHistory,
       };
     });
   }, []);
@@ -315,7 +323,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   const regeneratePlan = useCallback(() => {
     let next: MealPlan | null = null;
     setState((s) => {
-      const plan = buildMealPlan({
+      const built = buildMealPlan({
         household: s.household,
         recipes: s.recipes,
         pantry: s.pantry,
@@ -325,6 +333,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
         budget: s.household.weeklyBudget,
         history: s.history,
       });
+      const plan = { ...built, historySnapshot: s.history } as MealPlan;
       next = plan;
       return { ...s, plan, checked: [] };
     });
