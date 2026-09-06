@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Building2, LockKeyhole, Route, ShieldCheck } from "lucide-react";
+import { Building2, LockKeyhole, Route as RouteIcon, ShieldCheck } from "lucide-react";
 import { type FormEvent, useState } from "react";
 import { toast } from "sonner";
 
@@ -274,7 +274,7 @@ function DispatchQueue({
         ))}
         {!referrals.length && (
           <div className="editorial-card p-7 text-muted-foreground">
-            <Route className="size-6 text-primary" />
+            <RouteIcon className="size-6 text-primary" />
             <p className="mt-4 font-display text-xl font-black text-foreground">QUEUE CLEAR.</p>
             <p className="mt-2 text-sm">No requests are assigned right now. New requests are matched by service area.</p>
           </div>
