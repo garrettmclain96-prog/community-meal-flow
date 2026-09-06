@@ -17,6 +17,34 @@
     pointer-events: none;
   }
 
+  .pl-site-header + main.site-shell {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .pl-site-header + main.site-shell::before {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    top: 1.5rem;
+    right: -8rem;
+    width: 22rem;
+    height: 22rem;
+    border: 1px solid color-mix(in oklab, var(--primary) 13%, transparent);
+    border-radius: 50%;
+    box-shadow: 0 0 0 3rem color-mix(in oklab, var(--primary) 2.5%, transparent);
+    pointer-events: none;
+  }
+
+  .pl-site-header + main.site-shell > .display-title {
+    max-width: 12ch;
+    text-wrap: balance;
+  }
+
+  .pl-site-header + main.site-shell > .display-title + p {
+    line-height: 1.75;
+  }
+
   .pl-page-intro {
     position: relative;
     overflow: hidden;
@@ -177,6 +205,13 @@
     color: color-mix(in oklab, var(--foreground) 5%, transparent);
     pointer-events: none;
   }
+
+  main button[aria-pressed] {
+    min-height: 2.5rem;
+    transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
+  }
+
+  main button[aria-pressed]:hover { transform: translateY(-1px); }
 }
 
 ::selection { background: var(--primary); color: var(--primary-foreground); }
@@ -193,6 +228,7 @@ button, a { touch-action: manipulation; }
 @media (prefers-reduced-motion: reduce) {
   @layer components {
     .editorial-card, .field-control, .button-primary, .button-secondary,
-    .editorial-card::after, .button-primary::after, .button-secondary::after { transition: none; }
+    .editorial-card::after, .button-primary::after, .button-secondary::after,
+    main button[aria-pressed] { transition: none; }
   }
 }
