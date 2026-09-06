@@ -15,7 +15,7 @@ export async function isPlatformAdmin(userId: string): Promise<boolean> {
     _user_id: userId,
     _role: "platform_admin",
   });
-  if (error) return false;
+  if (error) throw error;
   return data === true;
 }
 
