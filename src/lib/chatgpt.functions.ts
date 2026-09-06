@@ -61,7 +61,7 @@ function extractOutputText(payload: unknown): string | null {
 }
 
 export const askMealPlanAssistant = createServerFn({ method: "POST" })
-  .validator((data: { prompt: string; context: AssistantContext }) => {
+  .inputValidator((data: { prompt: string; context: AssistantContext }) => {
     const prompt = data.prompt?.trim();
     if (!prompt) throw new Error("Ask ChatGPT a question first.");
     if (prompt.length > 1200) throw new Error("Keep your question under 1200 characters.");
