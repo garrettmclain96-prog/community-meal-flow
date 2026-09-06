@@ -110,11 +110,7 @@ function AdminPage() {
                   key={t.key}
                   type="button"
                   onClick={() => setTab(t.key)}
-                  className={
-                    tab === t.key
-                      ? "button-primary"
-                      : "button-secondary"
-                  }
+                  className={tab === t.key ? "button-primary" : "button-secondary"}
                 >
                   {t.label}
                 </button>
@@ -271,7 +267,9 @@ function RefundQueue() {
             </span>
             <span className="kicker text-primary">{row.status}</span>
           </div>
-          {row.reason && <p className="mt-3 text-sm leading-6 text-muted-foreground">{row.reason}</p>}
+          {row.reason && (
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">{row.reason}</p>
+          )}
           {row.reference_id && (
             <p className="mt-2 font-mono text-[11px] text-muted-foreground">
               payment reference {row.reference_id}

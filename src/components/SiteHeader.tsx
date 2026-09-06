@@ -5,7 +5,10 @@ import { useState } from "react";
 import { AccountButton } from "@/components/AccountButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
+
 const NAV = [
+  { to: "/pilot", label: "Pilot" },
   { to: "/impact", label: "Fund meals" },
   { to: "/help", label: "Find food" },
   { to: "/kitchen", label: "For kitchens" },
@@ -98,6 +101,7 @@ export function SiteFooter() {
             <Link to="/impact">Fund meals</Link>
             <Link to="/help">Find food help</Link>
             <Link to="/volunteer">Volunteer nearby</Link>
+            <Link to="/pilot">Join the pilot</Link>
           </div>
         </div>
         <div>
@@ -112,6 +116,7 @@ export function SiteFooter() {
       </div>
       <div className="border-t border-background/20">
         <div className="site-shell flex flex-wrap gap-x-5 gap-y-2 py-4 text-xs text-background/70">
+          <a href={SUPPORT_MAILTO}>{SUPPORT_EMAIL}</a>
           <Link to="/legal">Legal Center</Link>
           <Link to="/legal/terms">Terms</Link>
           <Link to="/legal/privacy">Privacy</Link>

@@ -62,7 +62,8 @@ function PilotPage() {
   const legal = useLegalGate({
     documents: BASE_DOCS,
     context: "pilot_signup",
-    intro: "Signing up for the pilot requires accepting these two documents at their current version.",
+    intro:
+      "Signing up for the pilot requires accepting these two documents at their current version.",
   });
 
   const mine = useQuery({
@@ -81,7 +82,9 @@ function PilotPage() {
   async function submit(event: React.FormEvent) {
     event.preventDefault();
     if (!user) {
-      toast.error("Sign in first so your pilot sign-up and agreement are recorded to your account.");
+      toast.error(
+        "Sign in first so your pilot sign-up and agreement are recorded to your account.",
+      );
       return;
     }
     try {
@@ -147,7 +150,10 @@ function PilotPage() {
             </h2>
             <div className="mt-8 grid gap-4 md:grid-cols-2">
               {ELIGIBILITY.map((item) => (
-                <p key={item} className="editorial-card p-5 text-sm leading-6 text-muted-foreground">
+                <p
+                  key={item}
+                  className="editorial-card p-5 text-sm leading-6 text-muted-foreground"
+                >
                   {item}
                 </p>
               ))}

@@ -3,12 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 export const PILOT_LIVE_DATE = "November 3, 2026";
 export const PILOT_LIVE_ISO = "2026-11-03";
 
-export type PilotInterest =
-  | "household"
-  | "kitchen_operator"
-  | "volunteer"
-  | "partner"
-  | "sponsor";
+export type PilotInterest = "household" | "kitchen_operator" | "volunteer" | "partner" | "sponsor";
 
 export const PILOT_INTEREST_LABEL: Record<PilotInterest, string> = {
   household: "Household that may need food help",
@@ -53,7 +48,9 @@ export async function submitPilotSignup(input: {
 export async function listMyPilotSignups(): Promise<PilotSignupRow[]> {
   const { data, error } = await supabase
     .from("pilot_signups")
-    .select("id, user_id, full_name, email, postal_code, interest, note, status, internal_note, created_at")
+    .select(
+      "id, user_id, full_name, email, postal_code, interest, note, status, internal_note, created_at",
+    )
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []) as PilotSignupRow[];

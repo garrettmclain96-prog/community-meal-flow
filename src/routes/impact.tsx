@@ -216,7 +216,9 @@ function ImpactPage() {
                     <option value="">Choose a kitchen…</option>
                     {kitchens.data?.map((k) => (
                       <option key={k.id} value={k.id}>
-                        {k.name} — {k.neighborhood ?? k.city} (${k.cost_per_meal.toFixed(2)}/meal)
+                        {k.name}
+                        {k.is_test ? " — Test-mode pilot kitchen — not a real partner" : ""} —{" "}
+                        {k.neighborhood ?? k.city} (${k.cost_per_meal.toFixed(2)}/meal)
                       </option>
                     ))}
                   </select>
@@ -279,7 +281,9 @@ function ImpactPage() {
                     <p className="font-display text-4xl font-black">
                       {kitchen ? money(amount) : "—"}
                     </p>
-                    {kitchen && <ProviderStateBadge state={kitchen.providerState} />}
+                    {kitchen && (
+                      <ProviderStateBadge state={kitchen.providerState} isTest={kitchen.is_test} />
+                    )}
                   </div>
                   <p className="mt-1 text-xs text-muted-foreground">
                     {kitchen

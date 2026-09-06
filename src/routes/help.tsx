@@ -121,7 +121,7 @@ function HelpPage() {
                           [program.neighborhood, program.city].filter(Boolean).join(", ")}
                       </p>
                     </div>
-                    <ProviderStateBadge state={program.providerState} />
+                    <ProviderStateBadge state={program.providerState} isTest={program.is_test} />
                   </div>
                   {program.summary && (
                     <p className="mt-4 text-sm leading-6 text-muted-foreground">

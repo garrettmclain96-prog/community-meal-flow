@@ -1,3 +1,4 @@
+import { TestKitchenBadge } from "@/components/ProviderStateBadge";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -233,12 +234,15 @@ function CivicPage() {
                       <li key={k.id} className="rounded-lg border border-border bg-card p-4">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="font-semibold">{k.name}</p>
+                          <TestKitchenBadge isTest={k.is_test} />
                           <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
-                            {k.claimed && k.payout_status === "ready"
-                              ? "Funding enabled"
-                              : k.claimed
-                                ? "Operator verified"
-                                : "Directory listing — not affiliated"}
+                            {k.is_test
+                              ? "Sandbox capacity"
+                              : k.claimed && k.payout_status === "ready"
+                                ? "Funding enabled"
+                                : k.claimed
+                                  ? "Operator verified"
+                                  : "Directory listing — not affiliated"}
                           </span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">

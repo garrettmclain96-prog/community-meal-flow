@@ -33,10 +33,7 @@ export function LegalDocPage({
       </div>
 
       <main className="site-shell legal-doc py-12 md:py-16">
-        <Link
-          to="/legal"
-          className="kicker text-primary underline underline-offset-4 print:hidden"
-        >
+        <Link to="/legal" className="kicker text-primary underline underline-offset-4 print:hidden">
           ← Legal Center
         </Link>
 
@@ -63,7 +60,10 @@ export function LegalDocPage({
         </header>
 
         <div className="mt-8 grid gap-10 lg:grid-cols-[220px_1fr]">
-          <nav aria-label="Table of contents" className="print:hidden lg:sticky lg:top-24 lg:self-start">
+          <nav
+            aria-label="Table of contents"
+            className="print:hidden lg:sticky lg:top-24 lg:self-start"
+          >
             <p className="kicker text-muted-foreground">On this page</p>
             <ol className="mt-3 grid gap-1.5 text-sm">
               {sections.map((section, index) => (

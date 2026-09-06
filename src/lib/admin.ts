@@ -35,7 +35,9 @@ export type AdminRequestRow = {
 export async function listAllPrivacyRequests(): Promise<AdminRequestRow[]> {
   const { data, error } = await supabase
     .from("privacy_requests")
-    .select("id, user_id, request_type, details, contact_preference, status, internal_note, created_at")
+    .select(
+      "id, user_id, request_type, details, contact_preference, status, internal_note, created_at",
+    )
     .order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []) as AdminRequestRow[];
@@ -71,7 +73,9 @@ export async function updateQueueRow(
 export async function listAllPilotSignups() {
   const { data, error } = await supabase
     .from("pilot_signups")
-    .select("id, user_id, full_name, email, postal_code, interest, note, status, internal_note, created_at")
+    .select(
+      "id, user_id, full_name, email, postal_code, interest, note, status, internal_note, created_at",
+    )
     .order("created_at", { ascending: false });
   if (error) throw error;
   return data ?? [];

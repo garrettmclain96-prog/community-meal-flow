@@ -246,7 +246,7 @@ function HomePage() {
                     {kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}
                   </p>
                 </div>
-                <ProviderStateBadge state={kitchen.providerState} />
+                <ProviderStateBadge state={kitchen.providerState} isTest={kitchen.is_test} />
               </div>
             ))}
             {kitchens.isLoading && (

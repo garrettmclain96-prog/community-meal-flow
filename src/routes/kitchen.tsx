@@ -1,3 +1,4 @@
+import { TestKitchenBadge } from "@/components/ProviderStateBadge";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
@@ -154,6 +155,8 @@ function KitchenPage() {
             </Link>
           </div>
         )}
+
+        {mine.data && <TestKitchenBadge isTest={mine.data.is_test} />}
 
         {user && mine.isLoading && <p className="mt-10 text-sm text-muted-foreground">Loading…</p>}
 
@@ -744,7 +747,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
       const { data, error } = await supabase
         .from("kitchens")
         .select(
-          "id, name, kind_detail, city, neighborhood, address, daily_capacity_meals, cost_per_meal, summary, website",
+          "id, name, kind_detail, city, neighborhood, address, daily_capacity_meals, cost_per_meal, summary, website, is_test",
         )
         .eq("claimed", false)
         .eq("active", true)
@@ -771,6 +774,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
           <li key={k.id} className="rounded-lg border border-border bg-card p-4">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <p className="text-sm font-semibold">{k.name}</p>
+              <TestKitchenBadge isTest={k.is_test} />
               <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
                 Directory listing — not affiliated
               </span>

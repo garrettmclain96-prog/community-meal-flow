@@ -19,6 +19,7 @@ import { Route as LegalRouteImport } from './routes/legal'
 import { Route as KitchenRouteImport } from './routes/kitchen'
 import { Route as ImpactRouteImport } from './routes/impact'
 import { Route as HelpRouteImport } from './routes/help'
+import { Route as DesignRouteImport } from './routes/design'
 import { Route as CivicRouteImport } from './routes/civic'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AppRouteImport } from './routes/app'
@@ -91,6 +92,11 @@ const ImpactRoute = ImpactRouteImport.update({
 const HelpRoute = HelpRouteImport.update({
   id: '/help',
   path: '/help',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DesignRoute = DesignRouteImport.update({
+  id: '/design',
+  path: '/design',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CivicRoute = CivicRouteImport.update({
@@ -216,6 +222,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/civic': typeof CivicRoute
+  '/design': typeof DesignRoute
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
@@ -250,6 +257,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/civic': typeof CivicRoute
+  '/design': typeof DesignRoute
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
@@ -285,6 +293,7 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
   '/civic': typeof CivicRoute
+  '/design': typeof DesignRoute
   '/help': typeof HelpRoute
   '/impact': typeof ImpactRoute
   '/kitchen': typeof KitchenRoute
@@ -322,6 +331,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/civic'
+    | '/design'
     | '/help'
     | '/impact'
     | '/kitchen'
@@ -356,6 +366,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/auth'
     | '/civic'
+    | '/design'
     | '/help'
     | '/impact'
     | '/kitchen'
@@ -390,6 +401,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/auth'
     | '/civic'
+    | '/design'
     | '/help'
     | '/impact'
     | '/kitchen'
@@ -426,6 +438,7 @@ export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
   CivicRoute: typeof CivicRoute
+  DesignRoute: typeof DesignRoute
   HelpRoute: typeof HelpRoute
   ImpactRoute: typeof ImpactRoute
   KitchenRoute: typeof KitchenRoute
@@ -510,6 +523,13 @@ declare module '@tanstack/react-router' {
       path: '/help'
       fullPath: '/help'
       preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/design': {
+      id: '/design'
+      path: '/design'
+      fullPath: '/design'
+      preLoaderRoute: typeof DesignRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/civic': {
@@ -730,6 +750,7 @@ const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
   CivicRoute: CivicRoute,
+  DesignRoute: DesignRoute,
   HelpRoute: HelpRoute,
   ImpactRoute: ImpactRoute,
   KitchenRoute: KitchenRoute,

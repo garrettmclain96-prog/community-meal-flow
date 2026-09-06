@@ -26,6 +26,7 @@ export interface KitchenRow {
   address: string | null;
   website: string | null;
   summary: string | null;
+  is_test: boolean;
   claimed: boolean;
   payout_status: string;
   /** Honest network state, derived server-data-side. Never inferred from copy. */
@@ -48,7 +49,7 @@ function withState<T extends { claimed: boolean; payout_status: string; cost_per
 }
 
 const KITCHEN_COLUMNS =
-  "id, name, kind, city, neighborhood, daily_capacity_meals, cost_per_meal, address, website, summary, claimed, payout_status";
+  "id, name, kind, city, neighborhood, daily_capacity_meals, cost_per_meal, address, website, summary, claimed, payout_status, is_test";
 
 /** Full public directory — discovery only. Includes unaffiliated directory listings. */
 export async function listKitchens(): Promise<KitchenRow[]> {

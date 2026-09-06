@@ -5,7 +5,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { flushPendingAcceptances } from "@/lib/legal/acceptance";
 
 export type AppRole =
-  "household" | "kitchen" | "nonprofit" | "sponsor" | "city_admin" | "platform_admin";
+  | "household"
+  | "kitchen"
+  | "nonprofit"
+  | "sponsor"
+  | "city_admin"
+  | "platform_admin";
 
 interface AuthCtx {
   session: Session | null;

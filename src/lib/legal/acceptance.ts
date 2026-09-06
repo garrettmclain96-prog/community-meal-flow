@@ -95,8 +95,7 @@ export async function missingAcceptances(keys: LegalDocKey[]): Promise<LegalDocK
   return keys.filter(
     (key) =>
       !rows.some(
-        (row) =>
-          row.document_key === key && row.document_version === LEGAL_DOCUMENTS[key].version,
+        (row) => row.document_key === key && row.document_version === LEGAL_DOCUMENTS[key].version,
       ),
   );
 }

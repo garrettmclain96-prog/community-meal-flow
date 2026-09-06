@@ -1,15 +1,16 @@
 ---
 title: ProvisionLoop
-status: implemented
+status: in_progress
+priority: p0
 owner: Garrett McLain
-version: 1.0.0
+version: 1.1.1
 date: 2026-09-05
-last_updated: 2026-09-05
+last_updated: 2026-09-06
 domain: software
 tags: [food-security, marketplace, payments, civic-data]
 related:
   requirements: ./requirements.md
-  tasks: ./roadmap.md
+  tasks: ./tasks.md
   adrs: ./docs/adr/
 supersedes:
 ---
@@ -21,7 +22,7 @@ supersedes:
 ProvisionLoop is a community food-security network that turns sponsor dollars into
 verified, delivered meals from local kitchens. The load-bearing design choice: the
 public ledger only counts money that a payment webhook confirmed, at kitchens that
-a real operator has claimed — honesty of the number is the product.
+an account has claimed — honesty of the number is the product.
 
 ## Context & Scope
 
@@ -49,7 +50,7 @@ aggregation to all hold simultaneously.
 - No money can move to a kitchen that has not been claimed and payout-verified.
 - Household identity never reaches a sponsor, volunteer or civic surface.
 - Civic aggregates are usable for planning: demand vs. capacity by area, 7/30/90-day windows, CSV export.
-- Every legal acceptance is recorded server-side, versioned, and unbypassable from the UI.
+- Every legal acceptance should be persisted, versioned and enforced server-side (FR-501.4 remains open).
 
 ## Non-Goals
 
@@ -62,9 +63,27 @@ aggregation to all hold simultaneously.
 
 ## Requirements Traceability
 
-Feature-level status and acceptance state live in `roadmap.md`. Legal document
-versions and their required acceptance contexts are enumerated in
-`src/lib/legal/registry.ts`, which is the traceability source for the legal gate.
+Criteria and evidence state live in [requirements.md](./requirements.md). Unmarked
+criteria are source-backed, not a claim that deployed integration tests passed.
+
+| Requirement | Component                                               | Verification method                                                |
+| ----------- | ------------------------------------------------------- | ------------------------------------------------------------------ |
+| FR-101      | payments webhook, confirm_sponsor_checkout              | Signature/replay integration test; sandbox blocked                 |
+| FR-102      | community.ts, payments.functions.ts                     | Funding gate source review; rejected checkout integration          |
+| FR-103      | payments.functions.ts, delivery RPCs                    | Authenticated sandbox reconciliation; open                         |
+| FR-201      | ProviderStateBadge, community.ts, civic.ts; five routes | Badge/query source checks and route smoke                          |
+| FR-202      | volunteer.ts, claim_kitchen                             | RPC source review; competing claims integration; verification open |
+| FR-203      | contact.ts, SiteHeader, trust-method, legal.index       | Shared address/link checks and smoke                               |
+| FR-301      | volunteer.ts, volunteer route                           | Profile and shift integration with role sessions                   |
+| FR-302      | delivery triggers/RPCs, volunteer.ts                    | Authorized/unauthorized transition integration; sandbox open       |
+| FR-401      | assistance.ts, partners.ts, civic.ts                    | RPC/RLS source review; separate user sessions                      |
+| FR-402      | legal/acceptance.ts, privacy-center, admin              | Request ownership integration; notification open                   |
+| FR-501      | legal/registry.ts, legal/acceptance.ts, useLegalGate    | Version/dedup source review; direct-call bypass negative test open |
+| FR-502      | legal.index, refund-request, SiteHeader                 | Legal links/navigation checks and smoke                            |
+| FR-601      | civic.ts, civic route                                   | CSV/window source review; suppression/real totals open             |
+| FR-701      | admin.ts, admin route, user_roles                       | Role lookup/queue integration; grant blocked                       |
+| FR-702      | design-docs.ts, design.functions.ts, design route       | Parser fixtures, role boundary tests, bundle privacy scan, smoke   |
+| FR-703      | tasks.md, verification report, SQL functions            | Format/typecheck/lint/build/smoke; database advisors blocked       |
 
 ## Design
 
@@ -136,8 +155,8 @@ sequenceDiagram
 
 RLS on every public table with explicit GRANTs; security-definer helpers instead of
 broad policies; anonymous execute revoked on all internal functions. Volunteers see
-a kitchen or drop point, never a household. Civic reads are aggregate with a
-minimum-cohort suppression threshold.
+a kitchen or drop point, never a household. Civic reads are aggregate, but `MIN_COHORT = 1` and kitchen-backed areas bypass
+suppression; meaningful suppression remains open (FR-601.4).
 
 ### Performance & Scale
 
@@ -152,8 +171,8 @@ transfer rather than re-fetched.
 ## Error Handling
 
 Funding paths fail closed with a stated reason ("This kitchen is not yet accepting
-funding."). Webhook retries are safe by construction. Legal gates throw from inside
-the handler via `assertAccepted()` so a disabled-button bypass cannot succeed.
+funding."). Webhook retries are safe by construction. Legal gates currently call `assertAccepted()` in UI handlers. Direct server/RPC
+bypass protection is not established; FR-501.4 remains open.
 
 ## Testing Strategy
 
@@ -187,9 +206,21 @@ migration.
 ## Risks & Open Questions
 
 - Email notifications for admin queues are blocked on owning a sending domain (owner: Garrett).
-- 19 pre-existing SECURITY DEFINER linter warnings remain open.
-- End-to-end sandbox sponsorship → delivery → payout has not been run with a signed-in session.
+- 19 historically reported SECURITY DEFINER linter warnings remain unverified; advisor access denied. Source-only inventory found 21 definers with paths pinned.
+- End-to-end sandbox sponsorship → delivery → payout is blocked: preview unreachable, no signed-in session or local payment secrets. No amounts observed.
 - Pilot date (Nov 3 2026) and eligibility wording are provisional.
+
+- [ ] Browser smoke and real admin rendering remain blocked by preview access; five automated parser/handler/bundle tests pass.
+
+### Findings from this pass
+
+- [ ] Real operator authority is not verified before claim approval; the committed RPC auto-approves (FR-202.3).
+- [ ] Server-side legal acceptance enforcement is missing from payment handlers (FR-501.4).
+- [ ] Civic suppression, estimate labeling and sandbox aggregate separation remain open (FR-601.4–6).
+- [ ] Garrett’s platform_admin grant needs confirmed account identity and database access (FR-701.3).
+- [x] Monitored contact links published from the existing contact constant (FR-203).
+- [x] Test-kitchen labels and is_test columns added to the five requested surfaces (FR-201).
+- [x] Pilot linked in header/mobile and footer navigation (FR-502.3).
 
 ## Dependencies
 
@@ -213,6 +244,19 @@ unmet-demand gap by area, and zero public totals traceable to unpaid pledges.
 - **Funding gate** — the combined approved + active + claimed + payout-ready check.
 - **Impact event** — the append-only row behind every public number.
 
+## Architecture Decision Records
+
+- [0001 — Payment-confirmed ledger](./docs/adr/0001-payment-confirmed-ledger.md)
+- [0002 — Private build-time design dashboard](./docs/adr/0002-private-build-time-design-dashboard.md)
+
+- [0003 — Authored source verification](./docs/adr/0003-authored-source-verification.md)
+
 ## Changelog
 
+- 2026-09-06 v1.1.1 — Verified build/type/parser/access boundaries; format authored source and exempt generated integrations from style tooling. Database grant and browser/sandbox checks remain blocked.
+
+- 2026-09-05 v1.1.0 — Added EARS traceability, collaboration contract and private build-time dashboard; corrected unsupported legal/claim/civic guarantees.
+- 2026-09-05 v1.0.3 — Added pilot header/mobile/footer navigation.
+- 2026-09-05 v1.0.2 — Added test kitchen badges and query flags.
+- 2026-09-05 v1.0.1 — Published existing monitored contact across trust/footer/legal.
 - 2026-09-05 v1.0.0 — Retrofit design doc for the shipped system (Garrett McLain)

@@ -1,7 +1,15 @@
 import type { Quantity } from "./units";
 
 export type Allergen =
-  "milk" | "egg" | "peanut" | "tree_nut" | "soy" | "wheat" | "fish" | "shellfish" | "sesame";
+  | "milk"
+  | "egg"
+  | "peanut"
+  | "tree_nut"
+  | "soy"
+  | "wheat"
+  | "fish"
+  | "shellfish"
+  | "sesame";
 
 export type DietTag =
   | "meat"
@@ -18,7 +26,14 @@ export type DietTag =
 export type StorageType = "pantry" | "fridge" | "freezer";
 
 export type IngredientCategory =
-  "produce" | "protein" | "dairy" | "grain" | "pantry" | "spice" | "frozen" | "bakery";
+  | "produce"
+  | "protein"
+  | "dairy"
+  | "grain"
+  | "pantry"
+  | "spice"
+  | "frozen"
+  | "bakery";
 
 export interface PackageSize {
   /** purchasable amount, e.g. 16 oz */

@@ -1,3 +1,13 @@
+---
+title: Payment-confirmed ledger
+status: accepted
+owner: Garrett McLain
+priority: p0
+version: 1.0.0
+date: 2026-09-05
+last_updated: 2026-09-05
+---
+
 # 0001 — Public totals count only webhook-confirmed payments
 
 - Status: accepted

@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
@@ -287,9 +288,12 @@ function TrustMethodPage() {
                   us to remove it entirely.
                 </li>
                 <li>
-                  <strong className="text-foreground">Correct or remove it:</strong> use the claim
-                  flow to reach us. A monitored contact channel for correction and removal requests
-                  will be published here before the public pilot opens.
+                  <strong className="text-foreground">Correct or remove it:</strong> email our
+                  monitored contact at{" "}
+                  <a href={SUPPORT_MAILTO} className="underline underline-offset-4">
+                    {SUPPORT_EMAIL}
+                  </a>
+                  . You do not need to claim a listing to request a correction or removal.
                 </li>
               </ul>
             </div>

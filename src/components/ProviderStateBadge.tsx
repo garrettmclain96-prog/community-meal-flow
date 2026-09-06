@@ -14,16 +14,18 @@ const TONE: Record<ProviderState, string> = {
  */
 export function ProviderStateBadge({
   state,
+  isTest = false,
   className = "",
 }: {
   state: ProviderState;
+  isTest?: boolean;
   className?: string;
 }) {
   return (
     <span
       className={`kicker inline-flex shrink-0 items-center border px-2 py-1 text-[10px] ${TONE[state]} ${className}`}
     >
-      {PROVIDER_STATE_LABEL[state]}
+      {isTest ? "Test-mode pilot kitchen — not a real partner" : PROVIDER_STATE_LABEL[state]}
     </span>
   );
 }
@@ -38,4 +40,8 @@ export function TrustLink({ className = "" }: { className?: string }) {
       How we verify providers &amp; count impact
     </Link>
   );
+}
+
+export function TestKitchenBadge({ isTest }: { isTest: boolean }) {
+  return isTest ? <ProviderStateBadge state="directory" isTest /> : null;
 }

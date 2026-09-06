@@ -1,3 +1,4 @@
+import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
 import { Link, createFileRoute } from "@tanstack/react-router";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
@@ -57,9 +58,12 @@ function LegalCenterPage() {
               yet.
             </li>
             <li>
-              <strong>Launch gate.</strong> The operating legal entity and a monitored legal contact
-              channel must be published in this Legal Center before any live-money launch. Neither
-              is published yet, and we will not invent one.
+              <strong>Launch gate.</strong> The operating legal entity must be published before any
+              live-money launch. For legal, listing or pilot questions, contact{" "}
+              <a href={SUPPORT_MAILTO} className="underline underline-offset-4">
+                {SUPPORT_EMAIL}
+              </a>
+              .
             </li>
             <li>
               <strong>Requests are reviewed by a person.</strong> Privacy and refund requests are

@@ -87,5 +87,9 @@
 
 ## Open
 
-- [ ] Publish a monitored contact channel for listing corrections/removals before the public pilot
-      opens (trust page currently directs operators to the claim flow).
+- [x] Linked the monitored address from `src/lib/contact.ts` on Trust & Method, footer and Legal Center; no claim required for correction/removal requests.
+- [x] Added `/pilot` navigation and test-kitchen badges to the five pilot surfaces.
+- [x] Added private build-time `/design` dashboard and requirements/task traceability.
+- [ ] Resolve database access, confirm Garrett’s account and grant platform_admin; see tasks.md.
+
+Execution evidence and remaining verification: [tasks.md](./tasks.md).
