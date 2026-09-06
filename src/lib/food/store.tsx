@@ -159,7 +159,6 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     setState(load());
-    setReady(true);
 
     let cancelled = false;
     void loadCatalogPrices()
@@ -172,6 +171,9 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {
         /* baseline estimates remain available if public catalog loading fails */
+      })
+      .finally(() => {
+        if (!cancelled) setReady(true);
       });
 
     return () => {
