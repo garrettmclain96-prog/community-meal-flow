@@ -6,6 +6,11 @@ import { SEED_RECIPES } from "./recipes";
 import type { MealForgeState } from "./store";
 import type { Household, PantryItem, Recipe } from "./types";
 
+type StoredMealPlan = MealPlan & {
+  completedMealSlots?: number[];
+  historySnapshot?: string[];
+};
+
 /**
  * Cloud repository for MealForge.
  *
@@ -134,6 +139,7 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
   }));
 
   const latest = plans.data?.[0];
+  const storedPlan = latest ? (latest.plan as unknown as StoredMealPlan) : null;
 
   return {
     householdId: hh.id,
@@ -161,7 +167,8 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
         provenance: "RECENT_OBSERVED" as const,
         scope: "household" as const,
       })),
-      plan: latest ? (latest.plan as unknown as MealPlan) : null,
+      history: storedPlan?.historySnapshot ?? [],
+      plan: storedPlan,
       checked: latest ? latest.checked : [],
     },
   };
