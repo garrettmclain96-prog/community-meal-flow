@@ -1,0 +1,30 @@
+@layer components {
+  .pl-about { background: radial-gradient(circle at 85% 8%, color-mix(in oklab, var(--primary) 12%, transparent), transparent 26rem), var(--background); }
+  .pl-about-hero { position: relative; overflow: hidden; border-bottom: 1px solid var(--border); padding-block: clamp(5rem, 11vw, 10rem); }
+  .pl-about-hero::after { content: "LOOP"; position: absolute; right: -2vw; bottom: -2.5rem; font-family: var(--font-display); font-size: clamp(9rem, 26vw, 28rem); font-weight: 900; letter-spacing: -.1em; line-height: .7; color: color-mix(in oklab, var(--foreground) 4%, transparent); pointer-events: none; }
+  .pl-about-hero > .site-shell { position: relative; z-index: 1; }
+  .pl-about-title { max-width: 10ch; margin-top: 1rem; font-family: var(--font-display); font-size: clamp(4rem, 11vw, 10rem); font-weight: 900; letter-spacing: -.085em; line-height: .78; }
+  .pl-about-title span { color: var(--primary); }
+  .pl-about-lead { max-width: 49rem; margin-top: 2rem; font-size: clamp(1.05rem, 2vw, 1.35rem); line-height: 1.75; color: var(--muted-foreground); }
+  .pl-about-sequence { display: grid; gap: 1px; margin-top: 3rem; border: 1px solid var(--border); background: var(--border); }
+  .pl-about-sequence > div { background: var(--card); padding: 1.25rem; }
+  .pl-about-sequence strong { display: block; margin-top: .35rem; font-family: var(--font-display); font-size: 1.25rem; font-weight: 900; }
+  .pl-about-sequence span { font-family: var(--font-mono); font-size: .58rem; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; color: var(--primary); }
+  .pl-founder { position: relative; overflow: hidden; border-block: 1px solid var(--border); background: #11110f; color: #f5f0e5; }
+  .pl-founder-grid { display: grid; gap: 0; min-height: 36rem; }
+  .pl-founder-mark { position: relative; display: grid; min-height: 24rem; place-items: center; overflow: hidden; border-bottom: 1px solid rgba(255,255,255,.12); background: radial-gradient(circle at 50% 45%, rgba(255,105,45,.22), transparent 36%), linear-gradient(145deg, #191815, #0d0d0c); }
+  .pl-founder-mark::before, .pl-founder-mark::after { content: ""; position: absolute; width: 72%; aspect-ratio: 1; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; }
+  .pl-founder-mark::after { width: 48%; border-color: color-mix(in oklab, var(--primary) 55%, transparent); }
+  .pl-founder-initials { position: relative; z-index: 2; font-family: var(--font-display); font-size: clamp(6rem, 18vw, 12rem); font-weight: 900; letter-spacing: -.12em; line-height: .8; color: var(--primary); text-shadow: 8px 8px 0 rgba(255,255,255,.05); }
+  .pl-founder-copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(2rem, 6vw, 5rem); }
+  .pl-founder-quote { max-width: 15ch; margin-top: 1rem; font-family: var(--font-display); font-size: clamp(2.8rem, 6vw, 5.8rem); font-weight: 900; letter-spacing: -.065em; line-height: .88; }
+  .pl-founder-body { max-width: 43rem; margin-top: 1.5rem; color: #b8b2a7; font-size: .98rem; line-height: 1.8; }
+  .pl-founder-meta { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.6rem; }
+  .pl-founder-chip { border: 1px solid rgba(255,255,255,.18); padding: .55rem .7rem; font-family: var(--font-mono); font-size: .58rem; font-weight: 800; letter-spacing: .12em; text-transform: uppercase; color: #d7d1c6; }
+  .pl-about-manifesto { padding-block: clamp(5rem, 10vw, 9rem); background: var(--primary); color: var(--primary-foreground); }
+  .pl-about-manifesto h2 { max-width: 12ch; font-family: var(--font-display); font-size: clamp(3.7rem, 9vw, 8.5rem); font-weight: 900; letter-spacing: -.08em; line-height: .8; }
+  .pl-about-manifesto p { max-width: 40rem; margin-top: 1.5rem; font-size: 1rem; line-height: 1.8; opacity: .8; }
+}
+
+@media (min-width: 760px) { @layer components { .pl-about-sequence { grid-template-columns: repeat(4, minmax(0,1fr)); } } }
+@media (min-width: 960px) { @layer components { .pl-founder-grid { grid-template-columns: .72fr 1.28fr; } .pl-founder-mark { min-height: 44rem; border-bottom: 0; border-right: 1px solid rgba(255,255,255,.12); } } }
