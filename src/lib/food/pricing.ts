@@ -1,5 +1,5 @@
-import type { PackageSize, PriceProvenance, PriceQuote, Store } from "./types";
 import { INGREDIENT_BY_ID } from "./ingredients";
+import type { PackageSize, PriceProvenance, PriceQuote, Store } from "./types";
 
 /**
  * Price intelligence.
@@ -7,7 +7,7 @@ import { INGREDIENT_BY_ID } from "./ingredients";
  * Providers register behind one interface. Every quote carries provenance:
  *   VERIFIED_LIVE   — a real retailer feed said so, right now
  *   RECENT_OBSERVED — a receipt or a shopper confirmed this price recently
- *   ESTIMATED       — a national baseline adjusted for the store's index
+ *   ESTIMATED       — a seeded/store estimate or national baseline
  *
  * Nothing is ever labelled live unless a live retailer feed supplies it.
  */
@@ -22,7 +22,7 @@ export const STORES: Store[] = [
 
 export const STORE_BY_ID: Record<string, Store> = Object.fromEntries(STORES.map((s) => [s.id, s]));
 
-/** Relative price index per banner — used only for ESTIMATED quotes. */
+/** Relative price index per banner — last-resort ESTIMATED quotes only. */
 const STORE_INDEX: Record<string, number> = {
   heb: 0.96,
   kroger: 1.0,
@@ -36,8 +36,12 @@ export interface PriceObservation {
   storeId: string;
   packageLabel: string;
   price: number;
-  /** ISO date the observation was made (receipt date or manual confirm) */
+  /** ISO date the observation was made (receipt date, manual confirm or catalog seed date). */
   observedAt: string;
+  /** Household observations default to RECENT_OBSERVED; catalog rows can preserve ESTIMATED. */
+  provenance?: PriceProvenance;
+  /** Catalog rows are public reference data and are never written into a household's own table. */
+  scope?: "household" | "catalog";
 }
 
 export interface PriceProvider {
@@ -55,8 +59,8 @@ export interface PriceProvider {
 const OBSERVED_MAX_AGE_DAYS = 45;
 
 export const observedProvider: PriceProvider = {
-  id: "receipt_observed",
-  label: "Receipt observed",
+  id: "observed_or_seeded",
+  label: "Observed or seeded store price",
   provenance: "RECENT_OBSERVED",
   quote(ingredientId, storeId, pkg, ctx) {
     const cutoff = Date.now() - OBSERVED_MAX_AGE_DAYS * 86_400_000;
@@ -68,16 +72,22 @@ export const observedProvider: PriceProvider = {
           o.packageLabel === pkg.label &&
           Date.parse(o.observedAt) >= cutoff,
       )
-      .sort((a, b) => Date.parse(b.observedAt) - Date.parse(a.observedAt))[0];
+      .sort((a, b) => {
+        const householdPriority = Number(b.scope !== "catalog") - Number(a.scope !== "catalog");
+        if (householdPriority !== 0) return householdPriority;
+        return Date.parse(b.observedAt) - Date.parse(a.observedAt);
+      })[0];
     if (!hit) return null;
+
+    const provenance = hit.provenance ?? "RECENT_OBSERVED";
     return {
       ingredientId,
       storeId,
       pkg,
       price: hit.price,
-      provenance: "RECENT_OBSERVED",
+      provenance,
       observedAt: hit.observedAt,
-      providerId: this.id,
+      providerId: hit.scope === "catalog" ? "seeded_store_catalog" : "household_observed",
     };
   },
 };
