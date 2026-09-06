@@ -3,6 +3,7 @@ import { ArrowUpRight, Menu, X } from "lucide-react";
 import { useState } from "react";
 
 import "@/brand-refresh.css";
+import "@/workflow-experience.css";
 import { AccountButton } from "@/components/AccountButton";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
