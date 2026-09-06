@@ -78,3 +78,19 @@ test("partner PII and volunteer delivery RPCs require current governed agreement
   assert.match(migration, /advance_delivery_run[\s\S]*volunteer_waiver/);
   assert.match(migration, /auth\.uid\(\)/);
 });
+
+test("unverified kitchens cannot publish operational resources and approval completes claimed state", async () => {
+  const migration = await source(
+    "supabase/migrations/20260906165000_gate_unverified_kitchen_operations.sql",
+  );
+
+  assert.match(migration, /operates_approved_kitchen/);
+  assert.match(migration, /k\.approved = true/);
+  assert.match(migration, /k\.active = true/);
+  assert.match(migration, /k\.claimed = true/);
+  assert.match(migration, /claimed = true/);
+  assert.match(migration, /approved kitchen owners manage templates/);
+  assert.match(migration, /approved active templates are public/);
+  assert.match(migration, /approved kitchen owners manage shifts/);
+  assert.match(migration, /approved kitchen shifts are public/);
+});
