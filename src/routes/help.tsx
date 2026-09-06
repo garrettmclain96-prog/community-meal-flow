@@ -1,12 +1,12 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
-import { ExternalLink, MapPin, PhoneCall, ShieldCheck } from "lucide-react";
+import { ExternalLink, LockKeyhole, MapPin, PhoneCall, ShieldCheck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { ProviderStateBadge } from "@/components/ProviderStateBadge";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { submitAssistanceRequest } from "@/lib/assistance";
-import { ProviderStateBadge } from "@/components/ProviderStateBadge";
 import { listKitchens } from "@/lib/community";
 
 export const Route = createFileRoute("/help")({
@@ -73,32 +73,40 @@ function HelpPage() {
   }
 
   return (
-    <div className="min-h-dvh bg-background text-foreground">
+    <div className="pl-workflow-shell min-h-dvh bg-background text-foreground">
       <SiteHeader />
       <main>
-        <section className="border-b-2 border-foreground bg-secondary text-secondary-foreground">
-          <div className="site-shell py-16 md:py-24">
-            <p className="kicker">Food support · Galveston County</p>
+        <section className="pl-page-intro bg-secondary text-secondary-foreground">
+          <div className="site-shell">
+            <div className="inline-flex items-center gap-2 font-mono text-[10px] font-black uppercase tracking-[0.18em]">
+              <LockKeyhole className="size-4" /> Private by default
+            </div>
             <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
               ASKING FOR FOOD SHOULD NOT BE A MAZE.
             </h1>
             <p className="mt-7 max-w-2xl text-lg font-semibold leading-8">
-              Search participating programs directly or send one private request to the partner
-              network. Your name and contact information never appear publicly.
+              Find a local program yourself or send one private request into the partner network.
+              Your name and contact information never appear on the public ledger.
             </p>
+            <div className="pl-stage-strip text-foreground">
+              <div><span>01 · Choose</span><strong>Search or request</strong></div>
+              <div><span>02 · Private</span><strong>Share only what is needed</strong></div>
+              <div><span>03 · Route</span><strong>Verified partner review</strong></div>
+              <div><span>04 · Connect</span><strong>Get a direct response</strong></div>
+            </div>
           </div>
         </section>
 
         <section className="site-shell grid gap-12 py-16 lg:grid-cols-[1.05fr_.95fr]">
           <div>
-            <p className="kicker text-primary">Nearby programs</p>
-            <h2 className="mt-3 font-display text-4xl font-black tracking-tight">
-              Start with a local door.
+            <p className="kicker text-primary">Option 01 · Find a local door</p>
+            <h2 className="mt-3 max-w-lg font-display text-4xl font-black tracking-[-0.05em]">
+              START WITH WHAT IS ALREADY NEARBY.
             </h2>
-            <p className="mt-3 max-w-xl text-sm text-muted-foreground">
+            <p className="mt-4 max-w-xl text-sm leading-7 text-muted-foreground">
               Most entries are directory listings: real local programs mapped from public
-              information so you can find them. They are not affiliated with ProvisionLoop — contact
-              them directly and confirm hours before you go.
+              information so you can find them. They are not automatically affiliated with
+              ProvisionLoop — contact them directly and confirm hours before you go.
             </p>
             <label className="mt-7 block">
               <span className="field-label">Search by program, city or neighborhood</span>
@@ -116,18 +124,13 @@ function HelpPage() {
                     <div>
                       <h3 className="font-display text-xl font-black">{program.name}</h3>
                       <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
-                        <MapPin className="size-4" />{" "}
-                        {program.address ||
-                          [program.neighborhood, program.city].filter(Boolean).join(", ")}
+                        <MapPin className="size-4 shrink-0" />{" "}
+                        {program.address || [program.neighborhood, program.city].filter(Boolean).join(", ")}
                       </p>
                     </div>
                     <ProviderStateBadge state={program.providerState} isTest={program.is_test} />
                   </div>
-                  {program.summary && (
-                    <p className="mt-4 text-sm leading-6 text-muted-foreground">
-                      {program.summary}
-                    </p>
-                  )}
+                  {program.summary && <p className="mt-4 text-sm leading-6 text-muted-foreground">{program.summary}</p>}
                   {program.website && (
                     <a
                       className="mt-4 inline-flex items-center gap-2 text-sm font-extrabold text-primary"
@@ -140,13 +143,10 @@ function HelpPage() {
                   )}
                 </article>
               ))}
-              {programs.isLoading && (
-                <p className="text-sm text-muted-foreground">Loading local programs…</p>
-              )}
+              {programs.isLoading && <p className="text-sm text-muted-foreground">Loading local programs…</p>}
               {!programs.isLoading && filtered.length === 0 && (
-                <p className="border border-border p-5 text-sm text-muted-foreground">
-                  No matching listing yet. Use the private request form so a partner can help route
-                  you.
+                <p className="pl-trust-note">
+                  No matching listing yet. Use the private request beside this directory so a partner can help route you.
                 </p>
               )}
             </div>
@@ -155,16 +155,19 @@ function HelpPage() {
           <div className="lg:sticky lg:top-28 lg:self-start">
             <div className="editorial-card p-6 md:p-8">
               <div className="flex items-center gap-3">
-                <div className="grid size-11 place-items-center bg-primary text-primary-foreground">
+                <div className="grid size-11 shrink-0 place-items-center bg-primary text-primary-foreground">
                   <PhoneCall className="size-5" />
                 </div>
                 <div>
-                  <p className="kicker text-primary">Private request</p>
-                  <h2 className="font-display text-2xl font-black">
-                    Tell the network what you need.
-                  </h2>
+                  <p className="kicker text-primary">Option 02 · Private request</p>
+                  <h2 className="font-display text-2xl font-black">Tell the network what would help.</h2>
                 </div>
               </div>
+
+              <div className="pl-trust-note mt-6">
+                This request is operational data, not public content. Only the information needed to route support is shared with an authorized partner.
+              </div>
+
               {sent ? (
                 <div className="mt-8 border-2 border-foreground bg-accent p-6">
                   <ShieldCheck className="size-8" />
@@ -205,9 +208,7 @@ function HelpPage() {
                       />
                     </Field>
                   </div>
-                  <p className="-mt-3 text-xs text-muted-foreground">
-                    Provide at least one way to contact you.
-                  </p>
+                  <p className="-mt-3 text-xs text-muted-foreground">Provide at least one way to contact you.</p>
                   <div className="grid gap-4 sm:grid-cols-2">
                     <Field label="Area">
                       <input
@@ -225,9 +226,7 @@ function HelpPage() {
                         min={1}
                         max={30}
                         value={form.householdSize}
-                        onChange={(e) =>
-                          setForm({ ...form, householdSize: Number(e.target.value) })
-                        }
+                        onChange={(e) => setForm({ ...form, householdSize: Number(e.target.value) })}
                       />
                     </Field>
                   </div>
@@ -237,11 +236,7 @@ function HelpPage() {
                       value={form.needType}
                       onChange={(e) => setForm({ ...form, needType: e.target.value })}
                     >
-                      {NEEDS.map(([value, label]) => (
-                        <option key={value} value={value}>
-                          {label}
-                        </option>
-                      ))}
+                      {NEEDS.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
                     </select>
                   </Field>
                   <Field label="When is help needed?">
@@ -266,7 +261,7 @@ function HelpPage() {
                     <input
                       required
                       type="checkbox"
-                      className="mt-1 size-5"
+                      className="mt-1 size-5 shrink-0"
                       checked={form.consent}
                       onChange={(e) => setForm({ ...form, consent: e.target.checked })}
                     />
@@ -275,15 +270,11 @@ function HelpPage() {
                       for the purpose of connecting me with food support.
                     </span>
                   </label>
-                  <button
-                    disabled={busy}
-                    className="button-primary w-full py-4 disabled:opacity-60"
-                  >
+                  <button disabled={busy} className="button-primary w-full py-4 disabled:opacity-60">
                     {busy ? "Sending privately…" : "Send private request"}
                   </button>
                   <p className="text-xs leading-5 text-muted-foreground">
-                    This is not emergency service. If someone is in immediate danger, call 911. For
-                    broader local resources, call 211.
+                    This is not emergency service. If someone is in immediate danger, call 911. For broader local resources, call 211.
                   </p>
                 </form>
               )}
