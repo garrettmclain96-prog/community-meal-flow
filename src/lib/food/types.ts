@@ -126,8 +126,10 @@ export interface Household {
   weeklyBudget: number;
   dinnersPerWeek: number;
   dietaryPreferences: string[];
-  avoidTags: DietTag[];
-  allergies: Allergen[];
+  /** Preset diet tags and user-defined ingredient/food exclusions. */
+  avoidTags: string[];
+  /** Preset allergens and user-defined allergies/intolerances. */
+  allergies: string[];
   equipment: string[];
   storeIds: string[];
   maxCookMinutes: number;
