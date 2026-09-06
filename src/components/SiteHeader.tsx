@@ -94,6 +94,9 @@ export function SiteHeader() {
               <Link to="/app" className="pl-mobile-link" onClick={() => setOpen(false)}>
                 MealForge <span>07 ↗</span>
               </Link>
+              <Link to="/about" className="pl-mobile-link" onClick={() => setOpen(false)}>
+                About <span>08 ↗</span>
+              </Link>
               <div className="flex flex-wrap items-center gap-3 py-4 xl:hidden">
                 <AccountButton />
                 <ThemeToggle />
@@ -138,6 +141,7 @@ export function SiteFooter() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Build</p>
           <div className="mt-5 grid gap-3 text-sm">
+            <Link className="pl-footer-link" to="/about">About ProvisionLoop</Link>
             <Link className="pl-footer-link" to="/kitchen">Kitchen network</Link>
             <Link className="pl-footer-link" to="/partners">Community partners</Link>
             <Link className="pl-footer-link" to="/civic">Public ledger</Link>
