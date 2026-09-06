@@ -102,8 +102,8 @@ function MealForgeHome() {
         />
         <Tile
           to="/app/setup"
-          title="Household settings"
-          body="Members, allergies, stores, budget."
+          title="Food profile & household"
+          body={`${household.allergies.length} allergies/intolerances · ${household.avoidTags.length} avoid rules · preferences, members, budget and kitchen settings.`}
         />
       </div>
     </div>
