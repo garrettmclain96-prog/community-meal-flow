@@ -17,20 +17,18 @@ import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-16 text-foreground">
+      <div className="w-full max-w-2xl border-2 border-foreground bg-card p-8 shadow-[10px_10px_0_var(--primary)] md:p-12">
+        <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-primary">ProvisionLoop / 404</p>
+        <h1 className="mt-5 font-display text-6xl font-black leading-[0.85] tracking-[-0.07em] md:text-8xl">
+          THIS LOOP DOESN&apos;T EXIST.
+        </h1>
+        <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground">
+          The page moved, the link is stale, or this path was never part of the network. Nothing is lost — head back to the live system.
         </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
+        <div className="mt-8 flex flex-wrap gap-3">
+          <Link to="/" className="button-primary">Return home</Link>
+          <Link to="/help" className="button-secondary">Find food help</Link>
         </div>
       </div>
     </div>
@@ -42,30 +40,26 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-dvh items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+    <div className="flex min-h-dvh items-center justify-center bg-background px-4 py-16 text-foreground">
+      <div className="w-full max-w-2xl border-2 border-foreground bg-card p-8 shadow-[10px_10px_0_var(--primary)] md:p-12">
+        <p className="font-mono text-[10px] font-black uppercase tracking-[0.24em] text-primary">ProvisionLoop / recovery</p>
+        <h1 className="mt-5 font-display text-5xl font-black leading-[0.9] tracking-[-0.06em] md:text-7xl">
+          THE LOOP HIT A BREAK.
         </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+        <p className="mt-6 max-w-xl text-base leading-7 text-muted-foreground">
+          Something failed while loading this page. Retry the route first; if the problem persists, return to the network home.
         </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
+        <div className="mt-8 flex flex-wrap gap-3">
           <button
             onClick={() => {
               router.invalidate();
               reset();
             }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+            className="button-primary"
           >
-            Try again
+            Retry this page
           </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
+          <a href="/" className="button-secondary">Return home</a>
         </div>
       </div>
     </div>
@@ -76,37 +70,28 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "ProvisionLoop" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: "ProvisionLoop — Community Food Infrastructure" },
       {
         name: "description",
         content:
-          "A public benefit corporation building the digital and logistical rails for a world without hunger.",
+          "ProvisionLoop connects private food need, verified local kitchen capacity, accountable funding, volunteers and aggregate public proof across Galveston County.",
       },
-      { name: "author", content: "ProvisionLoop" },
-      { property: "og:title", content: "ProvisionLoop" },
+      { name: "author", content: "ProvisionLoop · Founded by Garrett McLain" },
+      { name: "theme-color", content: "#121210" },
+      { property: "og:title", content: "ProvisionLoop — Community Food Infrastructure" },
       {
         property: "og:description",
         content:
-          "A public benefit corporation building the digital and logistical rails for a world without hunger.",
+          "Private need. Local capacity. Public accountability. ProvisionLoop is building a closed-loop local food network in Galveston County.",
       },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:title", content: "ProvisionLoop" },
+      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: "ProvisionLoop — Community Food Infrastructure" },
       {
         name: "twitter:description",
         content:
-          "A public benefit corporation building the digital and logistical rails for a world without hunger.",
-      },
-      {
-        property: "og:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/52cdab5b-9d5a-4e8f-b3ef-8d08fa592d74",
-      },
-      {
-        name: "twitter:image",
-        content:
-          "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/52cdab5b-9d5a-4e8f-b3ef-8d08fa592d74",
+          "Private need. Local capacity. Public accountability. A closed-loop food network built to finish the job.",
       },
     ],
     links: [
