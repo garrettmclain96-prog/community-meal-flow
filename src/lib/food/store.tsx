@@ -99,6 +99,8 @@ interface Ctx {
   addPantryItem: (item: PantryItem) => void;
   removePantryItem: (id: string) => void;
   addRecipe: (recipe: Recipe) => void;
+  addPriceObservation: (observation: PriceObservation) => void;
+  markMealCooked: (recipeId: string) => void;
   regeneratePlan: () => MealPlan;
   groceryList: GroceryList | null;
   stockRemainders: () => void;
@@ -167,7 +169,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(() => {
       void pushCloudState(cloudId, state).catch(() => {
-        /* retried on the next change */
+        /* local-first state remains available; a later change retries sync */
       });
     }, 800);
     return () => {
@@ -193,6 +195,30 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
 
   const addRecipe = useCallback((recipe: Recipe) => {
     setState((s) => ({ ...s, recipes: [recipe, ...s.recipes.filter((r) => r.id !== recipe.id)] }));
+  }, []);
+
+  const addPriceObservation = useCallback((observation: PriceObservation) => {
+    setState((s) => ({
+      ...s,
+      observations: [
+        observation,
+        ...s.observations.filter(
+          (o) =>
+            !(
+              o.ingredientId === observation.ingredientId &&
+              o.storeId === observation.storeId &&
+              o.packageLabel === observation.packageLabel
+            ),
+        ),
+      ],
+    }));
+  }, []);
+
+  const markMealCooked = useCallback((recipeId: string) => {
+    setState((s) => ({
+      ...s,
+      history: [recipeId, ...s.history.filter((id) => id !== recipeId)].slice(0, 60),
+    }));
   }, []);
 
   const regeneratePlan = useCallback(() => {
@@ -223,7 +249,12 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     setState((s) => {
       if (!s.plan) return s;
       const list = buildGroceryList(s.plan, s.pantry, s.observations);
-      return { ...s, pantry: [...s.pantry, ...remaindersToPantry(list)] };
+      const remainders = remaindersToPantry(list, s.plan.generatedAt);
+      const replacementIds = new Set(remainders.map((item) => item.id));
+      return {
+        ...s,
+        pantry: [...s.pantry.filter((item) => !replacementIds.has(item.id)), ...remainders],
+      };
     });
   }, []);
 
@@ -245,6 +276,8 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
       addPantryItem,
       removePantryItem,
       addRecipe,
+      addPriceObservation,
+      markMealCooked,
       regeneratePlan,
       groceryList,
       stockRemainders,
@@ -259,6 +292,8 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
       addPantryItem,
       removePantryItem,
       addRecipe,
+      addPriceObservation,
+      markMealCooked,
       regeneratePlan,
       groceryList,
       stockRemainders,
