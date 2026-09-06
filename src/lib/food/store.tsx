@@ -153,6 +153,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<MealForgeState>(initialState);
   const [ready, setReady] = useState(false);
   const { user } = useAuth();
+  const userId = user?.id ?? null;
   const [cloudId, setCloudId] = useState<string | null>(null);
   const hydrating = useRef(false);
   const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -198,13 +199,13 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   // household and the cloud one is still empty — then the device wins.
   useEffect(() => {
     if (!ready) return;
-    if (!user) {
+    if (!userId) {
       setCloudId(null);
       return;
     }
     let cancelled = false;
     hydrating.current = true;
-    loadCloudState(user.id, DEFAULT_HOUSEHOLD)
+    loadCloudState(userId, DEFAULT_HOUSEHOLD)
       .then(({ householdId, state: remote }) => {
         if (cancelled) return;
         setCloudId(householdId);
@@ -243,7 +244,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     return () => {
       cancelled = true;
     };
-  }, [ready, user?.id]);
+  }, [ready, userId]);
 
   // Mirror every change back to the household's own rows.
   useEffect(() => {
