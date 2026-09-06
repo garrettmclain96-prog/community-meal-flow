@@ -74,11 +74,21 @@ function PlanPage() {
             dietaryPreferences: household.dietaryPreferences,
             maxCookMinutes: household.maxCookMinutes,
             equipment: household.equipment,
+            pantryItems: state.pantry.map((item) => {
+              const ingredient = INGREDIENT_BY_ID[item.ingredientId];
+              return `${item.quantity.amount} ${item.quantity.unit} ${ingredient?.name ?? item.ingredientId}`;
+            }),
             meals: plan.meals.map((meal) => ({
               title: meal.recipe.title,
               minutes: meal.recipe.totalTimeMinutes,
               costPerServing: meal.cost.costPerServing,
               reasons: meal.reasons,
+              ingredients: meal.recipe.ingredients.map((item) => {
+                const ingredient = INGREDIENT_BY_ID[item.ingredientId];
+                const name = ingredient?.name ?? item.ingredientId;
+                return item.raw ?? `${item.quantity.amount} ${item.quantity.unit} ${name}`;
+              }),
+              steps: meal.recipe.steps,
             })),
           },
         },
@@ -202,7 +212,7 @@ function PlanPage() {
                 />
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs text-muted-foreground">
-                    Uses your current week, budget, food exclusions, preferences, cook-time limit, and equipment as context. It does not override hard constraints.
+                    Uses your current week, pantry, recipes, food exclusions, preferences, cook-time limit, and equipment as context. It does not override hard constraints.
                   </p>
                   <button
                     type="button"
