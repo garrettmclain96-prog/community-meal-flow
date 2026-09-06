@@ -1,4 +1,3 @@
-import { TestKitchenBadge } from "@/components/ProviderStateBadge";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
@@ -64,9 +63,9 @@ function CivicPage() {
           THE NUMBERS WITHOUT THE NAMES.
         </h1>
         <p className="mt-4 max-w-2xl text-base text-muted-foreground">
-          Every number here is computed from the public impact ledger, approved kitchen capacity and
-          posted volunteer shifts. No household, sponsor or order-level record is readable from this
-          surface, by construction.
+          Real-world totals here exclude sandbox kitchens and suppress small neighborhood impact
+          counts. Capacity comes from approved non-test providers; funding and delivery totals come
+          from the public impact ledger.
         </p>
 
         <div className="mt-8 flex flex-wrap items-center gap-2">
@@ -104,6 +103,11 @@ function CivicPage() {
         {snap.isLoading && (
           <p className="mt-10 text-sm text-muted-foreground">Loading city data…</p>
         )}
+        {snap.isError && (
+          <p className="mt-10 rounded-xl border border-red-500/40 bg-surface p-5 text-sm">
+            Civic data could not be loaded. Nothing has been substituted or estimated in its place.
+          </p>
+        )}
 
         {data && (
           <>
@@ -111,24 +115,33 @@ function CivicPage() {
               <Stat
                 label="Meals funded"
                 value={data.totals.funded.toLocaleString()}
-                note={`last ${days} days`}
+                note={`real-world ledger · last ${days} days`}
               />
               <Stat
                 label="Meals delivered"
                 value={data.totals.delivered.toLocaleString()}
-                note="confirmed handoffs"
+                note="confirmed real-world handoffs"
               />
               <Stat
                 label="Weekly kitchen capacity"
                 value={data.totals.capacityPerWeek.toLocaleString()}
-                note={`${data.totals.kitchens} kitchens listed`}
+                note={`${data.totals.kitchens} approved non-test kitchens`}
               />
               <Stat
-                label="Sponsor dollars landed"
+                label="Sponsor dollars estimate"
                 value={`$${data.totals.dollars.toLocaleString()}`}
-                note="at posted cost per meal"
+                note="estimate from funded meals × posted meal cost"
               />
             </div>
+
+            {(data.test.kitchens > 0 || data.test.events > 0) && (
+              <div className="mt-4 border border-dashed border-border bg-card p-4 text-xs text-muted-foreground">
+                Sandbox excluded from every total above: {data.test.kitchens} test kitchen
+                {data.test.kitchens === 1 ? "" : "s"}, {data.test.capacityPerWeek.toLocaleString()} test
+                meals/week of capacity, and {data.test.events} test ledger event
+                {data.test.events === 1 ? "" : "s"} in this window.
+              </div>
+            )}
 
             <section className="mt-14">
               <div className="flex flex-wrap items-end justify-between gap-3">
@@ -136,8 +149,7 @@ function CivicPage() {
                   Demand versus capacity by area
                 </h2>
                 <p className="text-xs text-muted-foreground">
-                  {data.totals.unclaimed} listed kitchens have not been claimed by their operator
-                  yet
+                  {data.totals.unclaimed} real-world directory listings are not operator-verified
                 </p>
               </div>
 
@@ -176,32 +188,38 @@ function CivicPage() {
                             </span>
                           </div>
                         </td>
-                        <td className="px-5 py-3">{r.funded.toLocaleString()}</td>
+                        <td className="px-5 py-3">
+                          {r.impactSuppressed ? "Suppressed" : r.funded.toLocaleString()}
+                        </td>
                         <td className="px-5 py-3 text-muted-foreground">
-                          {r.delivered.toLocaleString()}
+                          {r.impactSuppressed ? "Suppressed" : r.delivered.toLocaleString()}
                         </td>
                         <td className="px-5 py-3 text-muted-foreground">
                           {r.unmet.toLocaleString()}
                         </td>
                         <td className="px-5 py-3">
-                          <span
-                            className={
-                              r.coverage < 0.05
-                                ? "text-muted-foreground"
-                                : r.coverage < 0.5
-                                  ? "text-ember-text"
-                                  : "font-semibold"
-                            }
-                          >
-                            {Math.round(r.coverage * 100)}%
-                          </span>
+                          {r.impactSuppressed ? (
+                            <span className="text-muted-foreground">Suppressed</span>
+                          ) : (
+                            <span
+                              className={
+                                r.coverage < 0.05
+                                  ? "text-muted-foreground"
+                                  : r.coverage < 0.5
+                                    ? "text-ember-text"
+                                    : "font-semibold"
+                              }
+                            >
+                              {Math.round(r.coverage * 100)}%
+                            </span>
+                          )}
                         </td>
                       </tr>
                     ))}
                     {rows.length === 0 && (
                       <tr>
                         <td colSpan={7} className="px-5 py-6 text-sm text-muted-foreground">
-                          No kitchens or funded meals in this window.
+                          No real-world kitchens or reportable impact in this window.
                         </td>
                       </tr>
                     )}
@@ -210,7 +228,8 @@ function CivicPage() {
               </div>
               {data.suppressed > 0 && (
                 <p className="mt-2 text-xs text-muted-foreground">
-                  {data.suppressed} area(s) suppressed for falling below the minimum cohort size.
+                  {data.suppressed} area(s) have impact counts hidden because they are below the
+                  minimum public cohort threshold.
                 </p>
               )}
             </section>
@@ -218,31 +237,40 @@ function CivicPage() {
             {focus && (
               <section className="mt-10 rounded-xl border border-border bg-surface p-6">
                 <h3 className="font-display text-2xl font-bold">{focus.neighborhood}</h3>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                  <MiniStat label="Awaiting delivery" value={focus.awaiting.toLocaleString()} />
-                  <MiniStat label="Volunteer shifts posted" value={String(focus.shifts)} />
-                  <MiniStat label="Sponsor dollars" value={`$${focus.dollars.toLocaleString()}`} />
-                  <MiniStat
-                    label="Gap to fill capacity"
-                    value={`$${Math.round(focus.unmet * 6.5).toLocaleString()}`}
-                  />
-                </div>
+                {focus.impactSuppressed ? (
+                  <p className="mt-4 text-sm text-muted-foreground">
+                    Impact counts for this area are below the minimum public cohort threshold and
+                    are intentionally hidden. Public provider capacity can still be shown.
+                  </p>
+                ) : (
+                  <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <MiniStat label="Awaiting delivery" value={focus.awaiting.toLocaleString()} />
+                    <MiniStat label="Volunteer shifts posted" value={String(focus.shifts)} />
+                    <MiniStat
+                      label="Sponsor dollars estimate"
+                      value={`$${focus.dollars.toLocaleString()}`}
+                    />
+                    <MiniStat
+                      label="Estimated gap to fill capacity"
+                      value={`$${Math.round(focus.unmet * 6.5).toLocaleString()}`}
+                    />
+                  </div>
+                )}
                 <ul className="mt-5 space-y-2 text-sm">
                   {data.kitchens
-                    .filter((k) => (k.neighborhood || k.city) === focus.neighborhood)
+                    .filter(
+                      (k) => !k.is_test && (k.neighborhood || k.city) === focus.neighborhood,
+                    )
                     .map((k) => (
                       <li key={k.id} className="rounded-lg border border-border bg-card p-4">
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="font-semibold">{k.name}</p>
-                          <TestKitchenBadge isTest={k.is_test} />
                           <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
-                            {k.is_test
-                              ? "Sandbox capacity"
-                              : k.claimed && k.payout_status === "ready"
-                                ? "Funding enabled"
-                                : k.claimed
-                                  ? "Operator verified"
-                                  : "Directory listing — not affiliated"}
+                            {k.claimed && k.payout_status === "ready" && k.payout_account_id
+                              ? "Funding enabled"
+                              : k.claimed
+                                ? "Operator verified"
+                                : "Directory listing — not affiliated"}
                           </span>
                         </div>
                         <p className="mt-1 text-xs text-muted-foreground">
@@ -267,13 +295,13 @@ function CivicPage() {
             </section>
 
             <p className="mt-12 max-w-3xl text-xs text-muted-foreground">
-              Method: funded and delivered counts come from the public impact ledger, attributed to
-              the kitchen's neighborhood. Weekly capacity is the sum of each approved kitchen's
-              daily capacity across seven days. Sponsor dollars are estimated at each area's highest
-              posted cost per meal. Directory listings are real local programs mapped by
-              ProvisionLoop from public information; they are not affiliated with ProvisionLoop and
-              cannot receive funding. A provider becomes fundable only after its operator claims the
-              listing and completes payout onboarding.
+              Method: real-world funded and delivered counts come from the public impact ledger;
+              test-kitchen events are excluded. Weekly capacity is the sum of approved, active,
+              non-test kitchen capacity across seven days. Neighborhood impact counts below the
+              public cohort threshold are suppressed. Sponsor dollars are estimates based on funded
+              meals and posted meal costs; they are not a settled-payment total. Directory listings
+              are mapped from public information and are not affiliated with ProvisionLoop. Funding
+              requires operator verification plus a connected payout account.
             </p>
           </>
         )}
@@ -310,7 +338,7 @@ function TrendChart({
   if (trend.length === 0) {
     return (
       <p className="mt-4 rounded-xl border border-border bg-surface p-6 text-sm text-muted-foreground">
-        No ledger activity in this window yet.
+        No reportable ledger activity in this window yet.
       </p>
     );
   }
