@@ -1,15 +1,14 @@
 import { supabase } from "@/integrations/supabase/client";
 
 /**
- * Civic aggregates.
+ * Public civic aggregates.
  *
- * Every read here is from a publicly readable surface: the impact ledger,
- * approved kitchens, and posted volunteer shifts. No household, sponsor
- * identity or order-level detail reaches this file. Neighborhoods below the
- * minimum cohort size are suppressed rather than shown.
+ * Kitchen directory/capacity data is public operator information. Impact data
+ * is aggregated and small neighborhood counts are suppressed. Test kitchens
+ * and their events are never mixed into real-world civic totals.
  */
 
-export const MIN_COHORT = 1;
+export const MIN_COHORT = 5;
 
 export type WindowDays = 7 | 30 | 90;
 
@@ -23,7 +22,9 @@ export interface NeighborhoodRow {
   unmet: number;
   coverage: number;
   shifts: number;
+  /** Estimated dollars, never represented as settled payment volume. */
   dollars: number;
+  impactSuppressed: boolean;
 }
 
 export interface CivicSnapshot {
@@ -38,7 +39,13 @@ export interface CivicSnapshot {
     kitchens: number;
     unclaimed: number;
     shifts: number;
+    /** Estimate based on funded meals and posted kitchen prices. */
     dollars: number;
+  };
+  test: {
+    kitchens: number;
+    capacityPerWeek: number;
+    events: number;
   };
   trend: Array<{ date: string; funded: number; delivered: number }>;
   kitchens: Array<{
@@ -55,6 +62,7 @@ export interface CivicSnapshot {
     is_test: boolean;
     claimed: boolean;
     payout_status: string;
+    payout_account_id: string | null;
     website: string | null;
     summary: string | null;
   }>;
@@ -74,7 +82,7 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
     supabase
       .from("kitchens")
       .select(
-        "id, name, kind, city, neighborhood, address, latitude, longitude, daily_capacity_meals, cost_per_meal, claimed, payout_status, website, summary, is_test",
+        "id, name, kind, city, neighborhood, address, latitude, longitude, daily_capacity_meals, cost_per_meal, claimed, payout_status, payout_account_id, website, summary, is_test",
       )
       .eq("approved", true)
       .eq("active", true)
@@ -87,6 +95,7 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
 
   if (eventsRes.error) throw eventsRes.error;
   if (kitchensRes.error) throw kitchensRes.error;
+  if (shiftsRes.error) throw shiftsRes.error;
 
   const kitchens = (kitchensRes.data ?? []).map((k) => ({
     ...k,
@@ -94,17 +103,33 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
     latitude: k.latitude === null ? null : Number(k.latitude),
     longitude: k.longitude === null ? null : Number(k.longitude),
   }));
-  const events = eventsRes.data ?? [];
-  const shifts = shiftsRes.data ?? [];
+  const realKitchens = kitchens.filter((k) => !k.is_test);
+  const testKitchens = kitchens.filter((k) => k.is_test);
+  const kitchenById = new Map(kitchens.map((k) => [k.id, k]));
+  const kitchenArea = new Map(
+    realKitchens.map((k) => [k.id, k.neighborhood || k.city] as const),
+  );
+
+  const allEvents = eventsRes.data ?? [];
+  const testEvents = allEvents.filter((event) => {
+    const kitchen = event.kitchen_id ? kitchenById.get(event.kitchen_id) : null;
+    return kitchen?.is_test === true;
+  });
+  const events = allEvents.filter((event) => {
+    const kitchen = event.kitchen_id ? kitchenById.get(event.kitchen_id) : null;
+    return kitchen?.is_test !== true;
+  });
+  const shifts = (shiftsRes.data ?? []).filter((shift) => {
+    const kitchen = shift.kitchen_id ? kitchenById.get(shift.kitchen_id) : null;
+    return kitchen?.is_test !== true;
+  });
 
   const areaOf = (k: { neighborhood: string | null; city: string }) => k.neighborhood || k.city;
-  const kitchenArea = new Map(kitchens.map((k) => [k.id, areaOf(k)]));
-
   const rows = new Map<string, NeighborhoodRow>();
   const row = (area: string) => {
-    let r = rows.get(area);
-    if (!r) {
-      r = {
+    let current = rows.get(area);
+    if (!current) {
+      current = {
         neighborhood: area,
         funded: 0,
         delivered: 0,
@@ -115,85 +140,109 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
         coverage: 0,
         shifts: 0,
         dollars: 0,
+        impactSuppressed: false,
       };
-      rows.set(area, r);
+      rows.set(area, current);
     }
-    return r;
+    return current;
   };
 
-  for (const k of kitchens) {
-    const r = row(areaOf(k));
-    r.kitchens += 1;
-    r.capacityPerWeek += k.daily_capacity_meals * 7;
+  for (const kitchen of realKitchens) {
+    const current = row(areaOf(kitchen));
+    current.kitchens += 1;
+    current.capacityPerWeek += kitchen.daily_capacity_meals * 7;
   }
 
   const trendMap = new Map<string, { funded: number; delivered: number }>();
-  for (const e of events) {
+  for (const event of events) {
     const area =
-      e.neighborhood || (e.kitchen_id ? kitchenArea.get(e.kitchen_id) : null) || "Unassigned";
-    const r = row(area);
-    const day = e.occurred_at.slice(0, 10);
-    const t = trendMap.get(day) ?? { funded: 0, delivered: 0 };
-    if (e.kind === "funded") {
-      r.funded += e.meals;
-      t.funded += e.meals;
+      event.neighborhood ||
+      (event.kitchen_id ? kitchenArea.get(event.kitchen_id) : null) ||
+      "Unassigned";
+    const current = row(area);
+    const day = event.occurred_at.slice(0, 10);
+    const trend = trendMap.get(day) ?? { funded: 0, delivered: 0 };
+    if (event.kind === "funded") {
+      current.funded += event.meals;
+      trend.funded += event.meals;
     }
-    if (e.kind === "delivered") {
-      r.delivered += e.meals;
-      t.delivered += e.meals;
+    if (event.kind === "delivered") {
+      current.delivered += event.meals;
+      trend.delivered += event.meals;
     }
-    trendMap.set(day, t);
+    trendMap.set(day, trend);
   }
 
-  for (const s of shifts) {
-    const area = s.neighborhood || (s.kitchen_id ? kitchenArea.get(s.kitchen_id) : null);
+  for (const shift of shifts) {
+    const area = shift.neighborhood || (shift.kitchen_id ? kitchenArea.get(shift.kitchen_id) : null);
     if (area) row(area).shifts += 1;
   }
 
   const costByArea = new Map<string, number>();
-  for (const k of kitchens) {
-    const area = areaOf(k);
-    costByArea.set(area, Math.max(costByArea.get(area) ?? 0, k.cost_per_meal));
+  for (const kitchen of realKitchens) {
+    const area = areaOf(kitchen);
+    costByArea.set(area, Math.max(costByArea.get(area) ?? 0, kitchen.cost_per_meal));
   }
 
-  const list = [...rows.values()].map((r) => {
-    r.awaiting = Math.max(0, r.funded - r.delivered);
-    r.unmet = Math.max(0, r.capacityPerWeek - r.funded);
-    r.coverage = r.capacityPerWeek > 0 ? Math.min(1, r.funded / r.capacityPerWeek) : 0;
-    r.dollars = Math.round(r.funded * (costByArea.get(r.neighborhood) ?? 6.5));
-    return r;
+  const list = [...rows.values()].map((current) => {
+    const activity = Math.max(current.funded, current.delivered);
+    current.impactSuppressed = activity > 0 && activity < MIN_COHORT;
+    current.awaiting = Math.max(0, current.funded - current.delivered);
+    current.unmet = Math.max(0, current.capacityPerWeek - current.funded);
+    current.coverage = current.capacityPerWeek > 0 ? Math.min(1, current.funded / current.capacityPerWeek) : 0;
+    current.dollars = Math.round(current.funded * (costByArea.get(current.neighborhood) ?? 6.5));
+
+    if (current.impactSuppressed) {
+      current.funded = 0;
+      current.delivered = 0;
+      current.awaiting = 0;
+      current.coverage = 0;
+      current.dollars = 0;
+    }
+    return current;
   });
 
-  const visible = list.filter((r) => r.kitchens > 0 || r.funded >= MIN_COHORT);
-  visible.sort((a, b) => b.unmet - a.unmet || b.funded - a.funded);
+  list.sort((a, b) => b.unmet - a.unmet || b.funded - a.funded);
+
+  const visibleTrend = [...trendMap.entries()]
+    .map(([date, value]) => ({ date, ...value }))
+    .filter((value) => Math.max(value.funded, value.delivered) >= MIN_COHORT)
+    .sort((a, b) => a.date.localeCompare(b.date));
 
   return {
     window: days,
-    city: kitchens[0]?.city ?? "Galveston",
-    rows: visible,
-    suppressed: list.length - visible.length,
+    city: realKitchens[0]?.city ?? kitchens[0]?.city ?? "Galveston",
+    rows: list,
+    suppressed: list.filter((current) => current.impactSuppressed).length,
     totals: {
-      funded: visible.reduce((n, r) => n + r.funded, 0),
-      delivered: visible.reduce((n, r) => n + r.delivered, 0),
-      awaiting: visible.reduce((n, r) => n + r.awaiting, 0),
-      capacityPerWeek: visible.reduce((n, r) => n + r.capacityPerWeek, 0),
-      kitchens: kitchens.length,
-      unclaimed: kitchens.filter((k) => !k.claimed).length,
-      shifts: visible.reduce((n, r) => n + r.shifts, 0),
-      dollars: visible.reduce((n, r) => n + r.dollars, 0),
+      funded: list.reduce((n, current) => n + current.funded, 0),
+      delivered: list.reduce((n, current) => n + current.delivered, 0),
+      awaiting: list.reduce((n, current) => n + current.awaiting, 0),
+      capacityPerWeek: list.reduce((n, current) => n + current.capacityPerWeek, 0),
+      kitchens: realKitchens.length,
+      unclaimed: realKitchens.filter((kitchen) => !kitchen.claimed).length,
+      shifts: list.reduce((n, current) => n + current.shifts, 0),
+      dollars: list.reduce((n, current) => n + current.dollars, 0),
     },
-    trend: [...trendMap.entries()]
-      .sort(([a], [b]) => a.localeCompare(b))
-      .map(([date, v]) => ({ date, ...v })),
+    test: {
+      kitchens: testKitchens.length,
+      capacityPerWeek: testKitchens.reduce(
+        (sum, kitchen) => sum + kitchen.daily_capacity_meals * 7,
+        0,
+      ),
+      events: testEvents.length,
+    },
+    trend: visibleTrend,
     kitchens,
   };
 }
 
-export function snapshotToCsv(snap: CivicSnapshot): string {
+export function snapshotToCsv(snapshot: CivicSnapshot): string {
   const header = [
     "area",
     "kitchens",
     "weekly_capacity_meals",
+    "impact_suppressed",
     "meals_funded",
     "meals_delivered",
     "meals_awaiting_delivery",
@@ -202,22 +251,25 @@ export function snapshotToCsv(snap: CivicSnapshot): string {
     "volunteer_shifts_posted",
     "sponsor_dollars_estimate",
   ].join(",");
-  const lines = snap.rows.map((r) =>
+  const lines = snapshot.rows.map((current) =>
     [
-      `"${r.neighborhood.replace(/"/g, '""')}"`,
-      r.kitchens,
-      r.capacityPerWeek,
-      r.funded,
-      r.delivered,
-      r.awaiting,
-      r.unmet,
-      Math.round(r.coverage * 100),
-      r.shifts,
-      r.dollars,
+      `"${current.neighborhood.replace(/"/g, '""')}"`,
+      current.kitchens,
+      current.capacityPerWeek,
+      current.impactSuppressed ? "true" : "false",
+      current.impactSuppressed ? "SUPPRESSED" : current.funded,
+      current.impactSuppressed ? "SUPPRESSED" : current.delivered,
+      current.impactSuppressed ? "SUPPRESSED" : current.awaiting,
+      current.unmet,
+      current.impactSuppressed ? "SUPPRESSED" : Math.round(current.coverage * 100),
+      current.shifts,
+      current.impactSuppressed ? "SUPPRESSED" : current.dollars,
     ].join(","),
   );
   return [
-    `# ProvisionLoop Civic export — last ${snap.window} days — generated ${new Date().toISOString()}`,
+    `# ProvisionLoop Civic export — real-world only — last ${snapshot.window} days — generated ${new Date().toISOString()}`,
+    `# Test/sandbox excluded: ${snapshot.test.kitchens} kitchens, ${snapshot.test.events} events`,
+    `# Impact values below ${MIN_COHORT} meals per area are suppressed`,
     header,
     ...lines,
   ].join("\n");
