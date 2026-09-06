@@ -40,6 +40,7 @@ const KEY = "mealforge.state.v1";
 type PersistedMealPlan = MealPlan & {
   completedMealSlots?: number[];
   historySnapshot?: string[];
+  pantrySnapshot?: PantryItem[];
 };
 
 export interface MealForgeState {
@@ -105,6 +106,28 @@ function load(): MealForgeState {
   } catch {
     return initialState();
   }
+}
+
+function snapshotPantry(pantry: PantryItem[]): PantryItem[] {
+  return pantry.map((item) => ({ ...item, quantity: { ...item.quantity } }));
+}
+
+function buildCurrentPlan(state: MealForgeState): MealPlan {
+  const built = buildMealPlan({
+    household: state.household,
+    recipes: state.recipes,
+    pantry: state.pantry,
+    observations: state.observations,
+    storeId: state.household.storeIds[0] ?? "heb",
+    dinners: state.household.dinnersPerWeek,
+    budget: state.household.weeklyBudget,
+    history: state.history,
+  });
+  return {
+    ...built,
+    historySnapshot: state.history,
+    pantrySnapshot: snapshotPantry(state.pantry),
+  } as MealPlan;
 }
 
 interface Ctx {
@@ -192,12 +215,21 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
           const householdObservations = (remote.observations ?? s.observations).filter(
             (o) => o.scope !== "catalog",
           );
-          return {
+          let merged: MealForgeState = {
             ...s,
             ...remote,
             household: remote.household ?? s.household,
             observations: [...householdObservations, ...catalog],
-          };
+          } as MealForgeState;
+
+          const cloudPlan = merged.plan as (PersistedMealPlan & { requestedDinners?: number }) | null;
+          if (
+            merged.onboarded &&
+            (!cloudPlan || cloudPlan.requestedDinners !== merged.household.dinnersPerWeek)
+          ) {
+            merged = { ...merged, plan: buildCurrentPlan(merged), checked: [] };
+          }
+          return merged;
         });
       })
       .catch(() => {
@@ -277,7 +309,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
 
       const meal = plan.meals[slot]!;
       const protectedPrefix = planRemainderPrefix(plan.generatedAt);
-      const pantry = s.pantry.map((item) => ({ ...item, quantity: { ...item.quantity } }));
+      const pantry = snapshotPantry(s.pantry);
 
       for (const line of meal.cost.lines) {
         let remaining = line.fromPantryBase;
@@ -323,17 +355,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   const regeneratePlan = useCallback(() => {
     let next: MealPlan | null = null;
     setState((s) => {
-      const built = buildMealPlan({
-        household: s.household,
-        recipes: s.recipes,
-        pantry: s.pantry,
-        observations: s.observations,
-        storeId: s.household.storeIds[0] ?? "heb",
-        dinners: s.household.dinnersPerWeek,
-        budget: s.household.weeklyBudget,
-        history: s.history,
-      });
-      const plan = { ...built, historySnapshot: s.history } as MealPlan;
+      const plan = buildCurrentPlan(s);
       next = plan;
       return { ...s, plan, checked: [] };
     });
