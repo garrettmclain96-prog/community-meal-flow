@@ -1,0 +1,206 @@
+@layer components {
+  .pl-signal-bar {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border-bottom: 1px solid color-mix(in oklab, var(--foreground) 35%, transparent);
+  }
+
+  .pl-signal-inner {
+    min-height: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    font-family: var(--font-mono);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+  }
+
+  .pl-site-header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: color-mix(in oklab, var(--foreground) 96%, transparent);
+    color: var(--background);
+    border-bottom: 1px solid color-mix(in oklab, var(--background) 18%, transparent);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .pl-header-row {
+    min-height: 72px;
+  }
+
+  .pl-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    min-width: 0;
+  }
+
+  .pl-brand-symbol {
+    position: relative;
+    display: grid;
+    width: 2.15rem;
+    height: 2.15rem;
+    flex: 0 0 auto;
+    place-items: center;
+    border: 1px solid color-mix(in oklab, var(--background) 30%, transparent);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 0.82rem;
+    box-shadow: 3px 3px 0 color-mix(in oklab, var(--background) 22%, transparent);
+  }
+
+  .pl-brand-wordmark {
+    display: flex;
+    align-items: baseline;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 900;
+    letter-spacing: -0.055em;
+    line-height: 1;
+  }
+
+  .pl-brand-wordmark strong {
+    color: var(--primary);
+  }
+
+  .pl-brand-sub {
+    display: none;
+    margin-top: 0.18rem;
+    color: color-mix(in oklab, var(--background) 60%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.52rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .pl-nav-link {
+    position: relative;
+    padding: 0.72rem 0.68rem;
+    color: color-mix(in oklab, var(--background) 68%, transparent);
+    font-size: 0.73rem;
+    font-weight: 750;
+    transition: color 160ms ease;
+  }
+
+  .pl-nav-link::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0.68rem;
+    bottom: 0.35rem;
+    height: 2px;
+    transform: scaleX(0);
+    transform-origin: left;
+    background: var(--primary);
+    transition: transform 160ms ease;
+  }
+
+  .pl-nav-link:hover {
+    color: var(--background);
+  }
+
+  .pl-nav-link:hover::after {
+    transform: scaleX(1);
+  }
+
+  .pl-header-action {
+    display: inline-flex;
+    min-height: 2.65rem;
+    align-items: center;
+    gap: 0.45rem;
+    border: 1px solid var(--primary);
+    background: var(--primary);
+    color: var(--primary-foreground);
+    padding: 0.65rem 0.95rem;
+    font-size: 0.76rem;
+    font-weight: 900;
+    box-shadow: 3px 3px 0 color-mix(in oklab, var(--background) 20%, transparent);
+  }
+
+  .pl-header-icon {
+    border-color: color-mix(in oklab, var(--background) 26%, transparent) !important;
+    background: color-mix(in oklab, var(--foreground) 90%, var(--background) 10%) !important;
+    color: var(--background) !important;
+  }
+
+  .pl-mobile-nav {
+    border-top: 1px solid color-mix(in oklab, var(--background) 16%, transparent);
+    background: var(--foreground);
+    color: var(--background);
+  }
+
+  .pl-mobile-link {
+    display: flex;
+    min-height: 3.9rem;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid color-mix(in oklab, var(--background) 14%, transparent);
+    font-family: var(--font-display);
+    font-size: 1.45rem;
+    font-weight: 850;
+    letter-spacing: -0.04em;
+  }
+
+  .pl-mobile-link span {
+    color: var(--primary);
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+  }
+
+  .pl-footer {
+    background: #10100f;
+    color: #f4efe4;
+    border-top: 6px solid var(--primary);
+  }
+
+  .pl-footer-grid {
+    display: grid;
+    gap: 2rem;
+    padding-block: 3.5rem;
+  }
+
+  .pl-footer-wordmark {
+    font-family: var(--font-display);
+    font-size: clamp(2.2rem, 7vw, 5.8rem);
+    font-weight: 900;
+    letter-spacing: -0.075em;
+    line-height: 0.86;
+  }
+
+  .pl-footer-wordmark span {
+    color: var(--primary);
+  }
+
+  .pl-footer-link {
+    color: #c7c2b8;
+    transition: color 160ms ease;
+  }
+
+  .pl-footer-link:hover {
+    color: var(--primary);
+  }
+}
+
+@media (min-width: 640px) {
+  @layer components {
+    .pl-brand-sub {
+      display: block;
+    }
+  }
+}
+
+@media (min-width: 900px) {
+  @layer components {
+    .pl-footer-grid {
+      grid-template-columns: 1.6fr 0.7fr 0.7fr;
+      align-items: start;
+    }
+  }
+}
