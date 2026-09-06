@@ -19,14 +19,19 @@ export interface CloudSnapshot {
   state: Partial<MealForgeState>;
 }
 
+function assertOk(error: { message: string } | null, operation: string) {
+  if (error) throw new Error(`${operation}: ${error.message}`);
+}
+
 async function getOrCreateHousehold(userId: string, fallback: Household) {
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from("households")
     .select("*")
     .eq("owner_id", userId)
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
+  assertOk(existingError, "Load household");
   if (existing) return existing;
 
   const { data, error } = await supabase
@@ -46,14 +51,14 @@ async function getOrCreateHousehold(userId: string, fallback: Household) {
     })
     .select("*")
     .single();
-  if (error) throw error;
+  assertOk(error, "Create household");
   return data;
 }
 
 export async function loadCloudState(userId: string, fallback: Household): Promise<CloudSnapshot> {
   const hh = await getOrCreateHousehold(userId, fallback);
 
-  const [members, pantry, recipes, plans] = await Promise.all([
+  const [members, pantry, recipes, plans, observations] = await Promise.all([
     supabase.from("household_members").select("*").eq("household_id", hh.id),
     supabase.from("pantry_items").select("*").eq("household_id", hh.id),
     supabase.from("recipes").select("*").eq("household_id", hh.id),
@@ -63,7 +68,18 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
       .eq("household_id", hh.id)
       .order("created_at", { ascending: false })
       .limit(1),
+    supabase
+      .from("price_observations")
+      .select("*")
+      .eq("household_id", hh.id)
+      .order("observed_at", { ascending: false }),
   ]);
+
+  assertOk(members.error, "Load household members");
+  assertOk(pantry.error, "Load pantry");
+  assertOk(recipes.error, "Load recipes");
+  assertOk(plans.error, "Load meal plan");
+  assertOk(observations.error, "Load price observations");
 
   const household: Household = {
     id: hh.id,
@@ -117,6 +133,13 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
         ...SEED_RECIPES,
         ...imported.filter((r) => !SEED_RECIPES.some((s) => s.id === r.id)),
       ],
+      observations: (observations.data ?? []).map((o) => ({
+        ingredientId: o.ingredient_id,
+        storeId: o.store_id,
+        packageLabel: o.package_label ?? "",
+        price: Number(o.price),
+        observedAt: o.observed_at,
+      })),
       plan: latest ? (latest.plan as unknown as MealPlan) : null,
       checked: latest ? latest.checked : [],
     },
@@ -127,7 +150,7 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
 export async function pushCloudState(householdId: string, state: MealForgeState) {
   const h = state.household;
 
-  await supabase
+  const householdResult = await supabase
     .from("households")
     .update({
       name: h.name,
@@ -142,10 +165,12 @@ export async function pushCloudState(householdId: string, state: MealForgeState)
       onboarded: state.onboarded,
     })
     .eq("id", householdId);
+  assertOk(householdResult.error, "Sync household");
 
-  await supabase.from("household_members").delete().eq("household_id", householdId);
+  const deleteMembers = await supabase.from("household_members").delete().eq("household_id", householdId);
+  assertOk(deleteMembers.error, "Reset household members");
   if (h.members.length > 0) {
-    await supabase.from("household_members").insert(
+    const insertMembers = await supabase.from("household_members").insert(
       h.members.map((m) => ({
         household_id: householdId,
         name: m.name,
@@ -153,11 +178,13 @@ export async function pushCloudState(householdId: string, state: MealForgeState)
         appetite: m.appetite,
       })),
     );
+    assertOk(insertMembers.error, "Sync household members");
   }
 
-  await supabase.from("pantry_items").delete().eq("household_id", householdId);
+  const deletePantry = await supabase.from("pantry_items").delete().eq("household_id", householdId);
+  assertOk(deletePantry.error, "Reset pantry");
   if (state.pantry.length > 0) {
-    await supabase.from("pantry_items").insert(
+    const insertPantry = await supabase.from("pantry_items").insert(
       state.pantry.map((p) => ({
         household_id: householdId,
         ingredient_id: p.ingredientId,
@@ -167,12 +194,14 @@ export async function pushCloudState(householdId: string, state: MealForgeState)
         expires_at: p.expiresAt ?? null,
       })),
     );
+    assertOk(insertPantry.error, "Sync pantry");
   }
 
   const imported = state.recipes.filter((r) => !SEED_RECIPES.some((s) => s.id === r.id));
-  await supabase.from("recipes").delete().eq("household_id", householdId);
+  const deleteRecipes = await supabase.from("recipes").delete().eq("household_id", householdId);
+  assertOk(deleteRecipes.error, "Reset imported recipes");
   if (imported.length > 0) {
-    await supabase.from("recipes").insert(
+    const insertRecipes = await supabase.from("recipes").insert(
       imported.map((r) => ({
         household_id: householdId,
         slug: r.id,
@@ -186,14 +215,36 @@ export async function pushCloudState(householdId: string, state: MealForgeState)
         source: r.source as unknown as never,
       })),
     );
+    assertOk(insertRecipes.error, "Sync imported recipes");
   }
 
-  await supabase.from("meal_plans").delete().eq("household_id", householdId);
+  const deleteObservations = await supabase
+    .from("price_observations")
+    .delete()
+    .eq("household_id", householdId);
+  assertOk(deleteObservations.error, "Reset price observations");
+  if (state.observations.length > 0) {
+    const insertObservations = await supabase.from("price_observations").insert(
+      state.observations.map((o) => ({
+        household_id: householdId,
+        ingredient_id: o.ingredientId,
+        store_id: o.storeId,
+        package_label: o.packageLabel,
+        price: o.price,
+        observed_at: o.observedAt,
+      })),
+    );
+    assertOk(insertObservations.error, "Sync price observations");
+  }
+
+  const deletePlans = await supabase.from("meal_plans").delete().eq("household_id", householdId);
+  assertOk(deletePlans.error, "Reset meal plan");
   if (state.plan) {
-    await supabase.from("meal_plans").insert({
+    const insertPlan = await supabase.from("meal_plans").insert({
       household_id: householdId,
       plan: state.plan as unknown as never,
       checked: state.checked,
     });
+    assertOk(insertPlan.error, "Sync meal plan");
   }
 }
