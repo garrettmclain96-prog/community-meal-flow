@@ -122,6 +122,17 @@ test("current repo doc metadata, risk extraction and ADR links", async () => {
 });
 
 test("built public assets never contain raw design prose or implementation", async () => {
+  try {
+    await readdir(".output/public");
+  } catch (error) {
+    if (error?.code === "ENOENT") {
+      assert.fail(
+        "Missing .output/public. Run `npm run build` before running this test.",
+      );
+    }
+    throw error;
+  }
+
   async function scan(dir) {
     for (const item of await readdir(dir, { withFileTypes: true })) {
       const path = `${dir}/${item.name}`;
