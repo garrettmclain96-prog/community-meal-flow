@@ -3,12 +3,15 @@ import { bestPackage, type PriceObservation } from "./pricing";
 import { normalizeToPackageUnit, packageUnit, type MealPlan } from "./planner";
 import type { PantryItem, PriceProvenance } from "./types";
 
+type GroceryPlan = MealPlan & { pantrySnapshot?: PantryItem[] };
+
 /**
  * Consolidated grocery list with package-size intelligence.
  *
  * Recipe quantity is never the same as purchasable quantity. We add up
- * everything the week needs, subtract the pantry, round up to real packages,
- * and hand the leftover back to the pantry as a tracked remainder.
+ * everything the week needs, subtract the pantry captured when that plan was
+ * built, round up to real packages, and hand leftover package quantity back to
+ * the pantry for the next plan.
  */
 
 export interface GroceryLine {
@@ -68,16 +71,17 @@ export function buildGroceryList(
   const lines: GroceryLine[] = [];
   let pantrySavings = 0;
   const currentPlanRemainderPrefix = planRemainderPrefix(plan.generatedAt);
+  const planPantry = (plan as GroceryPlan).pantrySnapshot ?? pantry;
 
   for (const [ingredientId, entry] of needed) {
     const ing = INGREDIENT_BY_ID[ingredientId];
     const quote = bestPackage(ingredientId, plan.storeId, observations);
     if (!ing || !quote) continue;
 
-    // Remainders already banked from this exact plan are for the *next* plan.
-    // Excluding them here keeps today's grocery list stable after the user
-    // presses "bank leftovers" and prevents double-counting.
-    const available = pantry
+    // Use the pantry state captured when the plan was created. Cooking a meal
+    // legitimately reduces the live pantry; that must not make an already-built
+    // shopping list grow halfway through the week.
+    const available = planPantry
       .filter(
         (p) =>
           p.ingredientId === ingredientId && !p.id.startsWith(currentPlanRemainderPrefix),
