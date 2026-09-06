@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import { askMealPlanAssistant } from "@/lib/chatgpt.functions";
+import { INGREDIENT_BY_ID } from "@/lib/food/ingredients";
 import { PROVENANCE_LABEL, STORE_BY_ID } from "@/lib/food/pricing";
 import { useMealForge } from "@/lib/food/store";
-import { INGREDIENT_BY_ID } from "@/lib/food/ingredients";
 
 export const Route = createFileRoute("/app/plan")({
   head: () => ({
@@ -34,6 +34,18 @@ function PlanPage() {
   const [answerModel, setAnswerModel] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const repairedLegacyPlan = useRef(false);
+
+  useEffect(() => {
+    if (!ready || !plan || repairedLegacyPlan.current) return;
+    const current = plan as typeof plan & { requestedDinners?: number };
+    const isLegacyOrStale =
+      current.requestedDinners === undefined || current.requestedDinners !== household.dinnersPerWeek;
+    if (isLegacyOrStale) {
+      repairedLegacyPlan.current = true;
+      regeneratePlan();
+    }
+  }, [ready, plan, household.dinnersPerWeek, regeneratePlan]);
 
   if (!ready) return <p className="text-sm text-muted-foreground">Loading…</p>;
 
@@ -110,6 +122,31 @@ function PlanPage() {
 
       {plan && (
         <>
+          {plan.meals.length === 0 && (
+            <section className="border-l-4 border-ember bg-ember/10 p-4 text-sm leading-6">
+              <p className="font-bold">No recipes fit every hard limit right now.</p>
+              <p className="mt-1 text-muted-foreground">
+                Your current cook-time limit is {household.maxCookMinutes} minutes. Check Food Needs,
+                equipment, and cooking time, or import a recipe that fits those limits.
+              </p>
+              <Link to="/app/setup" className="mt-3 inline-flex font-bold text-ember-text underline underline-offset-4">
+                Review food profile &amp; limits
+              </Link>
+            </section>
+          )}
+
+          {plan.meals.length > 0 && plan.constraintLimited && (
+            <section className="border-l-4 border-primary bg-primary/10 p-4 text-sm leading-6">
+              <p className="font-bold">Your week is complete, but your unique options are limited.</p>
+              <p className="mt-1 text-muted-foreground">
+                Only {plan.uniqueEligibleRecipes} unique recipe{plan.uniqueEligibleRecipes === 1 ? "" : "s"} fit all current hard limits, so MealForge repeated the strongest match{plan.repeatedMeals === 1 ? "" : "es"} {plan.repeatedMeals} time{plan.repeatedMeals === 1 ? "" : "s"} to deliver all {plan.requestedDinners} requested dinners. Your maximum cook time is {household.maxCookMinutes} minutes.
+              </p>
+              <Link to="/app/setup" className="mt-3 inline-flex font-bold text-primary underline underline-offset-4">
+                Adjust food profile or cooking time
+              </Link>
+            </section>
+          )}
+
           <div className="grid gap-3 sm:grid-cols-3">
             <Box label="Plan cost" value={`$${plan.totalCost.toFixed(2)}`} />
             <Box label="Budget" value={`$${plan.budget.toFixed(2)}`} />
@@ -119,74 +156,76 @@ function PlanPage() {
             />
           </div>
 
-          <section className="rounded-lg border border-border bg-surface p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h2 className="font-display text-xl font-bold">ChatGPT</h2>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  Ask for swaps, prep help, or ways to stretch this exact plan.
-                </p>
+          {plan.meals.length > 0 && (
+            <section className="rounded-lg border border-border bg-surface p-4">
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h2 className="font-display text-xl font-bold">ChatGPT</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Ask for prep help, explanations, or ways to stretch this exact plan.
+                  </p>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    "Explain why this plan fits my household.",
+                    "How can I stretch this plan if money gets tighter?",
+                    "Give me prep-ahead tips for this week.",
+                  ].map((quickPrompt) => (
+                    <button
+                      key={quickPrompt}
+                      type="button"
+                      onClick={() => {
+                        setPrompt(quickPrompt);
+                        void submitAssistant(quickPrompt);
+                      }}
+                      disabled={loading}
+                      className="rounded-sm border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:border-ember/50 hover:text-foreground disabled:opacity-50"
+                    >
+                      {quickPrompt}
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {[
-                  "Explain why this plan fits my household.",
-                  "How can I stretch this plan if money gets tighter?",
-                  "Give me prep-ahead tips for this week.",
-                ].map((quickPrompt) => (
+
+              <div className="mt-4 space-y-3">
+                <textarea
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  rows={4}
+                  placeholder="Ask ChatGPT about this week's meals, prep, or budget."
+                  className="w-full rounded-lg border border-border bg-background p-3 text-sm"
+                />
+                <div className="flex items-center justify-between gap-3">
+                  <p className="text-xs text-muted-foreground">
+                    Uses your current week, budget, and meal lineup as context. It does not override your hard food exclusions.
+                  </p>
                   <button
-                    key={quickPrompt}
                     type="button"
-                    onClick={() => {
-                      setPrompt(quickPrompt);
-                      void submitAssistant(quickPrompt);
-                    }}
-                    disabled={loading}
-                    className="rounded-sm border border-border px-2.5 py-1 text-xs font-medium text-muted-foreground hover:border-ember/50 hover:text-foreground disabled:opacity-50"
+                    onClick={() => void submitAssistant(prompt.trim())}
+                    disabled={!canAsk || loading}
+                    className="rounded-sm bg-ember px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-40"
                   >
-                    {quickPrompt}
+                    {loading ? "Asking…" : "Ask ChatGPT"}
                   </button>
-                ))}
+                </div>
               </div>
-            </div>
 
-            <div className="mt-4 space-y-3">
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                rows={4}
-                placeholder="Ask ChatGPT about this week's meals, substitutions, prep, or budget."
-                className="w-full rounded-lg border border-border bg-background p-3 text-sm"
-              />
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-xs text-muted-foreground">
-                  Uses your current week, budget, and meal lineup as context.
-                </p>
-                <button
-                  type="button"
-                  onClick={() => void submitAssistant(prompt.trim())}
-                  disabled={!canAsk || loading}
-                  className="rounded-sm bg-ember px-4 py-2 text-sm font-semibold text-primary-foreground disabled:opacity-40"
-                >
-                  {loading ? "Asking…" : "Ask ChatGPT"}
-                </button>
-              </div>
-            </div>
+              {error && <p className="mt-3 text-sm text-ember-text">{error}</p>}
 
-            {error && <p className="mt-3 text-sm text-ember-text">{error}</p>}
-
-            {answer && (
-              <div className="mt-4 rounded-lg border border-border bg-background p-4">
-                <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
-                  ChatGPT{answerModel ? ` · ${answerModel}` : ""}
-                </p>
-                <p className="mt-2 whitespace-pre-wrap text-sm">{answer}</p>
-              </div>
-            )}
-          </section>
+              {answer && (
+                <div className="mt-4 rounded-lg border border-border bg-background p-4">
+                  <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
+                    ChatGPT{answerModel ? ` · ${answerModel}` : ""}
+                  </p>
+                  <p className="mt-2 whitespace-pre-wrap text-sm">{answer}</p>
+                </div>
+              )}
+            </section>
+          )}
 
           <ol className="space-y-3">
             {plan.meals.map((meal, i) => (
-              <li key={meal.recipe.id} className="rounded-lg border border-border bg-surface p-4">
+              <li key={`${meal.recipe.id}_${i}`} className="rounded-lg border border-border bg-surface p-4">
                 <div className="flex items-start justify-between gap-4">
                   <div>
                     <p className="text-[11px] uppercase tracking-widest text-muted-foreground">
@@ -243,12 +282,14 @@ function PlanPage() {
             ))}
           </ol>
 
-          <Link
-            to="/app/shop"
-            className="inline-flex rounded-sm border border-border px-4 py-2 text-sm font-semibold hover:border-ember/50"
-          >
-            Build the grocery list →
-          </Link>
+          {plan.meals.length > 0 && (
+            <Link
+              to="/app/shop"
+              className="inline-flex rounded-sm border border-border px-4 py-2 text-sm font-semibold hover:border-ember/50"
+            >
+              Build the grocery list →
+            </Link>
+          )}
 
           {plan.excluded.length > 0 && (
             <details className="rounded-lg border border-border bg-surface p-4">
