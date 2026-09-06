@@ -6,7 +6,7 @@ import type { PantryItem, PriceProvenance } from "./types";
 /**
  * Consolidated grocery list with package-size intelligence.
  *
- * Recipe quantity is never the same thing as purchasable quantity. We add up
+ * Recipe quantity is never the same as purchasable quantity. We add up
  * everything the week needs, subtract the pantry, round up to real packages,
  * and hand the leftover back to the pantry as a tracked remainder.
  */
@@ -38,6 +38,17 @@ export interface GroceryList {
   generatedAt: string;
 }
 
+function remainderPlanKey(planGeneratedAt: string) {
+  const parsed = Date.parse(planGeneratedAt);
+  return Number.isFinite(parsed)
+    ? parsed.toString(36)
+    : planGeneratedAt.replace(/[^a-zA-Z0-9]/g, "").slice(0, 24);
+}
+
+export function planRemainderPrefix(planGeneratedAt: string) {
+  return `rem_${remainderPlanKey(planGeneratedAt)}_`;
+}
+
 export function buildGroceryList(
   plan: MealPlan,
   pantry: PantryItem[],
@@ -56,14 +67,21 @@ export function buildGroceryList(
 
   const lines: GroceryLine[] = [];
   let pantrySavings = 0;
+  const currentPlanRemainderPrefix = planRemainderPrefix(plan.generatedAt);
 
   for (const [ingredientId, entry] of needed) {
     const ing = INGREDIENT_BY_ID[ingredientId];
     const quote = bestPackage(ingredientId, plan.storeId, observations);
     if (!ing || !quote) continue;
 
+    // Remainders already banked from this exact plan are for the *next* plan.
+    // Excluding them here keeps today's grocery list stable after the user
+    // presses "bank leftovers" and prevents double-counting.
     const available = pantry
-      .filter((p) => p.ingredientId === ingredientId)
+      .filter(
+        (p) =>
+          p.ingredientId === ingredientId && !p.id.startsWith(currentPlanRemainderPrefix),
+      )
       .reduce(
         (s, p) =>
           s + (normalizeToPackageUnit(p.quantity.amount, p.quantity.unit, ingredientId) ?? 0),
@@ -128,11 +146,12 @@ export function buildGroceryList(
 }
 
 /** Leftovers from package rounding, ready to write back into the pantry. */
-export function remaindersToPantry(list: GroceryList): PantryItem[] {
+export function remaindersToPantry(list: GroceryList, planGeneratedAt: string): PantryItem[] {
+  const prefix = planRemainderPrefix(planGeneratedAt);
   return list.lines
     .filter((l) => l.remainderBase > 0.001)
     .map((l) => ({
-      id: `rem_${l.ingredientId}_${Date.now().toString(36)}`,
+      id: `${prefix}${l.ingredientId}`,
       ingredientId: l.ingredientId,
       quantity: { amount: Math.round(l.remainderBase * 100) / 100, unit: l.unit },
       origin: "package_remainder" as const,
