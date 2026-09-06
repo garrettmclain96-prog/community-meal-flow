@@ -1,5 +1,5 @@
-import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
+import { Link, useNavigate } from "@tanstack/react-router";
 
 import { useAuth } from "@/hooks/useAuth";
 
@@ -33,6 +33,7 @@ export function AccountButton() {
   }
 
   const role = roles[0] ? ROLE_LABEL[roles[0]] : null;
+  const isPlatformAdmin = roles.includes("platform_admin");
 
   async function handleSignOut() {
     await queryClient.cancelQueries();
@@ -43,6 +44,14 @@ export function AccountButton() {
 
   return (
     <div className="flex items-center gap-2">
+      {isPlatformAdmin && (
+        <Link
+          to="/god-mode"
+          className="rounded-full bg-foreground px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-background transition hover:opacity-80"
+        >
+          God Mode
+        </Link>
+      )}
       <span className="hidden text-xs text-muted-foreground sm:inline">
         {user.email}
         {role && <span className="ml-2 text-ember-text">{role}</span>}
