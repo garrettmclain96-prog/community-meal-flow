@@ -35,6 +35,7 @@ export interface KitchenRow {
 
 /** A provider can only receive money once an operator claimed it AND payouts are live. */
 export function isFundable(k: { claimed: boolean; payout_status: string }): boolean {
+  // The database enforces that `ready` cannot exist without payout_account_id.
   return k.claimed === true && k.payout_status === "ready";
 }
 
@@ -75,6 +76,7 @@ export async function listFundableKitchens(): Promise<KitchenRow[]> {
     .eq("active", true)
     .eq("claimed", true)
     .eq("payout_status", "ready")
+    .not("payout_account_id", "is", null)
     .order("name");
   if (error) throw error;
   return (data ?? []).map(withState);
@@ -141,9 +143,13 @@ export async function loadImpactTotals(): Promise<ImpactTotals> {
       .eq("approved", true)
       .eq("active", true)
       .eq("claimed", true)
-      .eq("payout_status", "ready"),
+      .eq("payout_status", "ready")
+      .not("payout_account_id", "is", null),
   ]);
   if (events.error) throw events.error;
+  if (mapped.error) throw mapped.error;
+  if (verified.error) throw verified.error;
+  if (fundable.error) throw fundable.error;
 
   const rows = events.data ?? [];
   const byHood = new Map<string, number>();
