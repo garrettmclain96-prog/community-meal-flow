@@ -135,6 +135,11 @@ export interface Exclusion {
 }
 
 export function isRecipeAllowed(recipe: Recipe, household: Household): string | null {
+  const unresolved = recipe.source.unmatchedIngredients?.filter((line) => line.trim()) ?? [];
+  if (unresolved.length > 0) {
+    return `needs ingredient mapping (${unresolved.length} unresolved)`;
+  }
+
   for (const item of recipe.ingredients) {
     if (item.optional) continue;
     const ing = INGREDIENT_BY_ID[item.ingredientId];
@@ -143,7 +148,7 @@ export function isRecipeAllowed(recipe: Recipe, household: Household): string | 
       if (customAllergy) return `matches allergy/intolerance: ${customAllergy}`;
       const customAvoid = findCustomConstraint(item, household.avoidTags);
       if (customAvoid) return `contains excluded ingredient: ${customAvoid}`;
-      continue;
+      return "needs ingredient mapping (unknown ingredient)";
     }
 
     // Structured metadata remains the highest-confidence check.
