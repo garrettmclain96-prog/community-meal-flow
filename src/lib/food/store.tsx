@@ -11,8 +11,18 @@ import {
 import { useAuth } from "@/hooks/useAuth";
 
 import { loadCloudState, pushCloudState } from "./cloud";
-import { buildGroceryList, remaindersToPantry, type GroceryList } from "./grocery";
-import { buildMealPlan, type MealPlan } from "./planner";
+import {
+  buildGroceryList,
+  planRemainderPrefix,
+  remaindersToPantry,
+  type GroceryList,
+} from "./grocery";
+import {
+  buildMealPlan,
+  normalizeToPackageUnit,
+  packageUnit,
+  type MealPlan,
+} from "./planner";
 import type { PriceObservation } from "./pricing";
 import { SEED_RECIPES } from "./recipes";
 import type { Household, PantryItem, Recipe } from "./types";
@@ -26,6 +36,8 @@ import type { Household, PantryItem, Recipe } from "./types";
  */
 
 const KEY = "mealforge.state.v1";
+
+type PersistedMealPlan = MealPlan & { completedMealSlots?: number[] };
 
 export interface MealForgeState {
   onboarded: boolean;
@@ -100,7 +112,7 @@ interface Ctx {
   removePantryItem: (id: string) => void;
   addRecipe: (recipe: Recipe) => void;
   addPriceObservation: (observation: PriceObservation) => void;
-  markMealCooked: (recipeId: string) => void;
+  markMealCooked: (slot: number) => void;
   regeneratePlan: () => MealPlan;
   groceryList: GroceryList | null;
   stockRemainders: () => void;
@@ -214,11 +226,51 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     }));
   }, []);
 
-  const markMealCooked = useCallback((recipeId: string) => {
-    setState((s) => ({
-      ...s,
-      history: [recipeId, ...s.history.filter((id) => id !== recipeId)].slice(0, 60),
-    }));
+  const markMealCooked = useCallback((slot: number) => {
+    setState((s) => {
+      if (!s.plan || slot < 0 || slot >= s.plan.meals.length) return s;
+      const plan = s.plan as PersistedMealPlan;
+      const completed = plan.completedMealSlots ?? [];
+      if (completed.includes(slot)) return s;
+
+      const meal = plan.meals[slot]!;
+      const protectedPrefix = planRemainderPrefix(plan.generatedAt);
+      const pantry = s.pantry.map((item) => ({ ...item, quantity: { ...item.quantity } }));
+
+      for (const line of meal.cost.lines) {
+        let remaining = line.fromPantryBase;
+        if (remaining <= 0) continue;
+
+        for (const item of pantry) {
+          if (remaining <= 0) break;
+          if (item.ingredientId !== line.ingredientId || item.id.startsWith(protectedPrefix)) continue;
+          const have = normalizeToPackageUnit(
+            item.quantity.amount,
+            item.quantity.unit,
+            line.ingredientId,
+          );
+          if (have === null || have <= 0) continue;
+          const take = Math.min(have, remaining);
+          remaining -= take;
+          item.quantity = {
+            amount: Math.max(0, Math.round((have - take) * 1000) / 1000),
+            unit: packageUnit(line.ingredientId),
+          };
+        }
+      }
+
+      const nextPlan = {
+        ...plan,
+        completedMealSlots: [...completed, slot].sort((a, b) => a - b),
+      } as MealPlan;
+
+      return {
+        ...s,
+        plan: nextPlan,
+        pantry: pantry.filter((item) => item.quantity.amount > 0.001),
+        history: [meal.recipe.id, ...s.history.filter((id) => id !== meal.recipe.id)].slice(0, 60),
+      };
+    });
   }, []);
 
   const regeneratePlan = useCallback(() => {
