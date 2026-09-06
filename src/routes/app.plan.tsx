@@ -69,6 +69,11 @@ function PlanPage() {
             storeName,
             gap: plan.gap,
             excludedCount: plan.excluded.length,
+            allergies: household.allergies,
+            avoidTags: household.avoidTags,
+            dietaryPreferences: household.dietaryPreferences,
+            maxCookMinutes: household.maxCookMinutes,
+            equipment: household.equipment,
             meals: plan.meals.map((meal) => ({
               title: meal.recipe.title,
               minutes: meal.recipe.totalTimeMinutes,
@@ -197,7 +202,7 @@ function PlanPage() {
                 />
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs text-muted-foreground">
-                    Uses your current week, budget, and meal lineup as context. It does not override your hard food exclusions.
+                    Uses your current week, budget, food exclusions, preferences, cook-time limit, and equipment as context. It does not override hard constraints.
                   </p>
                   <button
                     type="button"
