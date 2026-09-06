@@ -1,10 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, Plus, X } from "lucide-react";
 import { useEffect, useState } from "react";
 
 import { STORES } from "@/lib/food/pricing";
 import { useMealForge } from "@/lib/food/store";
-import type { Allergen, DietTag, HouseholdMember } from "@/lib/food/types";
+import type { HouseholdMember } from "@/lib/food/types";
 
 export const Route = createFileRoute("/app/setup")({
   head: () => ({
@@ -20,7 +20,7 @@ export const Route = createFileRoute("/app/setup")({
   component: SetupPage,
 });
 
-const ALLERGENS: Allergen[] = [
+const ALLERGENS = [
   "milk",
   "egg",
   "peanut",
@@ -30,8 +30,8 @@ const ALLERGENS: Allergen[] = [
   "fish",
   "shellfish",
   "sesame",
-];
-const AVOID: DietTag[] = [
+] as const;
+const AVOID = [
   "meat",
   "poultry",
   "pork",
@@ -42,7 +42,7 @@ const AVOID: DietTag[] = [
   "egg",
   "gluten",
   "alcohol",
-];
+] as const;
 const EQUIPMENT = [
   "oven",
   "skillet",
@@ -61,6 +61,7 @@ function SetupPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState(state.household);
   const [step, setStep] = useState(0);
+  const [foodSaved, setFoodSaved] = useState(false);
 
   useEffect(() => {
     if (ready) setForm(state.household);
@@ -80,13 +81,21 @@ function SetupPage() {
     );
     setForm({ ...form, members });
   };
-  const toggle = <T extends string>(items: T[], value: T) =>
+  const toggle = (items: string[], value: string) =>
     items.includes(value) ? items.filter((item) => item !== value) : [...items, value];
-  const save = () => {
+
+  const persist = (goToPlan: boolean) => {
     setHousehold(form);
     update({ onboarded: true });
     setTimeout(() => regeneratePlan(), 0);
-    void navigate({ to: "/app/plan" });
+    if (goToPlan) void navigate({ to: "/app/plan" });
+  };
+
+  const save = () => persist(true);
+  const saveFoodProfile = () => {
+    persist(false);
+    setFoodSaved(true);
+    window.setTimeout(() => setFoodSaved(false), 2200);
   };
 
   return (
@@ -183,23 +192,66 @@ function SetupPage() {
         {step === 1 && (
           <div className="grid gap-9">
             <ChipField
-              legend="Food allergies"
-              description="These ingredients are always excluded."
+              legend="Common food allergies"
+              description="Preset allergen tags are checked against structured ingredient data."
               options={ALLERGENS}
               selected={form.allergies}
               onToggle={(value) => setForm({ ...form, allergies: toggle(form.allergies, value) })}
             />
+
+            <CustomTagField
+              legend="Custom allergies & intolerances"
+              description="Add anything not covered above — for example coconut, mushroom, red dye 40, or cilantro."
+              placeholder="Type an allergy or intolerance"
+              values={form.allergies}
+              presetValues={ALLERGENS}
+              onChange={(allergies) => setForm({ ...form, allergies })}
+            />
+
             <ChipField
               legend="Foods to avoid"
-              description="Preferences and dietary choices."
+              description="Dietary choices and broad food categories you do not want in the plan."
               options={AVOID}
               selected={form.avoidTags}
               onToggle={(value) => setForm({ ...form, avoidTags: toggle(form.avoidTags, value) })}
             />
+
+            <CustomTagField
+              legend="Other ingredients to avoid"
+              description="Add specific ingredients or foods you never want suggested."
+              placeholder="e.g. olives, mushrooms, artificial sweetener"
+              values={form.avoidTags}
+              presetValues={AVOID}
+              onChange={(avoidTags) => setForm({ ...form, avoidTags })}
+            />
+
+            <CustomTagField
+              legend="Foods & styles you prefer"
+              description="Optional. Add preferences such as vegetarian, high protein, spicy, Mediterranean, or quick meals. Matching recipe tags get a planning boost."
+              placeholder="e.g. high protein"
+              values={form.dietaryPreferences}
+              onChange={(dietaryPreferences) => setForm({ ...form, dietaryPreferences })}
+            />
+
             <div className="border-l-4 border-primary bg-primary/10 p-4 text-sm leading-6">
-              <strong>Safety first:</strong> allergy exclusions override cost, variety and every
-              other planner score.
+              <strong>Important allergy note:</strong> MealForge filters the ingredients and metadata
+              listed in its recipes, but it cannot verify manufacturer labels, hidden ingredients,
+              substitutions, or cross-contact/cross-contamination. Always check packaging and use
+              your normal allergy-safety practices.
             </div>
+
+            {state.onboarded && (
+              <div className="flex flex-wrap items-center gap-3 border-t border-border pt-5">
+                <button type="button" className="button-primary" onClick={saveFoodProfile}>
+                  <Check className="size-4" /> Save food profile
+                </button>
+                {foodSaved && (
+                  <span className="text-sm font-bold text-primary" role="status">
+                    Saved — your plan was rebuilt.
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         )}
 
@@ -312,6 +364,7 @@ function Field({ label: text, children }: { label: string; children: React.React
     </label>
   );
 }
+
 function ChipField<T extends string>({
   legend,
   description,
@@ -322,7 +375,7 @@ function ChipField<T extends string>({
   legend: string;
   description: string;
   options: readonly T[];
-  selected: T[];
+  selected: string[];
   onToggle: (value: T) => void;
 }) {
   return (
@@ -349,6 +402,98 @@ function ChipField<T extends string>({
     </fieldset>
   );
 }
+
+function CustomTagField({
+  legend,
+  description,
+  placeholder,
+  values,
+  presetValues = [],
+  onChange,
+}: {
+  legend: string;
+  description: string;
+  placeholder: string;
+  values: string[];
+  presetValues?: readonly string[];
+  onChange: (values: string[]) => void;
+}) {
+  const [draft, setDraft] = useState("");
+  const presetKeys = new Set(presetValues.map((value) => value.toLowerCase()));
+  const customValues = values.filter((value) => !presetKeys.has(value.toLowerCase()));
+
+  const add = (raw = draft) => {
+    const additions = raw
+      .split(",")
+      .map((value) => value.trim().replace(/\s+/g, " ").slice(0, 60))
+      .filter(Boolean);
+    if (!additions.length) return;
+
+    const next = [...values];
+    for (const addition of additions) {
+      if (!next.some((value) => value.toLowerCase() === addition.toLowerCase())) next.push(addition);
+    }
+    onChange(next);
+    setDraft("");
+  };
+
+  const remove = (target: string) =>
+    onChange(values.filter((value) => value.toLowerCase() !== target.toLowerCase()));
+
+  return (
+    <fieldset>
+      <legend className="field-label text-lg">{legend}</legend>
+      <p className="mb-4 text-sm text-muted-foreground">{description}</p>
+
+      {customValues.length > 0 && (
+        <div className="mb-3 flex flex-wrap gap-2" aria-label={`${legend} saved values`}>
+          {customValues.map((value) => (
+            <span
+              key={value.toLowerCase()}
+              className="inline-flex min-h-10 items-center gap-2 border border-primary/50 bg-primary/10 px-3 py-2 text-sm font-bold"
+            >
+              {value}
+              <button
+                type="button"
+                onClick={() => remove(value)}
+                className="grid size-6 place-items-center rounded-full hover:bg-primary/15"
+                aria-label={`Remove ${value}`}
+              >
+                <X className="size-3.5" />
+              </button>
+            </span>
+          ))}
+        </div>
+      )}
+
+      <div className="flex gap-2">
+        <input
+          className="field-control min-w-0 flex-1"
+          value={draft}
+          maxLength={120}
+          placeholder={placeholder}
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === ",") {
+              e.preventDefault();
+              add();
+            }
+          }}
+        />
+        <button
+          type="button"
+          onClick={() => add()}
+          disabled={!draft.trim()}
+          className="button-secondary shrink-0 px-4 disabled:opacity-40"
+        >
+          <Plus className="size-4" /> <span className="hidden sm:inline">Add</span>
+        </button>
+      </div>
+      <p className="mt-2 text-xs text-muted-foreground">Press Enter or comma to add multiple items.</p>
+    </fieldset>
+  );
+}
+
 function Summary({ value, label: text }: { value: string; label: string }) {
   return (
     <div>
@@ -357,6 +502,7 @@ function Summary({ value, label: text }: { value: string; label: string }) {
     </div>
   );
 }
+
 function SetupSkeleton() {
   return (
     <div className="animate-pulse space-y-5">
