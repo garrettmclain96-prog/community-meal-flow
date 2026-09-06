@@ -80,6 +80,14 @@ function AdminPage() {
               Sign in
             </Link>
           </div>
+        ) : admin.isError ? (
+          <div className="mt-8 max-w-xl">
+            <ErrorState
+              title="Could not verify administrator access"
+              error={admin.error}
+              onRetry={() => void admin.refetch()}
+            />
+          </div>
         ) : !admin.data ? (
           <div className="editorial-card mt-8 max-w-xl p-6">
             <p className="font-display text-xl font-black">Not authorized.</p>
@@ -209,10 +217,36 @@ function EmptyState({ what }: { what: string }) {
   return <p className="text-sm text-muted-foreground">No {what} yet.</p>;
 }
 
+function ErrorState({
+  title,
+  error,
+  onRetry,
+}: {
+  title: string;
+  error: unknown;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="editorial-card border-red-500/40 p-6">
+      <p className="font-display text-lg font-black">{title}</p>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {error instanceof Error ? error.message : "The database request failed."}
+      </p>
+      <button type="button" className="button-secondary mt-4" onClick={onRetry}>
+        Retry
+      </button>
+    </div>
+  );
+}
+
 function PrivacyQueue() {
   const q = useQuery({ queryKey: ["admin-privacy"], queryFn: listAllPrivacyRequests });
   const save = useQueueMutation("admin-privacy");
   if (q.isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (q.isError)
+    return (
+      <ErrorState title="Privacy queue failed to load" error={q.error} onRetry={() => void q.refetch()} />
+    );
   if (!q.data?.length) return <EmptyState what="privacy requests" />;
   return (
     <div className="grid gap-4">
@@ -253,6 +287,10 @@ function RefundQueue() {
   const q = useQuery({ queryKey: ["admin-refunds"], queryFn: listAllRefundRequests });
   const save = useQueueMutation("admin-refunds");
   if (q.isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (q.isError)
+    return (
+      <ErrorState title="Refund queue failed to load" error={q.error} onRetry={() => void q.refetch()} />
+    );
   if (!q.data?.length) return <EmptyState what="refund requests" />;
   return (
     <div className="grid gap-4">
@@ -293,6 +331,10 @@ function PilotQueue() {
   const q = useQuery({ queryKey: ["admin-pilot"], queryFn: listAllPilotSignups });
   const save = useQueueMutation("admin-pilot");
   if (q.isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
+  if (q.isError)
+    return (
+      <ErrorState title="Pilot queue failed to load" error={q.error} onRetry={() => void q.refetch()} />
+    );
   if (!q.data?.length) return <EmptyState what="pilot sign-ups" />;
   return (
     <div className="grid gap-4">
