@@ -12,10 +12,10 @@ interface Props {
 }
 
 /**
- * Renders a dusk photograph behind content, honouring the user's saved
+ * Renders a photograph behind content, honouring the user's saved
  * opacity + contrast-scrim preferences.
  *
- * Reads the CSS custom properties `--tf-img-opacity` / `--tf-scrim`, which are
+ * Reads the CSS custom properties `--pl-img-opacity` / `--pl-scrim`, which are
  * set by the inline boot script in <head> before first paint and updated live
  * by DisplayProvider. Using variables (rather than React state) keeps the SSR
  * and client markup identical while still applying saved prefs immediately.
@@ -40,11 +40,11 @@ export function PhotoBackdrop({
         height={height}
         loading={loading}
         className={`size-full object-cover ${imgClassName}`}
-        style={{ opacity: `calc(var(--tf-img-opacity, 0.42) * ${intensity})` }}
+        style={{ opacity: `calc(var(--pl-img-opacity, 0.42) * ${intensity})` }}
       />
       <div
         className="absolute inset-0 bg-background"
-        style={{ opacity: "var(--tf-scrim, 0.62)" }}
+        style={{ opacity: "var(--pl-scrim, 0.62)" }}
         aria-hidden="true"
       />
       {children}
