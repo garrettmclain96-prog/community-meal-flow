@@ -16,6 +16,16 @@ export const Route = createFileRoute("/god-mode")({
   component: GodModePage,
 });
 
+type ActionRoute =
+  | "/admin"
+  | "/design"
+  | "/kitchen"
+  | "/partners"
+  | "/volunteer"
+  | "/civic"
+  | "/impact"
+  | "/trust-method";
+
 function GodModePage() {
   const { user, loading, hasRole } = useAuth();
   const canLoad = Boolean(user && hasRole("platform_admin"));
@@ -216,7 +226,7 @@ function MiniStat({ label, value }: { label: string; value: string | number }) {
   );
 }
 
-function Action({ to, label, note }: { to: string; label: string; note: string }) {
+function Action({ to, label, note }: { to: ActionRoute; label: string; note: string }) {
   return (
     <Link to={to} className="group min-h-28 border border-zinc-800 bg-zinc-950 p-4 transition hover:border-emerald-400">
       <div className="flex items-start justify-between gap-3">
