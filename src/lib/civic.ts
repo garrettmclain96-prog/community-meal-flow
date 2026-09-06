@@ -62,7 +62,6 @@ export interface CivicSnapshot {
     is_test: boolean;
     claimed: boolean;
     payout_status: string;
-    payout_account_id: string | null;
     website: string | null;
     summary: string | null;
   }>;
@@ -82,7 +81,7 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
     supabase
       .from("kitchens")
       .select(
-        "id, name, kind, city, neighborhood, address, latitude, longitude, daily_capacity_meals, cost_per_meal, claimed, payout_status, payout_account_id, website, summary, is_test",
+        "id, name, kind, city, neighborhood, address, latitude, longitude, daily_capacity_meals, cost_per_meal, claimed, payout_status, website, summary, is_test",
       )
       .eq("approved", true)
       .eq("active", true)
@@ -106,9 +105,7 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
   const realKitchens = kitchens.filter((k) => !k.is_test);
   const testKitchens = kitchens.filter((k) => k.is_test);
   const kitchenById = new Map(kitchens.map((k) => [k.id, k]));
-  const kitchenArea = new Map(
-    realKitchens.map((k) => [k.id, k.neighborhood || k.city] as const),
-  );
+  const kitchenArea = new Map(realKitchens.map((k) => [k.id, k.neighborhood || k.city] as const));
 
   const allEvents = eventsRes.data ?? [];
   const testEvents = allEvents.filter((event) => {
@@ -189,7 +186,8 @@ export async function loadCivicSnapshot(days: WindowDays): Promise<CivicSnapshot
     current.impactSuppressed = activity > 0 && activity < MIN_COHORT;
     current.awaiting = Math.max(0, current.funded - current.delivered);
     current.unmet = Math.max(0, current.capacityPerWeek - current.funded);
-    current.coverage = current.capacityPerWeek > 0 ? Math.min(1, current.funded / current.capacityPerWeek) : 0;
+    current.coverage =
+      current.capacityPerWeek > 0 ? Math.min(1, current.funded / current.capacityPerWeek) : 0;
     current.dollars = Math.round(current.funded * (costByArea.get(current.neighborhood) ?? 6.5));
 
     if (current.impactSuppressed) {
