@@ -1,4 +1,8 @@
 @layer components {
+  body > main > div > main {
+    animation: pl-page-enter 420ms cubic-bezier(.16,1,.3,1) both;
+  }
+
   .pl-workflow-shell {
     position: relative;
     isolation: isolate;
@@ -206,12 +210,20 @@
     pointer-events: none;
   }
 
+  main button {
+    min-height: 2.75rem;
+  }
+
   main button[aria-pressed] {
-    min-height: 2.5rem;
     transition: transform 150ms ease, border-color 150ms ease, background 150ms ease;
   }
 
   main button[aria-pressed]:hover { transform: translateY(-1px); }
+}
+
+@keyframes pl-page-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 ::selection { background: var(--primary); color: var(--primary-foreground); }
@@ -227,6 +239,7 @@ button, a { touch-action: manipulation; }
 
 @media (prefers-reduced-motion: reduce) {
   @layer components {
+    body > main > div > main { animation: none; }
     .editorial-card, .field-control, .button-primary, .button-secondary,
     .editorial-card::after, .button-primary::after, .button-secondary::after,
     main button[aria-pressed] { transition: none; }
