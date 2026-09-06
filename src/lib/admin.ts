@@ -80,3 +80,85 @@ export async function listAllPilotSignups() {
   if (error) throw error;
   return data ?? [];
 }
+
+export type PendingKitchenClaim = {
+  id: string;
+  kitchen_id: string;
+  user_id: string;
+  role_at_kitchen: string | null;
+  note: string | null;
+  status: string;
+  created_at: string;
+  kitchen_name: string;
+  city: string;
+  neighborhood: string | null;
+};
+
+export async function listPendingKitchenClaims(): Promise<PendingKitchenClaim[]> {
+  const { data: claims, error } = await supabase
+    .from("kitchen_claims")
+    .select("id, kitchen_id, user_id, role_at_kitchen, note, status, created_at")
+    .eq("status", "pending")
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  if (!claims?.length) return [];
+
+  const kitchenIds = [...new Set(claims.map((claim) => claim.kitchen_id))];
+  const { data: kitchens, error: kitchensError } = await supabase
+    .from("kitchens")
+    .select("id, name, city, neighborhood")
+    .in("id", kitchenIds);
+  if (kitchensError) throw kitchensError;
+
+  const byId = new Map((kitchens ?? []).map((kitchen) => [kitchen.id, kitchen]));
+  return claims.map((claim) => {
+    const kitchen = byId.get(claim.kitchen_id);
+    return {
+      ...claim,
+      kitchen_name: kitchen?.name ?? "Unknown kitchen",
+      city: kitchen?.city ?? "",
+      neighborhood: kitchen?.neighborhood ?? null,
+    };
+  });
+}
+
+export type PendingKitchenRegistration = {
+  id: string;
+  owner_id: string | null;
+  name: string;
+  kind: string;
+  city: string;
+  neighborhood: string | null;
+  address: string | null;
+  website: string | null;
+  summary: string | null;
+  created_at: string;
+};
+
+export async function listPendingKitchenRegistrations(): Promise<PendingKitchenRegistration[]> {
+  const { data, error } = await supabase
+    .from("kitchens")
+    .select("id, owner_id, name, kind, city, neighborhood, address, website, summary, created_at")
+    .not("owner_id", "is", null)
+    .eq("claimed", false)
+    .eq("approved", false)
+    .order("created_at", { ascending: true });
+  if (error) throw error;
+  return data ?? [];
+}
+
+export async function reviewKitchenClaim(claimId: string, approve: boolean): Promise<void> {
+  const { error } = await supabase.rpc(
+    "review_kitchen_claim" as never,
+    { _claim_id: claimId, _approve: approve } as never,
+  );
+  if (error) throw error;
+}
+
+export async function reviewKitchenRegistration(kitchenId: string, approve: boolean): Promise<void> {
+  const { error } = await supabase.rpc(
+    "review_kitchen_registration" as never,
+    { _kitchen_id: kitchenId, _approve: approve } as never,
+  );
+  if (error) throw error;
+}
