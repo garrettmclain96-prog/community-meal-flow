@@ -92,6 +92,8 @@ export interface RecipeSource {
   url?: string;
   /** raw payload exactly as received — never discarded */
   raw?: string;
+  /** Ingredient lines the normalizer could not safely map. Automatic planning excludes these recipes. */
+  unmatchedIngredients?: string[];
   extractionMethod: ExtractionMethod;
   /** 0–1 confidence in the normalization */
   confidence: number;
