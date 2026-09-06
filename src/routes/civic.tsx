@@ -266,7 +266,7 @@ function CivicPage() {
                         <div className="flex flex-wrap items-center justify-between gap-2">
                           <p className="font-semibold">{k.name}</p>
                           <span className="rounded-full border border-border px-2 py-0.5 text-[11px] uppercase tracking-widest text-muted-foreground">
-                            {k.claimed && k.payout_status === "ready" && k.payout_account_id
+                            {k.claimed && k.payout_status === "ready"
                               ? "Funding enabled"
                               : k.claimed
                                 ? "Operator verified"
