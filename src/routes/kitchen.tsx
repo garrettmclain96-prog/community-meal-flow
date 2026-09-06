@@ -27,7 +27,7 @@ export const Route = createFileRoute("/kitchen")({
       {
         name: "description",
         content:
-          "Restaurants, food trucks and community kitchens register capacity, post meal templates, accept funded orders and track guaranteed revenue.",
+          "Restaurants, food trucks and community kitchens register capacity, complete verification, publish meal availability, fulfill funded orders and track verified payouts.",
       },
       { property: "og:title", content: "Kitchen Operations — ProvisionLoop Kitchen" },
       {
