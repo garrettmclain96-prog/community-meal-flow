@@ -13,6 +13,7 @@ const NAV = [
   { to: "/kitchen", label: "Kitchens" },
   { to: "/volunteer", label: "Volunteer" },
   { to: "/partners", label: "Partners" },
+  { to: "/about", label: "About" },
 ] as const;
 
 export function SiteHeader() {
@@ -22,13 +23,13 @@ export function SiteHeader() {
     <>
       <div className="pl-signal-bar">
         <div className="site-shell pl-signal-inner">
-          <span>Galveston County · pilot network</span>
-          <span className="hidden sm:inline">Local meals · verified capacity · public proof</span>
+          <span className="pl-signal-live"><i aria-hidden="true" /> Galveston County · pilot network</span>
+          <span className="hidden sm:inline">Private need · local capacity · public accountability</span>
         </div>
       </div>
       <header className="pl-site-header">
         <div className="site-shell pl-header-row flex items-center justify-between gap-4">
-          <Link to="/" className="pl-brand" onClick={() => setOpen(false)}>
+          <Link to="/" className="pl-brand" onClick={() => setOpen(false)} aria-label="ProvisionLoop home">
             <span className="pl-brand-symbol">PL</span>
             <span className="min-w-0">
               <span className="pl-brand-wordmark">
@@ -40,14 +41,14 @@ export function SiteHeader() {
 
           <nav className="hidden items-center lg:flex" aria-label="Primary navigation">
             {NAV.map((item) => (
-              <Link key={item.to} to={item.to} className="pl-nav-link">
+              <Link key={item.to} to={item.to} className="pl-nav-link" activeProps={{ className: "pl-nav-link is-active" }}>
                 {item.label}
               </Link>
             ))}
-            <Link to="/civic" className="pl-nav-link">
-              Public ledger
+            <Link to="/civic" className="pl-nav-link" activeProps={{ className: "pl-nav-link is-active" }}>
+              Ledger
             </Link>
-            <Link to="/app" className="pl-nav-link">
+            <Link to="/app" className="pl-nav-link" activeProps={{ className: "pl-nav-link is-active" }}>
               MealForge
             </Link>
           </nav>
@@ -85,17 +86,14 @@ export function SiteHeader() {
                   onClick={() => setOpen(false)}
                 >
                   {item.label}
-                  <span>0{index + 1} ↗</span>
+                  <span>{String(index + 1).padStart(2, "0")} ↗</span>
                 </Link>
               ))}
               <Link to="/civic" className="pl-mobile-link" onClick={() => setOpen(false)}>
-                Public ledger <span>06 ↗</span>
+                Public ledger <span>07 ↗</span>
               </Link>
               <Link to="/app" className="pl-mobile-link" onClick={() => setOpen(false)}>
-                MealForge <span>07 ↗</span>
-              </Link>
-              <Link to="/about" className="pl-mobile-link" onClick={() => setOpen(false)}>
-                About <span>08 ↗</span>
+                MealForge <span>08 ↗</span>
               </Link>
               <div className="flex flex-wrap items-center gap-3 py-4 xl:hidden">
                 <AccountButton />
@@ -139,9 +137,9 @@ export function SiteFooter() {
         </div>
 
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Build</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Explore</p>
           <div className="mt-5 grid gap-3 text-sm">
-            <Link className="pl-footer-link" to="/about">About ProvisionLoop</Link>
+            <Link className="pl-footer-link" to="/about">About + founder</Link>
             <Link className="pl-footer-link" to="/kitchen">Kitchen network</Link>
             <Link className="pl-footer-link" to="/partners">Community partners</Link>
             <Link className="pl-footer-link" to="/civic">Public ledger</Link>
@@ -164,7 +162,7 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <div className="site-shell flex flex-wrap justify-between gap-3 py-5 text-xs text-[#6f6a61]">
           <span>© 2026 ProvisionLoop</span>
-          <span>Private need. Local capacity. Public accountability.</span>
+          <span>Founded by Garrett McLain · Built to close the loop.</span>
         </div>
       </div>
     </footer>
