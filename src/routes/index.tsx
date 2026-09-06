@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 
 import "@/home-refresh.css";
+import "@/home-experience.css";
 import heroTable from "@/assets/hero-table.jpg";
 import { ProviderStateBadge } from "@/components/ProviderStateBadge";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
