@@ -7,6 +7,11 @@ type AssistantContext = {
   storeName: string;
   gap: number;
   excludedCount: number;
+  allergies: string[];
+  avoidTags: string[];
+  dietaryPreferences: string[];
+  maxCookMinutes: number;
+  equipment: string[];
   meals: Array<{
     title: string;
     minutes: number;
@@ -85,7 +90,7 @@ export const askMealPlanAssistant = createServerFn({ method: "POST" })
             content: [
               {
                 type: "input_text",
-                text: "You are MealForge's ChatGPT assistant. Give concise, practical help based only on the provided household and meal-plan context. Do not invent allergies, ingredients, prices, or nutrition facts. Respect the budget and any avoided foods in the context.",
+                text: "You are MealForge's ChatGPT assistant. Give concise, practical help based only on the provided household and meal-plan context. Treat allergies and avoidTags as hard constraints: never recommend an ingredient, substitution, recipe, or workaround that conflicts with them. Respect maxCookMinutes and available equipment. Dietary preferences are soft preferences, not safety constraints. Do not invent ingredients, prices, nutrition facts, or medical/allergy guarantees. If a safe substitution cannot be established from the supplied context, say so instead of guessing.",
               },
             ],
           },
