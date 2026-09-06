@@ -1,6 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
-import { BookOpen, CookingPot, Home, ShoppingBasket, CalendarRange } from "lucide-react";
+import { BookOpen, CalendarRange, CookingPot, Home, ShoppingBasket } from "lucide-react";
 
+import "@/mealforge-experience.css";
 import { AccountButton } from "@/components/AccountButton";
 import { MealForgeProvider } from "@/lib/food/store";
 
@@ -37,17 +38,18 @@ const TABS = [
 function MealForgeShell() {
   return (
     <MealForgeProvider>
-      <div className="min-h-dvh bg-background text-foreground">
-        <header className="sticky top-0 z-40 border-b-2 border-foreground bg-background/95 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-3xl items-center justify-between px-5 py-3">
-            <Link to="/app" className="font-display text-xl font-black tracking-[-0.05em]">
-              MEAL<span className="text-primary">FORGE</span>
+      <div className="mf-shell min-h-dvh text-foreground">
+        <header className="mf-header">
+          <div className="mx-auto flex min-h-[70px] max-w-3xl items-center justify-between gap-4 px-5 py-3">
+            <Link to="/app" className="mf-brand" aria-label="MealForge home">
+              <span className="mf-brand-mark">MF</span>
+              <span>
+                MEAL<span className="text-primary">FORGE</span>
+                <small>household food intelligence</small>
+              </span>
             </Link>
             <div className="flex items-center gap-3">
-              <Link
-                to="/"
-                className="text-xs font-medium text-muted-foreground transition-colors hover:text-ember-text"
-              >
+              <Link to="/" className="mf-context-link">
                 ProvisionLoop ↗
               </Link>
               <AccountButton />
@@ -55,23 +57,19 @@ function MealForgeShell() {
           </div>
         </header>
 
-        <main className="mx-auto max-w-3xl px-5 pb-28 pt-6">
+        <main className="mf-content mx-auto max-w-3xl px-5 pb-28 pt-7">
           <Outlet />
         </main>
 
-        <nav
-          className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-foreground bg-background/95 backdrop-blur-xl"
-          aria-label="MealForge"
-        >
+        <nav className="mf-bottom-nav" aria-label="MealForge">
           <div className="mx-auto grid max-w-3xl grid-cols-5">
             {TABS.map(({ to, label, icon: Icon, exact }) => (
               <Link
                 key={to}
                 to={to}
                 activeOptions={{ exact }}
-                activeProps={{ className: "text-ember-text" }}
-                inactiveProps={{ className: "text-muted-foreground" }}
-                className="flex min-h-[66px] flex-col items-center justify-center gap-1 py-2 text-xs font-bold transition-colors hover:text-ember-text"
+                activeProps={{ className: "mf-tab is-active" }}
+                inactiveProps={{ className: "mf-tab" }}
               >
                 <Icon className="size-5" aria-hidden="true" />
                 {label}
