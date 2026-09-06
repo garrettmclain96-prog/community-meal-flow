@@ -5,8 +5,10 @@ import {
   ArrowUpRight,
   Building2,
   ChefHat,
+  Fingerprint,
   HandHeart,
   MapPin,
+  Radio,
   ShieldCheck,
   Users,
 } from "lucide-react";
@@ -87,7 +89,7 @@ function HomePage() {
         <section className="pl-hero">
           <div className="site-shell pl-hero-grid">
             <div className="pl-hero-copy">
-              <div className="pl-eyebrow text-primary">Live civic food network</div>
+              <div className="pl-eyebrow text-primary"><Radio className="size-3" /> Live civic food network</div>
               <h1 className="pl-hero-title">
                 NEED IN.
                 <br />
@@ -131,7 +133,17 @@ function HomePage() {
                 <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary">The system</p>
                 <strong>Private need → local capacity → verified fulfillment → public proof.</strong>
               </div>
+              <div className="pl-scroll-cue" aria-hidden="true"><span>enter the loop</span><i /></div>
             </div>
+          </div>
+        </section>
+
+        <section className="pl-loop-rail" aria-label="How ProvisionLoop closes the loop">
+          <div className="site-shell pl-loop-rail-grid">
+            <LoopNode number="01" label="Need enters privately" />
+            <LoopNode number="02" label="Capacity is verified" />
+            <LoopNode number="03" label="Money + people move" />
+            <LoopNode number="04" label="Proof closes publicly" />
           </div>
         </section>
 
@@ -166,7 +178,7 @@ function HomePage() {
           </div>
         </section>
 
-        <section className="pl-section border-b-2 border-foreground">
+        <section className="pl-section pl-why-section">
           <div className="site-shell grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
             <div>
               <p className="pl-section-kicker">Why ProvisionLoop?</p>
@@ -179,11 +191,8 @@ function HomePage() {
                 failure point is what happens between those pieces. ProvisionLoop connects them into
                 one accountable loop.
               </p>
-              <Link
-                to="/about"
-                className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary"
-              >
-                Why ProvisionLoop exists <ArrowUpRight className="size-4" />
+              <Link to="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
+                Experience the story <ArrowUpRight className="size-4" />
               </Link>
             </div>
           </div>
@@ -225,24 +234,35 @@ function HomePage() {
             <div className="pl-network-grid">
               {(kitchens.data ?? []).slice(0, 6).map((kitchen) => (
                 <div key={kitchen.id} className="pl-network-row">
-                  <div className="pl-network-icon">
-                    <Building2 className="size-4" />
-                  </div>
+                  <div className="pl-network-icon"><Building2 className="size-4" /></div>
                   <div className="min-w-0">
                     <p className="pl-network-name">{kitchen.name}</p>
-                    <p className="pl-network-meta">
-                      {kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}
-                    </p>
+                    <p className="pl-network-meta">{kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}</p>
                   </div>
                   <ProviderStateBadge state={kitchen.providerState} isTest={kitchen.is_test} />
                 </div>
               ))}
-              {kitchens.isLoading && (
-                <div className="pl-network-row text-sm opacity-60">Loading mapped providers…</div>
-              )}
+              {kitchens.isLoading && <div className="pl-network-row text-sm opacity-60">Loading mapped providers…</div>}
               {!kitchens.isLoading && (kitchens.data?.length ?? 0) === 0 && (
                 <div className="pl-network-row text-sm opacity-60">Mapped providers will appear here as the directory grows.</div>
               )}
+            </div>
+          </div>
+        </section>
+
+        <section className="pl-founder-tease">
+          <div className="site-shell pl-founder-tease-grid">
+            <div className="pl-founder-tease-mark"><Fingerprint className="size-8" /><strong>GM</strong></div>
+            <div>
+              <p className="pl-section-kicker">Built from the ground up</p>
+              <h2>MEET THE FOUNDER BEHIND THE LOOP.</h2>
+              <p>
+                Garrett McLain built ProvisionLoop around a simple obsession: if the system keeps
+                dropping the outcome between intention and execution, redesign the system.
+              </p>
+              <a href="/about#founder" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
+                Meet Garrett <ArrowUpRight className="size-4" />
+              </a>
             </div>
           </div>
         </section>
@@ -251,23 +271,13 @@ function HomePage() {
           <div className="site-shell pl-final-grid">
             <div>
               <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Start with one closed loop</p>
-              <h2 className="pl-final-title mt-4">
-                MAKE TONIGHT
-                <br />
-                <span>COUNT.</span>
-              </h2>
+              <h2 className="pl-final-title mt-4">MAKE TONIGHT<br /><span>COUNT.</span></h2>
             </div>
             <div>
-              <p className="pl-final-copy">
-                Fund where the network can act, or choose a local kitchen already eligible to receive meal funding.
-              </p>
+              <p className="pl-final-copy">Fund where the network can act, or choose a local kitchen already eligible to receive meal funding.</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/impact" className="pl-hero-primary">
-                  Fund meals <ArrowUpRight className="size-4" />
-                </Link>
-                <Link to="/civic" className="pl-hero-secondary">
-                  View public proof
-                </Link>
+                <Link to="/impact" className="pl-hero-primary">Fund meals <ArrowUpRight className="size-4" /></Link>
+                <Link to="/civic" className="pl-hero-secondary">View public proof</Link>
               </div>
             </div>
           </div>
@@ -280,20 +290,13 @@ function HomePage() {
 }
 
 function LiveStat({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="pl-live-stat">
-      <p className="pl-live-value">{value}</p>
-      <p className="pl-live-label">{label}</p>
-    </div>
-  );
+  return <div className="pl-live-stat"><p className="pl-live-value">{value}</p><p className="pl-live-label">{label}</p></div>;
+}
+
+function LoopNode({ number, label }: { number: string; label: string }) {
+  return <div className="pl-loop-node"><span>{number}</span><i aria-hidden="true" /><strong>{label}</strong></div>;
 }
 
 function ProofStep({ number, title, body }: { number: string; title: string; body: string }) {
-  return (
-    <article className="pl-proof-step">
-      <p className="pl-proof-num">{number}</p>
-      <h3>{title}</h3>
-      <p>{body}</p>
-    </article>
-  );
+  return <article className="pl-proof-step"><p className="pl-proof-num">{number}</p><h3>{title}</h3><p>{body}</p></article>;
 }
