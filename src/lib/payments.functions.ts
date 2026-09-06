@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import type Stripe from "stripe";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { BASE_DOCS, PAYMENT_DOCS } from "@/lib/legal/registry";
+import { legalAcceptanceError, missingServerAcceptances } from "@/lib/legal/server";
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 
 type CheckoutResult = { clientSecret: string; checkoutId?: string } | { error: string };
@@ -64,6 +66,33 @@ async function createSessionWithTax(
   }
 }
 
+async function verifyPaymentLegal(
+  supabase: Parameters<typeof missingServerAcceptances>[0],
+  userId: string,
+): Promise<string | null> {
+  try {
+    const missing = await missingServerAcceptances(supabase, userId, [...BASE_DOCS, ...PAYMENT_DOCS]);
+    return missing.length ? legalAcceptanceError(missing) : null;
+  } catch (error) {
+    return error instanceof Error ? error.message : "Could not verify required legal acceptance.";
+  }
+}
+
+async function verifyKitchenLegal(
+  supabase: Parameters<typeof missingServerAcceptances>[0],
+  userId: string,
+): Promise<string | null> {
+  try {
+    const missing = await missingServerAcceptances(supabase, userId, [
+      ...BASE_DOCS,
+      "kitchen_agreement",
+    ]);
+    return missing.length ? legalAcceptanceError(missing) : null;
+  } catch (error) {
+    return error instanceof Error ? error.message : "Could not verify required legal acceptance.";
+  }
+}
+
 /**
  * Fund meals at a kitchen. The per-meal price is read server-side from the
  * kitchen / meal template so a client cannot choose its own price.
@@ -88,6 +117,9 @@ export const createMealFundingCheckout = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }): Promise<CheckoutResult> => {
     const { supabase, userId } = context;
+
+    const legalError = await verifyPaymentLegal(supabase, userId);
+    if (legalError) return { error: legalError };
 
     const { data: kitchen, error: kitchenError } = await supabase
       .from("kitchens")
@@ -186,8 +218,11 @@ export const createSponsorshipCheckout = createServerFn({ method: "POST" })
   })
   .handler(async ({ data, context }): Promise<CheckoutResult> => {
     try {
-      const stripe = createStripeClient(data.environment);
       const { supabase, userId } = context;
+      const legalError = await verifyPaymentLegal(supabase, userId);
+      if (legalError) return { error: legalError };
+
+      const stripe = createStripeClient(data.environment);
       const { data: userResult } = await supabase.auth.getUser();
 
       const { count: fundableCount } = await supabase
@@ -265,7 +300,10 @@ export const createKitchenPayoutOnboarding = createServerFn({ method: "POST" })
     return data;
   })
   .handler(async ({ data, context }): Promise<{ url: string } | { error: string }> => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const legalError = await verifyKitchenLegal(supabase, userId);
+    if (legalError) return { error: legalError };
+
     const { data: kitchen } = await supabase
       .from("kitchens")
       .select("id, name, payout_account_id")
@@ -309,7 +347,10 @@ export const refreshKitchenPayoutStatus = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { kitchenId: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<{ status: string } | { error: string }> => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const legalError = await verifyKitchenLegal(supabase, userId);
+    if (legalError) return { error: legalError };
+
     const { data: kitchen } = await supabase
       .from("kitchens")
       .select("id, payout_account_id")
@@ -333,7 +374,10 @@ export const submitKitchenPayout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { payoutId: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<{ status: string } | { error: string }> => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const legalError = await verifyKitchenLegal(supabase, userId);
+    if (legalError) return { error: legalError };
+
     const { data: payout } = await supabase
       .from("payouts")
       .select("id, kitchen_id, amount_cents, status, stripe_transfer_id")
@@ -383,7 +427,10 @@ export const settleOrderPayout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { orderId: string; environment: StripeEnv }) => data)
   .handler(async ({ data, context }): Promise<{ status: string } | { error: string }> => {
-    const { supabase } = context;
+    const { supabase, userId } = context;
+    const legalError = await verifyKitchenLegal(supabase, userId);
+    if (legalError) return { error: legalError };
+
     const { data: payout } = await supabase
       .from("payouts")
       .select("id, kitchen_id, amount_cents, status")
