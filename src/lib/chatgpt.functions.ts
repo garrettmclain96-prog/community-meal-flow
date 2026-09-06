@@ -12,11 +12,14 @@ type AssistantContext = {
   dietaryPreferences: string[];
   maxCookMinutes: number;
   equipment: string[];
+  pantryItems: string[];
   meals: Array<{
     title: string;
     minutes: number;
     costPerServing: number;
     reasons: string[];
+    ingredients: string[];
+    steps: string[];
   }>;
 };
 
@@ -83,14 +86,14 @@ export const askMealPlanAssistant = createServerFn({ method: "POST" })
       },
       body: JSON.stringify({
         model,
-        max_output_tokens: 450,
+        max_output_tokens: 550,
         input: [
           {
             role: "system",
             content: [
               {
                 type: "input_text",
-                text: "You are MealForge's ChatGPT assistant. Give concise, practical help based only on the provided household and meal-plan context. Treat allergies and avoidTags as hard constraints: never recommend an ingredient, substitution, recipe, or workaround that conflicts with them. Respect maxCookMinutes and available equipment. Dietary preferences are soft preferences, not safety constraints. Do not invent ingredients, prices, nutrition facts, or medical/allergy guarantees. If a safe substitution cannot be established from the supplied context, say so instead of guessing.",
+                text: "You are MealForge's ChatGPT assistant. Give concise, practical help based only on the supplied household, pantry, recipe ingredients, recipe steps, and meal-plan context. Treat allergies and avoidTags as hard constraints: never recommend an ingredient, substitution, recipe, or workaround that conflicts with them. Respect maxCookMinutes and available equipment. Dietary preferences are soft preferences, not safety constraints. Do not invent ingredients, prices, nutrition facts, pantry inventory, recipe steps, or medical/allergy guarantees. If the supplied context is insufficient for a safe or factual answer, say exactly what is missing instead of guessing.",
               },
             ],
           },
