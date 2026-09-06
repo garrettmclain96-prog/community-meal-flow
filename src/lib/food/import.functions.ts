@@ -140,7 +140,7 @@ function extractJsonLdRecipe(html: string) {
 }
 
 export const importRecipeUrl = createServerFn({ method: "POST" })
-  .validator((data: { url: string }) => {
+  .inputValidator((data: { url: string }) => {
     const url = data.url?.trim();
     if (!url || url.length > 2000) throw new Error("Enter a valid recipe URL.");
     return { url };
