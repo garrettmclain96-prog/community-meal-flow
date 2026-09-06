@@ -1,6 +1,6 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Clock3, HandHeart, Route, Truck } from "lucide-react";
+import { Clock3, HandHeart, Route as RouteIcon, Truck } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
@@ -175,7 +175,7 @@ function VolunteerPage() {
                 <Stat label="Hours logged" value={hours.toFixed(1)} icon={Clock3} />
                 <Stat label="Meals you delivered" value={mealsMoved.toLocaleString()} icon={Truck} />
                 <Stat label="Open shifts nearby" value={String(shifts.data?.length ?? 0)} icon={HandHeart} />
-                <Stat label="Runs waiting" value={String(openRuns.length)} icon={Route} />
+                <Stat label="Runs waiting" value={String(openRuns.length)} icon={RouteIcon} />
               </div>
 
               {!legal.satisfied && (
