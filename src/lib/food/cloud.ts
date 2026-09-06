@@ -1,6 +1,7 @@
 import { supabase } from "@/integrations/supabase/client";
 
 import type { MealPlan } from "./planner";
+import type { PriceObservation } from "./pricing";
 import { SEED_RECIPES } from "./recipes";
 import type { MealForgeState } from "./store";
 import type { Household, PantryItem, Recipe } from "./types";
@@ -10,8 +11,7 @@ import type { Household, PantryItem, Recipe } from "./types";
  *
  * The UI never talks to the database directly. The local-first store keeps
  * working offline and signed-out; when a session exists we hydrate from these
- * tables and mirror every change back. Row-level security scopes everything to
- * the household the signed-in user owns.
+ * tables and mirror every change back. Row-level security scopes household data.
  */
 
 export interface CloudSnapshot {
@@ -23,18 +23,35 @@ function assertOk(error: { message: string } | null, operation: string) {
   if (error) throw new Error(`${operation}: ${error.message}`);
 }
 
+export async function loadCatalogPrices(): Promise<PriceObservation[]> {
+  const { data, error } = await supabase
+    .from("ingredient_prices")
+    .select("ingredient_id, store_id, package_label, price, provenance, observed_at");
+  assertOk(error, "Load store price catalog");
+
+  return (data ?? []).map((row) => ({
+    ingredientId: row.ingredient_id,
+    storeId: row.store_id,
+    packageLabel: row.package_label,
+    price: Number(row.price),
+    observedAt: row.observed_at,
+    provenance: row.provenance as PriceObservation["provenance"],
+    scope: "catalog" as const,
+  }));
+}
+
 async function getOrCreateHousehold(userId: string, fallback: Household) {
-  const { data: existing, error: existingError } = await supabase
+  const existingResult = await supabase
     .from("households")
     .select("*")
     .eq("owner_id", userId)
     .order("created_at", { ascending: true })
     .limit(1)
     .maybeSingle();
-  assertOk(existingError, "Load household");
-  if (existing) return existing;
+  if (existingResult.error) throw new Error(`Load household: ${existingResult.error.message}`);
+  if (existingResult.data) return existingResult.data;
 
-  const { data, error } = await supabase
+  const created = await supabase
     .from("households")
     .insert({
       owner_id: userId,
@@ -51,8 +68,10 @@ async function getOrCreateHousehold(userId: string, fallback: Household) {
     })
     .select("*")
     .single();
-  assertOk(error, "Create household");
-  return data;
+  if (created.error || !created.data) {
+    throw new Error(`Create household: ${created.error?.message ?? "No household returned"}`);
+  }
+  return created.data;
 }
 
 export async function loadCloudState(userId: string, fallback: Household): Promise<CloudSnapshot> {
@@ -139,6 +158,8 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
         packageLabel: o.package_label ?? "",
         price: Number(o.price),
         observedAt: o.observed_at,
+        provenance: "RECENT_OBSERVED" as const,
+        scope: "household" as const,
       })),
       plan: latest ? (latest.plan as unknown as MealPlan) : null,
       checked: latest ? latest.checked : [],
@@ -146,7 +167,7 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
   };
 }
 
-/** Mirrors the whole household document. Small data, simple and always correct. */
+/** Mirrors the household-owned document. Public catalog rows are never copied into household data. */
 export async function pushCloudState(householdId: string, state: MealForgeState) {
   const h = state.household;
 
@@ -218,14 +239,15 @@ export async function pushCloudState(householdId: string, state: MealForgeState)
     assertOk(insertRecipes.error, "Sync imported recipes");
   }
 
+  const householdObservations = state.observations.filter((o) => o.scope !== "catalog");
   const deleteObservations = await supabase
     .from("price_observations")
     .delete()
     .eq("household_id", householdId);
   assertOk(deleteObservations.error, "Reset price observations");
-  if (state.observations.length > 0) {
+  if (householdObservations.length > 0) {
     const insertObservations = await supabase.from("price_observations").insert(
-      state.observations.map((o) => ({
+      householdObservations.map((o) => ({
         household_id: householdId,
         ingredient_id: o.ingredientId,
         store_id: o.storeId,
