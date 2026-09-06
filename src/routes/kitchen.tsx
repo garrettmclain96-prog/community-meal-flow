@@ -64,16 +64,19 @@ function KitchenPage() {
   });
 
   const kitchenId = mine.data?.id ?? "";
+  const operational = Boolean(
+    mine.data?.approved && mine.data?.active && mine.data?.claimed,
+  );
 
   const templates = useQuery({
     queryKey: ["templates", kitchenId],
-    enabled: Boolean(kitchenId),
+    enabled: Boolean(kitchenId) && operational,
     queryFn: () => listTemplates(kitchenId),
   });
 
   const orders = useQuery({
     queryKey: ["kitchen-orders", kitchenId],
-    enabled: Boolean(kitchenId),
+    enabled: Boolean(kitchenId) && operational,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("funded_orders")
@@ -87,7 +90,7 @@ function KitchenPage() {
 
   const payouts = useQuery({
     queryKey: ["kitchen-payouts", kitchenId],
-    enabled: Boolean(kitchenId),
+    enabled: Boolean(kitchenId) && operational,
     queryFn: async () => {
       const { data, error } = await supabase
         .from("payouts")
@@ -101,7 +104,7 @@ function KitchenPage() {
 
   const support = useQuery({
     queryKey: ["kitchen-support", kitchenId],
-    enabled: Boolean(kitchenId),
+    enabled: Boolean(kitchenId) && operational,
     queryFn: async () => {
       const { data, error } = await supabase.rpc("get_my_kitchen_support", {
         _kitchen_id: kitchenId,
@@ -177,7 +180,21 @@ function KitchenPage() {
           </>
         )}
 
-        {mine.data && (
+        {mine.data && !operational && (
+          <section className="editorial-card mt-10 max-w-2xl border-amber-500/40 p-6">
+            <p className="kicker text-amber-700 dark:text-amber-300">Pending verification</p>
+            <h2 className="mt-2 font-display text-2xl font-black">
+              Your kitchen registration is under review.
+            </h2>
+            <p className="mt-3 text-sm leading-6 text-muted-foreground">
+              This provider remains private and unfundable until a ProvisionLoop platform
+              administrator approves it. Meal publishing, volunteer shifts, orders and payouts are
+              locked until verification is complete.
+            </p>
+          </section>
+        )}
+
+        {mine.data && operational && (
           <>
             <div className="mt-10 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
               <Stat label="Meals funded to you" value={funded.toLocaleString()} />
@@ -409,7 +426,7 @@ function RegisterKitchen({ onCreated }: { onCreated: () => void }) {
       toast.error(error.message);
       return;
     }
-    toast.success("Kitchen registered");
+    toast.success("Kitchen submitted for verification");
     onCreated();
   }
 
@@ -765,8 +782,9 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
       <p className="mt-1 max-w-2xl text-sm text-muted-foreground">
         These Galveston-area programs are mapped in the ProvisionLoop directory from public
         information. They are not affiliated with ProvisionLoop and cannot receive funding. If you
-        run one, claim it — the listing becomes your account, and funding opens once payout
-        onboarding is complete.
+        run one, submit a claim for manual verification. Ownership is granted only after a platform
+        administrator approves the claim; funding remains disabled until verification and payout
+        onboarding are complete.
       </p>
 
       <ul className="mt-5 grid gap-3 md:grid-cols-2">
@@ -797,7 +815,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
                   try {
                     await legal.assertAccepted();
                     await claimKitchen(k.id, role, note);
-                    toast.success(`${k.name} is yours — check your capacity and pricing`);
+                    toast.success("Claim submitted for verification");
                     onClaimed();
                   } catch (err) {
                     toast.error(
@@ -828,7 +846,7 @@ function ClaimListings({ onClaimed }: { onClaimed: () => void }) {
                     disabled={busy || !legal.satisfied}
                     className="rounded-full bg-ember px-4 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-50"
                   >
-                    {busy ? "Claiming…" : "Confirm claim"}
+                    {busy ? "Submitting…" : "Submit claim"}
                   </button>
                   <button
                     type="button"
