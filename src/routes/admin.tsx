@@ -12,6 +12,10 @@ import {
   listAllPilotSignups,
   listAllPrivacyRequests,
   listAllRefundRequests,
+  listPendingKitchenClaims,
+  listPendingKitchenRegistrations,
+  reviewKitchenClaim,
+  reviewKitchenRegistration,
   updateQueueRow,
   type AdminStatus,
 } from "@/lib/admin";
@@ -25,13 +29,13 @@ export const Route = createFileRoute("/admin")({
       {
         name: "description",
         content:
-          "Internal ProvisionLoop operations queue for privacy requests, refund requests and pilot sign-ups.",
+          "Internal ProvisionLoop operations queue for provider verification, privacy requests, refunds and pilot sign-ups.",
       },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Operations Queue — ProvisionLoop Admin" },
       {
         property: "og:description",
-        content: "Internal queue for privacy requests, refund requests and pilot sign-ups.",
+        content: "Internal ProvisionLoop operations and provider verification queue.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -40,9 +44,10 @@ export const Route = createFileRoute("/admin")({
   component: AdminPage,
 });
 
-type Tab = "privacy" | "refunds" | "pilot";
+type Tab = "kitchens" | "privacy" | "refunds" | "pilot";
 
 const TABS: { key: Tab; label: string }[] = [
+  { key: "kitchens", label: "Provider verification" },
   { key: "privacy", label: "Privacy requests" },
   { key: "refunds", label: "Refund requests" },
   { key: "pilot", label: "Pilot sign-ups" },
@@ -50,7 +55,7 @@ const TABS: { key: Tab; label: string }[] = [
 
 function AdminPage() {
   const { user, loading } = useAuth();
-  const [tab, setTab] = useState<Tab>("privacy");
+  const [tab, setTab] = useState<Tab>("kitchens");
 
   const admin = useQuery({
     queryKey: ["is-admin", user?.id],
@@ -125,6 +130,7 @@ function AdminPage() {
               ))}
             </div>
             <div className="mt-8">
+              {tab === "kitchens" && <KitchenVerificationQueue />}
               {tab === "privacy" && <PrivacyQueue />}
               {tab === "refunds" && <RefundQueue />}
               {tab === "pilot" && <PilotQueue />}
@@ -239,13 +245,202 @@ function ErrorState({
   );
 }
 
+function KitchenVerificationQueue() {
+  const queryClient = useQueryClient();
+  const claims = useQuery({
+    queryKey: ["admin-kitchen-claims"],
+    queryFn: listPendingKitchenClaims,
+  });
+  const registrations = useQuery({
+    queryKey: ["admin-kitchen-registrations"],
+    queryFn: listPendingKitchenRegistrations,
+  });
+  const [busy, setBusy] = useState<string | null>(null);
+
+  async function refresh() {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ["admin-kitchen-claims"] }),
+      queryClient.invalidateQueries({ queryKey: ["admin-kitchen-registrations"] }),
+    ]);
+  }
+
+  async function decide(kind: "claim" | "registration", id: string, approve: boolean) {
+    setBusy(`${kind}:${id}:${approve ? "approve" : "reject"}`);
+    try {
+      if (kind === "claim") await reviewKitchenClaim(id, approve);
+      else await reviewKitchenRegistration(id, approve);
+      toast.success(approve ? "Provider approved." : "Provider request rejected.");
+      await refresh();
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Provider review failed.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
+  if (claims.isLoading || registrations.isLoading) {
+    return <p className="text-sm text-muted-foreground">Loading provider verification…</p>;
+  }
+  if (claims.isError) {
+    return (
+      <ErrorState
+        title="Kitchen claim queue failed to load"
+        error={claims.error}
+        onRetry={() => void claims.refetch()}
+      />
+    );
+  }
+  if (registrations.isError) {
+    return (
+      <ErrorState
+        title="Kitchen registration queue failed to load"
+        error={registrations.error}
+        onRetry={() => void registrations.refetch()}
+      />
+    );
+  }
+
+  const claimRows = claims.data ?? [];
+  const registrationRows = registrations.data ?? [];
+
+  return (
+    <div className="space-y-10">
+      <section>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="kicker text-primary">Existing listings</p>
+            <h2 className="mt-2 font-display text-2xl font-black">Pending operator claims</h2>
+          </div>
+          <span className="kicker border border-border px-2 py-1 text-[10px]">
+            {claimRows.length} pending
+          </span>
+        </div>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          Approving a claim grants that account ownership of the mapped listing. Rejecting it leaves
+          the public directory listing unaffiliated and unfundable.
+        </p>
+
+        <div className="mt-5 grid gap-4">
+          {claimRows.length === 0 && <EmptyState what="pending kitchen claims" />}
+          {claimRows.map((row) => (
+            <article key={row.id} className="editorial-card p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="font-display text-xl font-black">{row.kitchen_name}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {row.neighborhood || row.city || "Area not provided"}
+                  </p>
+                </div>
+                <span className="kicker border border-amber-500/50 px-2 py-1 text-[10px] text-amber-700 dark:text-amber-300">
+                  Pending verification
+                </span>
+              </div>
+              <div className="mt-4 space-y-1 text-sm text-muted-foreground">
+                <p>Claimant: {row.user_id}</p>
+                {row.role_at_kitchen && <p>Role: {row.role_at_kitchen}</p>}
+                {row.note && <p className="pt-2 leading-6">{row.note}</p>}
+                <p className="pt-2 text-xs">Submitted {new Date(row.created_at).toLocaleString()}</p>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+                <button
+                  type="button"
+                  className="button-primary"
+                  disabled={busy !== null}
+                  onClick={() => void decide("claim", row.id, true)}
+                >
+                  {busy === `claim:${row.id}:approve` ? "Approving…" : "Approve claim"}
+                </button>
+                <button
+                  type="button"
+                  className="button-secondary"
+                  disabled={busy !== null}
+                  onClick={() => void decide("claim", row.id, false)}
+                >
+                  {busy === `claim:${row.id}:reject` ? "Rejecting…" : "Reject"}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section>
+        <div className="flex flex-wrap items-end justify-between gap-3">
+          <div>
+            <p className="kicker text-primary">New providers</p>
+            <h2 className="mt-2 font-display text-2xl font-black">Pending registrations</h2>
+          </div>
+          <span className="kicker border border-border px-2 py-1 text-[10px]">
+            {registrationRows.length} pending
+          </span>
+        </div>
+        <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+          New registrations remain private, inactive and unfundable until you approve them here.
+        </p>
+
+        <div className="mt-5 grid gap-4">
+          {registrationRows.length === 0 && <EmptyState what="pending kitchen registrations" />}
+          {registrationRows.map((row) => (
+            <article key={row.id} className="editorial-card p-6">
+              <div className="flex flex-wrap items-start justify-between gap-4">
+                <div>
+                  <p className="font-display text-xl font-black">{row.name}</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {row.neighborhood || row.city} · {row.kind.replaceAll("_", " ")}
+                  </p>
+                </div>
+                <span className="kicker border border-amber-500/50 px-2 py-1 text-[10px] text-amber-700 dark:text-amber-300">
+                  Pending verification
+                </span>
+              </div>
+              <div className="mt-4 space-y-1 text-sm text-muted-foreground">
+                <p>Owner account: {row.owner_id ?? "missing"}</p>
+                {row.address && <p>{row.address}</p>}
+                {row.website && (
+                  <p>
+                    Website: <span className="break-all">{row.website}</span>
+                  </p>
+                )}
+                {row.summary && <p className="pt-2 leading-6">{row.summary}</p>}
+                <p className="pt-2 text-xs">Submitted {new Date(row.created_at).toLocaleString()}</p>
+              </div>
+              <div className="mt-5 flex flex-wrap gap-2 border-t border-border pt-4">
+                <button
+                  type="button"
+                  className="button-primary"
+                  disabled={busy !== null}
+                  onClick={() => void decide("registration", row.id, true)}
+                >
+                  {busy === `registration:${row.id}:approve` ? "Approving…" : "Approve provider"}
+                </button>
+                <button
+                  type="button"
+                  className="button-secondary"
+                  disabled={busy !== null}
+                  onClick={() => void decide("registration", row.id, false)}
+                >
+                  {busy === `registration:${row.id}:reject` ? "Rejecting…" : "Reject"}
+                </button>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+    </div>
+  );
+}
+
 function PrivacyQueue() {
   const q = useQuery({ queryKey: ["admin-privacy"], queryFn: listAllPrivacyRequests });
   const save = useQueueMutation("admin-privacy");
   if (q.isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (q.isError)
     return (
-      <ErrorState title="Privacy queue failed to load" error={q.error} onRetry={() => void q.refetch()} />
+      <ErrorState
+        title="Privacy queue failed to load"
+        error={q.error}
+        onRetry={() => void q.refetch()}
+      />
     );
   if (!q.data?.length) return <EmptyState what="privacy requests" />;
   return (
@@ -289,7 +484,11 @@ function RefundQueue() {
   if (q.isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (q.isError)
     return (
-      <ErrorState title="Refund queue failed to load" error={q.error} onRetry={() => void q.refetch()} />
+      <ErrorState
+        title="Refund queue failed to load"
+        error={q.error}
+        onRetry={() => void q.refetch()}
+      />
     );
   if (!q.data?.length) return <EmptyState what="refund requests" />;
   return (
@@ -333,7 +532,11 @@ function PilotQueue() {
   if (q.isLoading) return <p className="text-sm text-muted-foreground">Loading…</p>;
   if (q.isError)
     return (
-      <ErrorState title="Pilot queue failed to load" error={q.error} onRetry={() => void q.refetch()} />
+      <ErrorState
+        title="Pilot queue failed to load"
+        error={q.error}
+        onRetry={() => void q.refetch()}
+      />
     );
   if (!q.data?.length) return <EmptyState what="pilot sign-ups" />;
   return (
