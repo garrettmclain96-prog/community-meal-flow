@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useRef } from "react";
 
-import { useMealForge } from "@/lib/food/store";
-import { STORE_BY_ID } from "@/lib/food/pricing";
 import { householdServings } from "@/lib/food/planner";
+import { STORE_BY_ID } from "@/lib/food/pricing";
+import { useMealForge } from "@/lib/food/store";
 
 export const Route = createFileRoute("/app/")({
   head: () => ({
@@ -23,8 +24,21 @@ export const Route = createFileRoute("/app/")({
 });
 
 function MealForgeHome() {
-  const { state, ready } = useMealForge();
+  const { state, ready, regeneratePlan } = useMealForge();
   const { household, pantry, plan, recipes } = state;
+  const repairedLegacyPlan = useRef(false);
+
+  useEffect(() => {
+    if (!ready || !state.onboarded || !plan || repairedLegacyPlan.current) return;
+    const current = plan as typeof plan & { requestedDinners?: number };
+    if (
+      current.requestedDinners === undefined ||
+      current.requestedDinners !== household.dinnersPerWeek
+    ) {
+      repairedLegacyPlan.current = true;
+      regeneratePlan();
+    }
+  }, [ready, state.onboarded, plan, household.dinnersPerWeek, regeneratePlan]);
 
   if (!ready) return <p className="text-sm text-muted-foreground">Loading your household…</p>;
 
@@ -47,6 +61,7 @@ function MealForgeHome() {
   }
 
   const store = STORE_BY_ID[household.storeIds[0] ?? "heb"];
+  const currentPlan = plan as (typeof plan & { requestedDinners?: number; constraintLimited?: boolean }) | null;
 
   return (
     <div className="space-y-6">
@@ -62,16 +77,26 @@ function MealForgeHome() {
         <Stat label="Weekly budget" value={`$${household.weeklyBudget.toFixed(2)}`} />
         <Stat
           label="Plan cost"
-          value={plan ? `$${plan.totalCost.toFixed(2)}` : "—"}
-          tone={plan && plan.gap > 0 ? "warn" : "ok"}
+          value={currentPlan ? `$${currentPlan.totalCost.toFixed(2)}` : "—"}
+          tone={currentPlan && currentPlan.gap > 0 ? "warn" : "ok"}
         />
         <Stat label="Pantry items" value={String(pantry.length)} />
       </div>
 
-      {plan && plan.gap > 0 && (
+      {currentPlan?.constraintLimited && (
+        <div className="border-l-4 border-primary bg-primary/10 p-4 text-sm">
+          <p className="font-bold">Your current limits reduce recipe variety.</p>
+          <p className="mt-1 text-muted-foreground">
+            MealForge will still fill the requested week by repeating eligible meals when necessary.
+            Open the plan to see exactly what is limiting the options.
+          </p>
+        </div>
+      )}
+
+      {currentPlan && currentPlan.gap > 0 && (
         <div className="rounded-lg border border-ember/40 bg-ember/5 p-4 text-sm">
           <p className="font-semibold text-ember-text">
-            ${plan.gap.toFixed(2)} over budget this week
+            ${currentPlan.gap.toFixed(2)} over budget this week
           </p>
           <p className="mt-1 text-muted-foreground">
             A gap this size is exactly what ProvisionLoop's assistance bridge is designed to close —
@@ -83,17 +108,17 @@ function MealForgeHome() {
       <div className="grid gap-3 sm:grid-cols-2">
         <Tile
           to="/app/plan"
-          title={plan ? "Review this week's plan" : "Build this week's plan"}
+          title={currentPlan ? "Review this week's plan" : "Build this week's plan"}
           body={
-            plan
-              ? `${plan.meals.length} dinners scored against your pantry and budget.`
+            currentPlan
+              ? `${currentPlan.meals.length} of ${household.dinnersPerWeek} requested dinners planned against your food profile, pantry and budget.`
               : "Deterministic selection across your constraints, pantry and local prices."
           }
         />
         <Tile
           to="/app/shop"
           title="Grocery list"
-          body="One consolidated list, rounded to real package sizes, grouped by aisle."
+          body="One consolidated list, pantry-offset and rounded to real packages, with prices you can confirm while shopping."
         />
         <Tile
           to="/app/kitchen"
