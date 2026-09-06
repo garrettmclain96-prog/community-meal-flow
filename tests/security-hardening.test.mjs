@@ -65,3 +65,16 @@ test("provider verification is a manual admin decision", async () => {
   assert.match(adminRoute, /Approve provider/);
   assert.match(adminRoute, /Pending verification/);
 });
+
+test("partner PII and volunteer delivery RPCs require current governed agreements", async () => {
+  const migration = await source(
+    "supabase/migrations/20260906163000_enforce_governed_legal_acceptance.sql",
+  );
+
+  assert.match(migration, /require_legal_acceptance\('partner_data', '1\.0'\)/);
+  assert.match(migration, /get_my_partner_workspace[\s\S]*partner_data/);
+  assert.match(migration, /update_partner_referral[\s\S]*partner_data/);
+  assert.match(migration, /claim_delivery_run[\s\S]*volunteer_waiver/);
+  assert.match(migration, /advance_delivery_run[\s\S]*volunteer_waiver/);
+  assert.match(migration, /auth\.uid\(\)/);
+});
