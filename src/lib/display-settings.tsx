@@ -1,6 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
-const STORAGE_KEY = "tf:display";
+const STORAGE_KEY = "provisionloop:display";
+const LEGACY_STORAGE_KEY = "tf:display";
 
 export interface DisplaySettings {
   /** Photo opacity 10–100 */
@@ -16,9 +17,9 @@ export const DEFAULT_DISPLAY: DisplaySettings = {
 
 /**
  * Applied inline in <head> so the saved photo opacity / scrim are painted on
- * the very first frame — no flash of the un-adjusted dusk photography.
+ * the very first frame — no flash of the un-adjusted photography.
  */
-export const DISPLAY_BOOT_SCRIPT = `(function(){try{var d={imageOpacity:${DEFAULT_DISPLAY.imageOpacity},scrim:${DEFAULT_DISPLAY.scrim}};var raw=localStorage.getItem("${STORAGE_KEY}");if(raw){var p=JSON.parse(raw);if(typeof p.imageOpacity==="number")d.imageOpacity=Math.min(100,Math.max(10,p.imageOpacity));if(typeof p.scrim==="number")d.scrim=Math.min(95,Math.max(0,p.scrim));}var s=document.documentElement.style;s.setProperty("--tf-img-opacity",String(d.imageOpacity/100));s.setProperty("--tf-scrim",String(d.scrim/100));}catch(e){}})();`;
+export const DISPLAY_BOOT_SCRIPT = `(function(){try{var k="${STORAGE_KEY}",l="${LEGACY_STORAGE_KEY}",d={imageOpacity:${DEFAULT_DISPLAY.imageOpacity},scrim:${DEFAULT_DISPLAY.scrim}};var raw=localStorage.getItem(k)||localStorage.getItem(l);if(raw){var p=JSON.parse(raw);if(typeof p.imageOpacity==="number")d.imageOpacity=Math.min(100,Math.max(10,p.imageOpacity));if(typeof p.scrim==="number")d.scrim=Math.min(95,Math.max(0,p.scrim));}localStorage.setItem(k,JSON.stringify(d));localStorage.removeItem(l);var s=document.documentElement.style;s.setProperty("--pl-img-opacity",String(d.imageOpacity/100));s.setProperty("--pl-scrim",String(d.scrim/100));}catch(e){}})();`;
 
 interface DisplayContextValue extends DisplaySettings {
   set: (patch: Partial<DisplaySettings>) => void;
@@ -29,8 +30,8 @@ const DisplayContext = createContext<DisplayContextValue | null>(null);
 
 function applyVars(next: DisplaySettings) {
   const s = document.documentElement.style;
-  s.setProperty("--tf-img-opacity", String(next.imageOpacity / 100));
-  s.setProperty("--tf-scrim", String(next.scrim / 100));
+  s.setProperty("--pl-img-opacity", String(next.imageOpacity / 100));
+  s.setProperty("--pl-scrim", String(next.scrim / 100));
 }
 
 export function DisplayProvider({ children }: { children: React.ReactNode }) {
@@ -38,7 +39,7 @@ export function DisplayProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem(LEGACY_STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as Partial<DisplaySettings>;
         const next = {
@@ -47,6 +48,8 @@ export function DisplayProvider({ children }: { children: React.ReactNode }) {
         };
         setSettings(next);
         applyVars(next);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+        localStorage.removeItem(LEGACY_STORAGE_KEY);
         return;
       }
     } catch {
