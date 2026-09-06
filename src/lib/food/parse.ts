@@ -3,11 +3,10 @@ import type { ExtractionMethod, Recipe, RecipeIngredient } from "./types";
 import { parseAmount, resolveUnit } from "./units";
 
 /**
- * Deterministic recipe ingestion (v1): manual entry and pasted text.
+ * Deterministic recipe ingestion: pasted text and normalized structured imports.
  *
  * The raw source is always preserved alongside the normalized record, and
  * every import records its extraction method plus a confidence score.
- * URL / JSON-LD / recipe-scrapers providers slot in ahead of this parser.
  */
 
 const AMOUNT_RE = /^\s*([\d¼½¾⅐⅓⅔⅛⅜⅝⅞./\s-]+?)\s+(.*)$/;
@@ -144,6 +143,7 @@ export function recipeFromPaste(result: PasteParseResult, rawText: string): Reci
     source: {
       kind: "paste",
       raw: rawText,
+      unmatchedIngredients: result.unmatched,
       extractionMethod: result.method,
       confidence: result.confidence,
       importedAt: new Date().toISOString(),
