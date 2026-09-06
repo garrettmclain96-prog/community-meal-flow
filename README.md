@@ -1,178 +1,157 @@
 # ProvisionLoop
 
-PROVISIONLOOP 2.0 — The World‑Impact Platform
+**Private need. Local capacity. Public accountability.**
 
-🚀 Core Idea (Upgraded)
+ProvisionLoop is a community food infrastructure platform for Galveston County, Texas. It connects people who need food, local kitchens with usable capacity, sponsors, volunteers, trusted community partners, and a public aggregate impact ledger in one accountable workflow.
 
-ProvisionLoop becomes a real‑time community support network that connects:
+The project is currently in **pilot stage**. The goal is to prove a reliable local operating model before scaling it further.
 
-• People who want to help
+## Live deployment
 
-• Restaurants who need support
+- **Production:** https://community-meal-flow.vercel.app
+- **Hosting:** Vercel
+- **Source of truth:** GitHub `main`
+- **Repository:** `garrettmclain96-prog/community-meal-flow`
 
-• Families who need meals
+Lovable remains connected as an optional design/editor workflow, but production deployment is handled through Vercel.
 
-• Local nonprofits who know where help is needed
+## What ProvisionLoop does
 
-• Cities who want to reduce hunger
+### Fund local meals
 
-• Businesses who want to sponsor impact
+Sponsors can fund meals through verified, funding-enabled kitchens. Funding eligibility is constrained by kitchen verification and payout readiness rather than treating every directory listing as fundable.
 
-Instead of “pay it forward,” it becomes:
+### Get food help privately
 
-A live, transparent, community‑powered food security engine.
+Households can find resources or submit assistance requests without turning personal need into public content. Partner-facing workflows are gated by legal acceptance and access controls.
 
----
+### Activate local kitchens
 
-🔧 How the New Platform Works
+Restaurants, caterers, churches, community kitchens, and other eligible providers can register or claim a listing. New providers remain pending until reviewed and approved.
 
-1. Real‑Time Meal Funding
+### Coordinate volunteers and delivery
 
-Anyone can fund a meal instantly.
+Volunteers can participate in prep and delivery workflows. Governed actions require the current volunteer waiver.
 
-But now it’s not just restaurants — it includes:
+### Publish aggregate civic impact
 
-• Food trucks
+ProvisionLoop exposes public outcome data in aggregate while keeping recipient identities private. Sandbox/test activity is separated from real pilot totals.
 
-• Local caterers
+### MealForge
 
-• Community kitchens
+MealForge is the household meal-planning workspace inside ProvisionLoop. It supports:
 
-• Meal prep businesses
+- Household food profiles
+- Custom allergies and foods to avoid
+- Meal planning under budget/time/equipment constraints
+- Pantry tracking
+- Grocery lists and pricing provenance
+- Cooking completion and leftover handling
+- Recipe text and supported URL import
+- Grounded ChatGPT meal-plan assistance when server AI credentials are configured
 
-• Churches with kitchens
+## Core architecture
 
-• School cafeterias after hours
+- **Frontend / server framework:** TanStack Start + React + TypeScript
+- **UI:** Tailwind CSS + shadcn/ui-style components
+- **Database / auth:** Supabase
+- **Payments / payouts:** Stripe
+- **Production hosting:** Vercel
+- **CI:** GitHub Actions
+- **Package/runtime tooling:** Bun
 
-Every dollar becomes a trackable, verifiable meal.
+## Security and operational controls
 
----
+The current codebase includes several fail-closed safeguards added during the pilot hardening pass:
 
-2. Smart Matching System
+- Platform-admin role checks for privileged operations
+- Pending review for kitchen claims and new registrations
+- Kitchen funding requires approval, claimed status, active status, payout readiness, and a payout account
+- Unverified kitchens cannot publish public meal templates or volunteer shifts
+- Server-side legal acceptance checks before payment and payout actions
+- Partner data access gated by the current partner agreement
+- Volunteer delivery actions gated by the current volunteer waiver
+- Public kitchen data restricted to a safe column set
+- Public impact data excludes internal order IDs
+- Civic reporting suppresses small cohorts and excludes sandbox activity from real totals
+- Security-definer database functions use a pinned `search_path`
 
-The platform automatically routes funded meals to:
+## Verification
 
-• Families in need
+The repository runs a release gate on `main` covering:
 
-• Seniors
+```sh
+bun run build
+bun run typecheck
+bun run lint
+bun run test
+```
 
-• Homeless individuals
+The latest audited release completed production build, TypeScript verification, lint, and tests successfully.
 
-• Disaster‑affected areas
+## Current production status
 
-• School kids
+The Vercel project is linked directly to this GitHub repository and deploys from `main`.
 
-• Single parents
+Current verified production observations:
 
-• Veterans
+- Latest Vercel production deployment: `READY`
+- Homepage responds successfully over HTTPS
+- `/about` responds successfully over HTTPS
+- No Vercel runtime error clusters were found in the recent audit window
+- Latest inspected Vercel build completed successfully
 
-This is done through verified nonprofit partners.
-
----
-
-3. Restaurant Stabilization Engine
-
-Restaurants don’t just get “support.”
-
-They get:
-
-• Guaranteed daily minimum revenue
-
-• Predictable meal orders
-
-• Access to micro‑grants
-
-• Access to volunteer labor
-
-• Access to discounted supplies
-
-• A dashboard showing community impact
-
-This keeps small restaurants alive during slow seasons.
-
----
-
-4. Community Impact Dashboard
-
-Every city gets a public, transparent dashboard showing:
-
-• Meals funded today
-
-• Meals delivered
-
-• Restaurants supported
-
-• Families helped
-
-• Sponsors contributing
-
-• Neighborhoods impacted
-
-This builds trust and momentum.
-
----
-
-5. Corporate & City Sponsorships
-
-Businesses can sponsor:
-
-• 100 meals a week
-
-• A whole neighborhood
-
-• A school
-
-• A restaurant
-
-• A monthly subscription
-
-Cities can integrate ProvisionLoop into:
-
-• Disaster response
-
-• Homeless outreach
-
-• Senior support
-
-• School programs
-
----
-
-6. Volunteer Integration
-
-People can sign up to:
-
-• Deliver meals
-
-• Help restaurants prep
-
-• Help nonprofits distribute
-
-• Host community events
-
-This turns ProvisionLoop into a movement, not an app.
-
----
-
-This project was built with [Lovable](https://lovable.dev).
-
-**Live app**: https://provisionloop.lovable.app
-
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/e0310514-f821-4056-88a3-79f62361f397).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
+Operational certification still requires real-world external-service testing for any workflow that depends on live credentials or third-party delivery, especially complete Stripe payment → webhook → funded order → fulfillment → payout and outbound email delivery.
+
+## Key routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Public homepage |
+| `/about` | Why ProvisionLoop exists and how the model works |
+| `/impact` | Meal funding |
+| `/help` | Food assistance |
+| `/kitchen` | Kitchen network and provider workflows |
+| `/volunteer` | Volunteer opportunities |
+| `/partners` | Community partner workflows |
+| `/civic` | Public aggregate impact ledger |
+| `/trust-method` | Verification and reporting methodology |
+| `/pilot` | Galveston County pilot |
+| `/app` | MealForge |
+| `/admin` | Platform administration |
+| `/god-mode` | Platform-admin mission control |
+| `/legal` | Legal center |
 
 ## Development
 
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
+Install dependencies with Bun:
 
 ```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
+git clone https://github.com/garrettmclain96-prog/community-meal-flow.git
+cd community-meal-flow
+bun install
+bun run dev
 ```
+
+Run the full verification suite:
+
+```sh
+bun run verify
+```
+
+## Project documentation
+
+- `design.md` — system design and operating model
+- `requirements.md` — testable EARS-form requirements
+- `roadmap.md` — product roadmap
+- `docs/adr/` — architecture decision records
+- `docs/verification/` — pilot verification procedures
+- `docs/operations/` — operational database checks
+
+## Product principle
+
+ProvisionLoop is not intended to be another donation page. The operating model is:
+
+**private need → local capacity → accountable funding → verified fulfillment → public aggregate proof**
+
+The platform should earn trust by closing real local loops before claiming scale.
