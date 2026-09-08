@@ -5,41 +5,39 @@ owner: Garrett McLain
 priority: p0
 version: 1.0.0
 date: 2026-09-05
-last_updated: 2026-09-06
+last_updated: 2026-09-08
 ---
 
 # Pilot completion tasks
 
 Derived from design.md Risks & Open Questions and roadmap.md open items.
-Execution order: 1–4, 7, then 5, then 6. Checked means source implementation
-completed; deployment and authenticated results are separately reported.
-Evidence: [pilot checks](./docs/verification/pilot-checks.md).
+Checked means the stated source/production condition was verified; live-money
+activation remains separately gated. Evidence: [pilot checks](./docs/verification/pilot-checks.md).
 
 1. [x] **Monitored contact** [FR-203, FR-502]: link existing contact constant from
        Trust & Method, site footer and Legal Center; remove unpublished-channel copy;
        update roadmap. Source address already existed; no new contact invented.
 2. [x] **Test kitchen labels** [FR-201, FR-601]: include `is_test` in directory,
        fundable, claim-listing and civic queries; label home, help, impact select/detail,
-       kitchen owner/listing and civic kitchen capacity views. Aggregate separation
-       remains FR-601.6, not accomplished by a badge.
+       kitchen owner/listing and civic kitchen capacity views. Public policies and civic
+       aggregation now exclude sandbox providers/events from real-world totals.
 3. [x] **Pilot navigation** [FR-502]: add `/pilot` to shared desktop/mobile header
        and footer navigation.
-4. [ ] **Garrett platform_admin grant** [FR-701]: BLOCKED. ProvisionLoop database
-       access was denied; the connected account lists other projects only. Confirm
-       Garrett's sign-in email; the support address is not sufficient identity proof.
-       Perform a single idempotent role insert and verify `has_role` after access.
-5. [ ] **Authenticated sandbox lifecycle** [FR-101, FR-102, FR-103, FR-302]: after
-       task 7, fund → confirm → prepare → deliver → payout. BLOCKED: no reachable
-       preview, authenticated session or local payment configuration. Record observed amounts,
-       counts and IDs; do not replace the webhook with a manual ledger insert.
-6. [ ] **19 reported SECURITY DEFINER warnings** [FR-703]: after task 5, obtain
-       deployed advisor output and function definitions. ATTEMPTED: permission denied;
-       source-only scan found 21 definers already pinned. Pin missing deployed search paths,
-       rerun advisors and verify affected RPCs. Historical 19 is not a measured count.
-7. [ ] **Verification** [FR-201, FR-203, FR-502, FR-702, FR-703]: formatting,
-       typecheck, lint, production build, parser/access/bundle tests and route smoke.
-       Format/type/build pass; lint 0 errors/16 existing warnings; 5 automated tests
-       pass. Browser smoke BLOCKED by preview reachability, so this item stays open.
+4. [x] **Garrett platform_admin grant** [FR-701]: verified against the actual
+       Lovable-managed ProvisionLoop database on 2026-09-08. The account
+       `garrettmclain96@gmail.com` has `platform_admin` (and household) role membership.
+5. [ ] **Authenticated sandbox lifecycle** [FR-101, FR-102, FR-103, FR-302]: fund →
+       confirm → prepare → deliver → payout remains intentionally open. Live money is not
+       enabled in this pass; do not replace webhook/payment evidence with manual ledger rows.
+6. [x] **SECURITY DEFINER search-path verification** [FR-703]: production catalog
+       inspected through the Lovable-managed database on 2026-09-08. All 25 public
+       `SECURITY DEFINER` functions observed have `search_path=public` pinned. The old
+       historical count of 19 warnings was not a trustworthy measured current count.
+7. [ ] **Verification** [FR-201, FR-203, FR-502, FR-702, FR-703]: production Vercel
+       deployments and public route smoke are reachable and recent hardening builds are READY;
+       regression tests now cover provider authority and aggregate-only civic proof. Keep this
+       item open until the full authenticated mobile workflow and MealForge end-to-end pass are
+       exercised after the current persistence cleanup.
 
 ## Supporting design-doc deliverables
 
@@ -55,14 +53,26 @@ Evidence: [pilot checks](./docs/verification/pilot-checks.md).
 
 11. [ ] **Sending domain and admin email notifications** [FR-402, FR-703].
 12. [ ] **Confirm provisional pilot date and eligibility** [FR-502].
-13. [ ] **Verify operator authority before claim approval** [FR-202].
-14. [ ] **Enforce legal acceptance in server functions/RPCs** [FR-501].
-15. [ ] **Civic suppression, estimated-dollar labels, sandbox separation** [FR-601].
-16. [ ] **Show admin query errors separately from empty queues** [FR-701].
-17. [ ] **Production activation gates** [FR-101, FR-401, FR-502]: verify applied
-        migrations, first approved partner, payment configuration, legal entity,
-        authenticated assistance/referral verification and published mobile QA.
-        Do not switch on live payments in this pass.
+13. [x] **Verify operator authority before claim approval** [FR-202]: production DB
+       approval now fails closed unless a platform admin supplies a verification method and
+       concrete evidence note. Evidence is stored in an admin-only RLS-protected audit table;
+       kitchen owners cannot change their own trust/approval/test flags.
+14. [ ] **Enforce legal acceptance in server functions/RPCs** [FR-501]: kitchen claim
+       and self-registration now enforce Terms v1.0, Privacy v1.0 and Kitchen Agreement v1.0
+       at the database boundary; partner/referral and volunteer delivery RPCs also enforce
+       their governed agreements. Keep the umbrella item open until every remaining direct-call
+       path, including money activation paths, has negative-bypass verification.
+15. [x] **Civic suppression, estimated-dollar labels, sandbox separation** [FR-601]:
+       civic reporting now comes from `get_public_civic_snapshot`; raw impact rows are not
+       anonymously/browser-readable, test kitchens/events/shifts are separated, cohorts under
+       five are suppressed, and sponsor-dollar values remain explicitly estimated.
+16. [x] **Show admin query errors separately from empty queues** [FR-701]: verified in
+       the current admin route; query errors render as errors rather than being presented as
+       empty operational queues.
+17. [ ] **Production activation gates** [FR-101, FR-401, FR-502]: verify remaining
+       migrations/source parity, first approved partner, payment configuration, legal entity,
+       authenticated assistance/referral workflow, full MealForge persistence cycle and
+       published mobile QA. Do not switch on live payments in this pass.
 
-Non-pilot roadmap work (price/recipe depth, MealForge screens, live feeds and
-URL/photo/PDF ingestion) stays in roadmap.md; no new scope is implied here.
+Non-pilot roadmap work (price/recipe depth, broader ingestion and live feeds) stays
+in roadmap.md; MealForge remains noindex until its end-to-end persistence cycle is verified.
