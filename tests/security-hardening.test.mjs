@@ -94,3 +94,40 @@ test("unverified kitchens cannot publish operational resources and approval comp
   assert.match(migration, /approved kitchen owners manage shifts/);
   assert.match(migration, /approved kitchen shifts are public/);
 });
+
+test("provider approval requires durable authority evidence and governed agreements", async () => {
+  const migration = await source(
+    "supabase/migrations/20260908125000_provider_trust_hardening.sql",
+  );
+  const admin = await source("src/lib/admin.ts");
+
+  assert.match(migration, /operator_authority_verifications/);
+  assert.match(migration, /require_legal_acceptance\('terms', '1\.0'\)/);
+  assert.match(migration, /require_legal_acceptance\('privacy', '1\.0'\)/);
+  assert.match(migration, /require_legal_acceptance\('kitchen_agreement', '1\.0'\)/);
+  assert.match(migration, /verification method is required/);
+  assert.match(migration, /verification note must explain what was checked/);
+  assert.match(migration, /operator authority verification evidence is required before approval/);
+  assert.match(migration, /provider trust fields require platform administrator review/);
+  assert.match(migration, /approved AND active AND NOT is_test/i);
+  assert.match(admin, /collectAuthorityEvidence/);
+  assert.match(admin, /_verification_method/);
+  assert.match(admin, /_verification_note/);
+});
+
+test("public civic reporting is aggregate-only and raw impact rows are not browser-readable", async () => {
+  const migration = await source(
+    "supabase/migrations/20260908130500_aggregate_only_civic_reporting.sql",
+  );
+  const civic = await source("src/lib/civic.ts");
+
+  assert.match(migration, /get_public_civic_snapshot/);
+  assert.match(migration, /SECURITY DEFINER/);
+  assert.match(migration, /k\.is_test = false/);
+  assert.match(migration, /greatest\(funded, delivered\) < 5/);
+  assert.match(migration, /DROP POLICY IF EXISTS "impact events are public"/);
+  assert.match(migration, /REVOKE SELECT ON TABLE public\.impact_events FROM anon, authenticated/);
+  assert.match(civic, /get_public_civic_snapshot/);
+  assert.doesNotMatch(civic, /\.from\("impact_events"\)/);
+  assert.doesNotMatch(civic, /\.from\("volunteer_shifts"\)/);
+});
