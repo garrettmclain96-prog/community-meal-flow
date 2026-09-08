@@ -1,11 +1,12 @@
 import { supabase } from "@/integrations/supabase/client";
+import { getPublicImpactSnapshot } from "@/lib/public-impact.functions";
 
 /**
  * Live community-side reads.
  *
- * Impact events and approved kitchens are the only publicly readable surface;
- * household data never leaves the household's own rows. Anonymous database
- * grants are column-scoped so owner and payout identifiers are not exposed.
+ * Impact totals are aggregated server-side so sandbox/test rows can be removed
+ * before anything public is returned. Public kitchen reads remain deliberately
+ * column-scoped and exclude test providers from the public network.
  */
 
 export type ProviderState = "directory" | "verified" | "funding_enabled";
@@ -53,13 +54,14 @@ function withState<T extends { claimed: boolean; payout_status: string; cost_per
 const KITCHEN_COLUMNS =
   "id, name, kind, city, neighborhood, daily_capacity_meals, cost_per_meal, address, website, summary, claimed, payout_status, is_test";
 
-/** Full public directory — discovery only. Includes unaffiliated directory listings. */
+/** Full public directory — discovery only. Includes unaffiliated directory listings, never test fixtures. */
 export async function listKitchens(): Promise<KitchenRow[]> {
   const { data, error } = await supabase
     .from("kitchens")
     .select(KITCHEN_COLUMNS)
     .eq("approved", true)
     .eq("active", true)
+    .eq("is_test", false)
     .order("name");
   if (error) throw error;
   return (data ?? []).map(withState);
@@ -68,6 +70,7 @@ export async function listKitchens(): Promise<KitchenRow[]> {
 /**
  * Providers that may actually receive funding. UI must use this for any
  * funding decision; the server re-checks the same conditions on checkout.
+ * Test fixtures are intentionally excluded from the public funding surface.
  */
 export async function listFundableKitchens(): Promise<KitchenRow[]> {
   const { data, error } = await supabase
@@ -77,6 +80,7 @@ export async function listFundableKitchens(): Promise<KitchenRow[]> {
     .eq("active", true)
     .eq("claimed", true)
     .eq("payout_status", "ready")
+    .eq("is_test", false)
     .order("name");
   if (error) throw error;
   return (data ?? []).map(withState);
@@ -104,11 +108,11 @@ export async function listTemplates(kitchenId?: string): Promise<TemplateRow[]> 
 export interface ImpactTotals {
   mealsFunded: number;
   mealsDelivered: number;
-  /** Every approved provider in the public directory, affiliated or not. */
+  /** Every approved, active, non-test provider visible in the public directory. */
   providersMapped: number;
-  /** Providers an operator claimed and that can actually receive funding. */
+  /** Non-test providers an operator claimed and that can actually receive funding. */
   fundingEnabledKitchens: number;
-  /** Providers an operator claimed, regardless of payout readiness. */
+  /** Non-test providers an operator claimed, regardless of payout readiness. */
   verifiedOperators: number;
   neighborhoods: Array<{ neighborhood: string; meals: number }>;
   recent: Array<{
@@ -120,60 +124,9 @@ export interface ImpactTotals {
   }>;
 }
 
+/** Public totals are sanitized and filtered server-side before reaching the browser. */
 export async function loadImpactTotals(): Promise<ImpactTotals> {
-  const approved = supabase
-    .from("kitchens")
-    .select("id", { count: "exact", head: true })
-    .eq("approved", true);
-  const [events, mapped, verified, fundable] = await Promise.all([
-    supabase
-      .from("impact_events")
-      .select("id, kind, meals, neighborhood, occurred_at")
-      .order("occurred_at", { ascending: false })
-      .limit(1000),
-    approved,
-    supabase
-      .from("kitchens")
-      .select("id", { count: "exact", head: true })
-      .eq("approved", true)
-      .eq("claimed", true),
-    supabase
-      .from("kitchens")
-      .select("id", { count: "exact", head: true })
-      .eq("approved", true)
-      .eq("active", true)
-      .eq("claimed", true)
-      .eq("payout_status", "ready"),
-  ]);
-  if (events.error) throw events.error;
-  if (mapped.error) throw mapped.error;
-  if (verified.error) throw verified.error;
-  if (fundable.error) throw fundable.error;
-
-  const rows = events.data ?? [];
-  const byHood = new Map<string, number>();
-  let funded = 0;
-  let delivered = 0;
-  for (const e of rows) {
-    if (e.kind === "funded") {
-      funded += e.meals;
-      const hood = e.neighborhood ?? "Unassigned";
-      byHood.set(hood, (byHood.get(hood) ?? 0) + e.meals);
-    }
-    if (e.kind === "delivered") delivered += e.meals;
-  }
-
-  return {
-    mealsFunded: funded,
-    mealsDelivered: delivered,
-    providersMapped: mapped.count ?? 0,
-    verifiedOperators: verified.count ?? 0,
-    fundingEnabledKitchens: fundable.count ?? 0,
-    neighborhoods: [...byHood.entries()]
-      .map(([neighborhood, meals]) => ({ neighborhood, meals }))
-      .sort((a, b) => b.meals - a.meals),
-    recent: rows.slice(0, 12),
-  };
+  return await getPublicImpactSnapshot();
 }
 
 // Funding now happens exclusively through paid checkout
