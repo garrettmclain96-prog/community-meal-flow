@@ -1,7 +1,6 @@
 # ProvisionLoop — agent notes
 
-Read `design.md` for architecture, goals, non-goals and rationale. Decisions live
-in `docs/adr/`. Feature status lives in `roadmap.md`.
+Read `PROJECT_CONTEXT.md` first for product history, current operating context, user expectations, launch state, and unresolved work. Then read `design.md` for architecture, goals, non-goals and rationale. Decisions live in `docs/adr/`. Testable behavior lives in `requirements.md`; current execution status lives in `tasks.md`; broader feature status lives in `roadmap.md`.
 
 ## Commands
 
@@ -19,3 +18,5 @@ in `docs/adr/`. Feature status lives in `roadmap.md`.
 - Payments stay in test mode. No tax-deductibility or partnership claims.
 - Never invent contact details, partners or impact numbers.
 - Colors and type come from tokens in `src/styles.css`; no hardcoded color utilities.
+- Never equate code presence with production readiness: distinguish user-reported behavior, source implementation, and deployed verification.
+- After material product/brand/launch/legal/architecture decisions, update `PROJECT_CONTEXT.md` along with the relevant design, requirements, tasks, roadmap, or ADR document.
