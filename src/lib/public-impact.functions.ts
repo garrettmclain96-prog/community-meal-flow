@@ -5,8 +5,8 @@ import { setResponseHeader } from "@tanstack/react-start/server";
  * Public civic snapshot computed server-side.
  *
  * The browser never needs direct access to environment/test flags or payout
- * identifiers. Keeping aggregation here lets us exclude sandbox rows before
- * anything public is returned and avoids widening anonymous database grants.
+ * identifiers. Sandbox exclusion is derived from the related kitchen record,
+ * because impact_events intentionally has no is_test column.
  */
 export const getPublicImpactSnapshot = createServerFn({ method: "GET" }).handler(async () => {
   setResponseHeader("Cache-Control", "public, s-maxage=60, stale-while-revalidate=300");
@@ -16,21 +16,24 @@ export const getPublicImpactSnapshot = createServerFn({ method: "GET" }).handler
   const [eventsResult, kitchensResult] = await Promise.all([
     supabaseAdmin
       .from("impact_events")
-      .select("id, kind, meals, neighborhood, occurred_at, is_test")
-      .eq("is_test", false)
+      .select("id, kitchen_id, kind, meals, neighborhood, occurred_at")
       .order("occurred_at", { ascending: false })
       .limit(1000),
     supabaseAdmin
       .from("kitchens")
-      .select("approved, active, claimed, payout_status, payout_account_id, is_test")
+      .select("id, approved, active, claimed, payout_status, payout_account_id, is_test")
       .eq("is_test", false),
   ]);
 
   if (eventsResult.error) throw new Error("Unable to load public impact events.");
   if (kitchensResult.error) throw new Error("Unable to load public provider totals.");
 
-  const events = eventsResult.data ?? [];
   const kitchens = kitchensResult.data ?? [];
+  const realKitchenIds = new Set(kitchens.map((row) => row.id));
+  const events = (eventsResult.data ?? []).filter(
+    (event) => Boolean(event.kitchen_id) && realKitchenIds.has(event.kitchen_id!),
+  );
+
   const byNeighborhood = new Map<string, number>();
   let mealsFunded = 0;
   let mealsDelivered = 0;
