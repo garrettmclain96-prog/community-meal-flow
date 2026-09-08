@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /god-mode
+Disallow: /design
+Disallow: /auth
+Disallow: /checkout/
+Disallow: /privacy-center
+Disallow: /refund-request
+Disallow: /app/
+
+Sitemap: https://www.provisionloop.org/sitemap.xml
