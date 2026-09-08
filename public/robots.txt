@@ -7,6 +7,6 @@ Disallow: /auth
 Disallow: /checkout/
 Disallow: /privacy-center
 Disallow: /refund-request
-Disallow: /app/
+Disallow: /app
 
 Sitemap: https://www.provisionloop.org/sitemap.xml
