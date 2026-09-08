@@ -1,0 +1,93 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        { "key": "X-Content-Type-Options", "value": "nosniff" },
+        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
+        { "key": "X-Frame-Options", "value": "SAMEORIGIN" }
+      ]
+    },
+    {
+      "source": "/",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/about",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/about>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/help",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/help>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/kitchen",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/kitchen>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/volunteer",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/volunteer>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/partners",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/partners>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/civic",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/civic>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/trust-method",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/trust-method>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/pilot",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/pilot>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/legal",
+      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/legal>; rel=\"canonical\"" }]
+    },
+    {
+      "source": "/impact",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, follow" }]
+    },
+    {
+      "source": "/app",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/app/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/auth",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/admin",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/god-mode",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/design",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/privacy-center",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/refund-request",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/checkout/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ]
+}
