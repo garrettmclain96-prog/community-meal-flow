@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
 
 const NAV = [
-  { to: "/impact", label: "Fund" },
+  { to: "/impact", label: "Funding" },
   { to: "/help", label: "Get help" },
   { to: "/kitchen", label: "Kitchens" },
   { to: "/volunteer", label: "Volunteer" },
@@ -61,8 +61,8 @@ export function SiteHeader() {
             <div className="pl-header-icon hidden sm:block">
               <ThemeToggle />
             </div>
-            <Link to="/impact" className="pl-header-action hidden md:inline-flex">
-              Fund a meal <ArrowUpRight className="size-4" />
+            <Link to="/pilot" className="pl-header-action hidden md:inline-flex">
+              Join the pilot <ArrowUpRight className="size-4" />
             </Link>
             <button
               type="button"
@@ -122,18 +122,18 @@ export function SiteFooter() {
             <span>FINISHES THE LOOP.</span>
           </div>
           <p className="mt-6 max-w-xl text-sm leading-7 text-[#b8b2a7]">
-            Funding enters through verified local kitchens, moves through accountable fulfillment,
-            and closes with aggregate public proof. Recipient identities stay private.
+            ProvisionLoop is building a verified local loop from private need to kitchen capacity,
+            accountable fulfillment and aggregate public proof. Recipient identities stay private.
           </p>
         </div>
 
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Act</p>
           <div className="mt-5 grid gap-3 text-sm">
-            <Link className="pl-footer-link" to="/impact">Fund meals</Link>
+            <Link className="pl-footer-link" to="/pilot">Join the pilot</Link>
             <Link className="pl-footer-link" to="/help">Find food help</Link>
             <Link className="pl-footer-link" to="/volunteer">Volunteer nearby</Link>
-            <Link className="pl-footer-link" to="/pilot">Join the pilot</Link>
+            <Link className="pl-footer-link" to="/impact">See the funding model</Link>
           </div>
         </div>
 
