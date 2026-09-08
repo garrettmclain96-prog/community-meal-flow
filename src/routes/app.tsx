@@ -14,6 +14,7 @@ export const Route = createFileRoute("/app")({
         content:
           "Plan a week of dinners against your real budget, pantry and local package prices. MealForge is ProvisionLoop's household food intelligence app.",
       },
+      { name: "robots", content: "noindex, nofollow" },
       { property: "og:title", content: "MealForge — Household Food Intelligence" },
       {
         property: "og:description",
