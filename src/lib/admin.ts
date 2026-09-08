@@ -147,18 +147,68 @@ export async function listPendingKitchenRegistrations(): Promise<PendingKitchenR
   return data ?? [];
 }
 
+type AuthorityEvidence = {
+  method: string;
+  note: string;
+};
+
+/**
+ * Approval is intentionally interactive: the database refuses to approve a
+ * provider without durable operator-authority evidence, and this internal UI
+ * gathers the evidence before calling that RPC.
+ */
+function collectAuthorityEvidence(): AuthorityEvidence {
+  if (typeof window === "undefined") {
+    throw new Error("Authority verification must be completed in the admin UI.");
+  }
+
+  const method = window
+    .prompt(
+      "Verification method (examples: owner/manager confirmation, business email/domain, in-person confirmation, public business records):",
+    )
+    ?.trim();
+
+  if (!method || method.length < 3) {
+    throw new Error("Verification method is required before approval.");
+  }
+
+  const note = window
+    .prompt(
+      "What exactly did you verify? Record the concrete evidence checked (minimum 12 characters):",
+    )
+    ?.trim();
+
+  if (!note || note.length < 12) {
+    throw new Error("A concrete verification note is required before approval.");
+  }
+
+  return { method, note };
+}
+
 export async function reviewKitchenClaim(claimId: string, approve: boolean): Promise<void> {
+  const evidence = approve ? collectAuthorityEvidence() : null;
   const { error } = await supabase.rpc(
     "review_kitchen_claim" as never,
-    { _claim_id: claimId, _approve: approve } as never,
+    {
+      _claim_id: claimId,
+      _approve: approve,
+      _verification_method: evidence?.method ?? null,
+      _verification_note: evidence?.note ?? null,
+    } as never,
   );
   if (error) throw error;
 }
 
 export async function reviewKitchenRegistration(kitchenId: string, approve: boolean): Promise<void> {
+  const evidence = approve ? collectAuthorityEvidence() : null;
   const { error } = await supabase.rpc(
     "review_kitchen_registration" as never,
-    { _kitchen_id: kitchenId, _approve: approve } as never,
+    {
+      _kitchen_id: kitchenId,
+      _approve: approve,
+      _verification_method: evidence?.method ?? null,
+      _verification_note: evidence?.note ?? null,
+    } as never,
   );
   if (error) throw error;
 }
