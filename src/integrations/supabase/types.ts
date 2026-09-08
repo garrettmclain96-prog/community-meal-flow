@@ -1612,8 +1612,24 @@ export type Database = {
         Returns: boolean
       }
       my_volunteer_id: { Args: never; Returns: string }
+      operates_approved_kitchen: {
+        Args: { _kitchen_id: string }
+        Returns: boolean
+      }
       owns_household: { Args: { _household_id: string }; Returns: boolean }
       owns_kitchen: { Args: { _kitchen_id: string }; Returns: boolean }
+      require_legal_acceptance: {
+        Args: { _document_key: string; _document_version: string }
+        Returns: undefined
+      }
+      review_kitchen_claim: {
+        Args: { _approve: boolean; _claim_id: string }
+        Returns: string
+      }
+      review_kitchen_registration: {
+        Args: { _approve: boolean; _kitchen_id: string }
+        Returns: string
+      }
       submit_assistance_request: {
         Args: {
           _area: string

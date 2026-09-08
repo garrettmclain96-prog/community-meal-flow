@@ -9,115 +9,46 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AppRouteImport } from './routes/app'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as CivicRouteImport } from './routes/civic'
-import { Route as DesignRouteImport } from './routes/design'
-import { Route as GodModeRouteImport } from './routes/god-mode'
-import { Route as HelpRouteImport } from './routes/help'
-import { Route as ImpactRouteImport } from './routes/impact'
-import { Route as KitchenRouteImport } from './routes/kitchen'
-import { Route as LegalRouteImport } from './routes/legal'
-import { Route as PartnersRouteImport } from './routes/partners'
-import { Route as PilotRouteImport } from './routes/pilot'
-import { Route as PrivacyCenterRouteImport } from './routes/privacy-center'
-import { Route as RefundRequestRouteImport } from './routes/refund-request'
-import { Route as TrustMethodRouteImport } from './routes/trust-method'
 import { Route as VolunteerRouteImport } from './routes/volunteer'
-import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppCookRouteImport } from './routes/app.cook'
-import { Route as AppImportRouteImport } from './routes/app.import'
-import { Route as AppKitchenRouteImport } from './routes/app.kitchen'
-import { Route as AppPantryRouteImport } from './routes/app.pantry'
-import { Route as AppPlanRouteImport } from './routes/app.plan'
-import { Route as AppSetupRouteImport } from './routes/app.setup'
-import { Route as AppShopRouteImport } from './routes/app.shop'
-import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as TrustMethodRouteImport } from './routes/trust-method'
+import { Route as RefundRequestRouteImport } from './routes/refund-request'
+import { Route as PrivacyCenterRouteImport } from './routes/privacy-center'
+import { Route as PilotRouteImport } from './routes/pilot'
+import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as LegalRouteImport } from './routes/legal'
+import { Route as KitchenRouteImport } from './routes/kitchen'
+import { Route as ImpactRouteImport } from './routes/impact'
+import { Route as HelpRouteImport } from './routes/help'
+import { Route as GodModeRouteImport } from './routes/god-mode'
+import { Route as DesignRouteImport } from './routes/design'
+import { Route as CivicRouteImport } from './routes/civic'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AppRouteImport } from './routes/app'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as LegalIndexRouteImport } from './routes/legal.index'
-import { Route as LegalFeesTaxRouteImport } from './routes/legal.fees-tax'
-import { Route as LegalKitchenAgreementRouteImport } from './routes/legal.kitchen-agreement'
-import { Route as LegalPartnerDataRouteImport } from './routes/legal.partner-data'
-import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
-import { Route as LegalRefundsRouteImport } from './routes/legal.refunds'
-import { Route as LegalTermsRouteImport } from './routes/legal.terms'
+import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as LegalVolunteerWaiverRouteImport } from './routes/legal.volunteer-waiver'
+import { Route as LegalTermsRouteImport } from './routes/legal.terms'
+import { Route as LegalRefundsRouteImport } from './routes/legal.refunds'
+import { Route as LegalPrivacyRouteImport } from './routes/legal.privacy'
+import { Route as LegalPartnerDataRouteImport } from './routes/legal.partner-data'
+import { Route as LegalKitchenAgreementRouteImport } from './routes/legal.kitchen-agreement'
+import { Route as LegalFeesTaxRouteImport } from './routes/legal.fees-tax'
+import { Route as CheckoutReturnRouteImport } from './routes/checkout.return'
+import { Route as AppShopRouteImport } from './routes/app.shop'
+import { Route as AppSetupRouteImport } from './routes/app.setup'
+import { Route as AppPlanRouteImport } from './routes/app.plan'
+import { Route as AppPantryRouteImport } from './routes/app.pantry'
+import { Route as AppKitchenRouteImport } from './routes/app.kitchen'
+import { Route as AppImportRouteImport } from './routes/app.import'
+import { Route as AppCookRouteImport } from './routes/app.cook'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CivicRoute = CivicRouteImport.update({
-  id: '/civic',
-  path: '/civic',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const DesignRoute = DesignRouteImport.update({
-  id: '/design',
-  path: '/design',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GodModeRoute = GodModeRouteImport.update({
-  id: '/god-mode',
-  path: '/god-mode',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HelpRoute = HelpRouteImport.update({
-  id: '/help',
-  path: '/help',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ImpactRoute = ImpactRouteImport.update({
-  id: '/impact',
-  path: '/impact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const KitchenRoute = KitchenRouteImport.update({
-  id: '/kitchen',
-  path: '/kitchen',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LegalRoute = LegalRouteImport.update({
-  id: '/legal',
-  path: '/legal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PartnersRoute = PartnersRouteImport.update({
-  id: '/partners',
-  path: '/partners',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PilotRoute = PilotRouteImport.update({
-  id: '/pilot',
-  path: '/pilot',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PrivacyCenterRoute = PrivacyCenterRouteImport.update({
-  id: '/privacy-center',
-  path: '/privacy-center',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RefundRequestRoute = RefundRequestRouteImport.update({
-  id: '/refund-request',
-  path: '/refund-request',
+const VolunteerRoute = VolunteerRouteImport.update({
+  id: '/volunteer',
+  path: '/volunteer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TrustMethodRoute = TrustMethodRouteImport.update({
@@ -125,54 +56,84 @@ const TrustMethodRoute = TrustMethodRouteImport.update({
   path: '/trust-method',
   getParentRoute: () => rootRouteImport,
 } as any)
-const VolunteerRoute = VolunteerRouteImport.update({
-  id: '/volunteer',
-  path: '/volunteer',
+const RefundRequestRoute = RefundRequestRouteImport.update({
+  id: '/refund-request',
+  path: '/refund-request',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AppRoute,
+const PrivacyCenterRoute = PrivacyCenterRouteImport.update({
+  id: '/privacy-center',
+  path: '/privacy-center',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppCookRoute = AppCookRouteImport.update({
-  id: '/cook',
-  path: '/cook',
-  getParentRoute: () => AppRoute,
+const PilotRoute = PilotRouteImport.update({
+  id: '/pilot',
+  path: '/pilot',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppImportRoute = AppImportRouteImport.update({
-  id: '/import',
-  path: '/import',
-  getParentRoute: () => AppRoute,
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppKitchenRoute = AppKitchenRouteImport.update({
+const LegalRoute = LegalRouteImport.update({
+  id: '/legal',
+  path: '/legal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KitchenRoute = KitchenRouteImport.update({
   id: '/kitchen',
   path: '/kitchen',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppPantryRoute = AppPantryRouteImport.update({
-  id: '/pantry',
-  path: '/pantry',
-  getParentRoute: () => AppRoute,
+const ImpactRoute = ImpactRouteImport.update({
+  id: '/impact',
+  path: '/impact',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppPlanRoute = AppPlanRouteImport.update({
-  id: '/plan',
-  path: '/plan',
-  getParentRoute: () => AppRoute,
+const HelpRoute = HelpRouteImport.update({
+  id: '/help',
+  path: '/help',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppSetupRoute = AppSetupRouteImport.update({
-  id: '/setup',
-  path: '/setup',
-  getParentRoute: () => AppRoute,
+const GodModeRoute = GodModeRouteImport.update({
+  id: '/god-mode',
+  path: '/god-mode',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AppShopRoute = AppShopRouteImport.update({
-  id: '/shop',
-  path: '/shop',
-  getParentRoute: () => AppRoute,
+const DesignRoute = DesignRouteImport.update({
+  id: '/design',
+  path: '/design',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
-  id: '/checkout/return',
-  path: '/checkout/return',
+const CivicRoute = CivicRouteImport.update({
+  id: '/civic',
+  path: '/civic',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppRoute = AppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LegalIndexRoute = LegalIndexRouteImport.update({
@@ -180,29 +141,14 @@ const LegalIndexRoute = LegalIndexRouteImport.update({
   path: '/',
   getParentRoute: () => LegalRoute,
 } as any)
-const LegalFeesTaxRoute = LegalFeesTaxRouteImport.update({
-  id: '/fees-tax',
-  path: '/fees-tax',
-  getParentRoute: () => LegalRoute,
+const AppIndexRoute = AppIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AppRoute,
 } as any)
-const LegalKitchenAgreementRoute = LegalKitchenAgreementRouteImport.update({
-  id: '/kitchen-agreement',
-  path: '/kitchen-agreement',
-  getParentRoute: () => LegalRoute,
-} as any)
-const LegalPartnerDataRoute = LegalPartnerDataRouteImport.update({
-  id: '/partner-data',
-  path: '/partner-data',
-  getParentRoute: () => LegalRoute,
-} as any)
-const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
-  id: '/privacy',
-  path: '/privacy',
-  getParentRoute: () => LegalRoute,
-} as any)
-const LegalRefundsRoute = LegalRefundsRouteImport.update({
-  id: '/refunds',
-  path: '/refunds',
+const LegalVolunteerWaiverRoute = LegalVolunteerWaiverRouteImport.update({
+  id: '/volunteer-waiver',
+  path: '/volunteer-waiver',
   getParentRoute: () => LegalRoute,
 } as any)
 const LegalTermsRoute = LegalTermsRouteImport.update({
@@ -210,10 +156,70 @@ const LegalTermsRoute = LegalTermsRouteImport.update({
   path: '/terms',
   getParentRoute: () => LegalRoute,
 } as any)
-const LegalVolunteerWaiverRoute = LegalVolunteerWaiverRouteImport.update({
-  id: '/volunteer-waiver',
-  path: '/volunteer-waiver',
+const LegalRefundsRoute = LegalRefundsRouteImport.update({
+  id: '/refunds',
+  path: '/refunds',
   getParentRoute: () => LegalRoute,
+} as any)
+const LegalPrivacyRoute = LegalPrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalPartnerDataRoute = LegalPartnerDataRouteImport.update({
+  id: '/partner-data',
+  path: '/partner-data',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalKitchenAgreementRoute = LegalKitchenAgreementRouteImport.update({
+  id: '/kitchen-agreement',
+  path: '/kitchen-agreement',
+  getParentRoute: () => LegalRoute,
+} as any)
+const LegalFeesTaxRoute = LegalFeesTaxRouteImport.update({
+  id: '/fees-tax',
+  path: '/fees-tax',
+  getParentRoute: () => LegalRoute,
+} as any)
+const CheckoutReturnRoute = CheckoutReturnRouteImport.update({
+  id: '/checkout/return',
+  path: '/checkout/return',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AppShopRoute = AppShopRouteImport.update({
+  id: '/shop',
+  path: '/shop',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSetupRoute = AppSetupRouteImport.update({
+  id: '/setup',
+  path: '/setup',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPlanRoute = AppPlanRouteImport.update({
+  id: '/plan',
+  path: '/plan',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppPantryRoute = AppPantryRouteImport.update({
+  id: '/pantry',
+  path: '/pantry',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppKitchenRoute = AppKitchenRouteImport.update({
+  id: '/kitchen',
+  path: '/kitchen',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppImportRoute = AppImportRouteImport.update({
+  id: '/import',
+  path: '/import',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppCookRoute = AppCookRouteImport.update({
+  id: '/cook',
+  path: '/cook',
+  getParentRoute: () => AppRoute,
 } as any)
 const ApiPublicPaymentsWebhookRoute =
   ApiPublicPaymentsWebhookRouteImport.update({
@@ -224,6 +230,7 @@ const ApiPublicPaymentsWebhookRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
@@ -261,6 +268,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/auth': typeof AuthRoute
   '/civic': typeof CivicRoute
@@ -297,6 +305,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
   '/admin': typeof AdminRoute
   '/app': typeof AppRouteWithChildren
   '/auth': typeof AuthRoute
@@ -336,6 +345,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
     | '/admin'
     | '/app'
     | '/auth'
@@ -373,6 +383,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
     | '/admin'
     | '/auth'
     | '/civic'
@@ -408,6 +419,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/about'
     | '/admin'
     | '/app'
     | '/auth'
@@ -446,6 +458,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
   AdminRoute: typeof AdminRoute
   AppRoute: typeof AppRouteWithChildren
   AuthRoute: typeof AuthRoute
@@ -468,109 +481,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/civic': {
-      id: '/civic'
-      path: '/civic'
-      fullPath: '/civic'
-      preLoaderRoute: typeof CivicRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/design': {
-      id: '/design'
-      path: '/design'
-      fullPath: '/design'
-      preLoaderRoute: typeof DesignRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/god-mode': {
-      id: '/god-mode'
-      path: '/god-mode'
-      fullPath: '/god-mode'
-      preLoaderRoute: typeof GodModeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/help': {
-      id: '/help'
-      path: '/help'
-      fullPath: '/help'
-      preLoaderRoute: typeof HelpRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/impact': {
-      id: '/impact'
-      path: '/impact'
-      fullPath: '/impact'
-      preLoaderRoute: typeof ImpactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/kitchen': {
-      id: '/kitchen'
-      path: '/kitchen'
-      fullPath: '/kitchen'
-      preLoaderRoute: typeof KitchenRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/legal': {
-      id: '/legal'
-      path: '/legal'
-      fullPath: '/legal'
-      preLoaderRoute: typeof LegalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/partners': {
-      id: '/partners'
-      path: '/partners'
-      fullPath: '/partners'
-      preLoaderRoute: typeof PartnersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/pilot': {
-      id: '/pilot'
-      path: '/pilot'
-      fullPath: '/pilot'
-      preLoaderRoute: typeof PilotRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/privacy-center': {
-      id: '/privacy-center'
-      path: '/privacy-center'
-      fullPath: '/privacy-center'
-      preLoaderRoute: typeof PrivacyCenterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/refund-request': {
-      id: '/refund-request'
-      path: '/refund-request'
-      fullPath: '/refund-request'
-      preLoaderRoute: typeof RefundRequestRouteImport
+    '/volunteer': {
+      id: '/volunteer'
+      path: '/volunteer'
+      fullPath: '/volunteer'
+      preLoaderRoute: typeof VolunteerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/trust-method': {
@@ -580,74 +495,116 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrustMethodRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/volunteer': {
-      id: '/volunteer'
-      path: '/volunteer'
-      fullPath: '/volunteer'
-      preLoaderRoute: typeof VolunteerRouteImport
+    '/refund-request': {
+      id: '/refund-request'
+      path: '/refund-request'
+      fullPath: '/refund-request'
+      preLoaderRoute: typeof RefundRequestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/': {
-      id: '/app/'
-      path: '/'
-      fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRoute
+    '/privacy-center': {
+      id: '/privacy-center'
+      path: '/privacy-center'
+      fullPath: '/privacy-center'
+      preLoaderRoute: typeof PrivacyCenterRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/cook': {
-      id: '/app/cook'
-      path: '/cook'
-      fullPath: '/app/cook'
-      preLoaderRoute: typeof AppCookRouteImport
-      parentRoute: typeof AppRoute
+    '/pilot': {
+      id: '/pilot'
+      path: '/pilot'
+      fullPath: '/pilot'
+      preLoaderRoute: typeof PilotRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/import': {
-      id: '/app/import'
-      path: '/import'
-      fullPath: '/app/import'
-      preLoaderRoute: typeof AppImportRouteImport
-      parentRoute: typeof AppRoute
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/kitchen': {
-      id: '/app/kitchen'
+    '/legal': {
+      id: '/legal'
+      path: '/legal'
+      fullPath: '/legal'
+      preLoaderRoute: typeof LegalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/kitchen': {
+      id: '/kitchen'
       path: '/kitchen'
-      fullPath: '/app/kitchen'
-      preLoaderRoute: typeof AppKitchenRouteImport
-      parentRoute: typeof AppRoute
+      fullPath: '/kitchen'
+      preLoaderRoute: typeof KitchenRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/pantry': {
-      id: '/app/pantry'
-      path: '/pantry'
-      fullPath: '/app/pantry'
-      preLoaderRoute: typeof AppPantryRouteImport
-      parentRoute: typeof AppRoute
+    '/impact': {
+      id: '/impact'
+      path: '/impact'
+      fullPath: '/impact'
+      preLoaderRoute: typeof ImpactRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/plan': {
-      id: '/app/plan'
-      path: '/plan'
-      fullPath: '/app/plan'
-      preLoaderRoute: typeof AppPlanRouteImport
-      parentRoute: typeof AppRoute
+    '/help': {
+      id: '/help'
+      path: '/help'
+      fullPath: '/help'
+      preLoaderRoute: typeof HelpRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/setup': {
-      id: '/app/setup'
-      path: '/setup'
-      fullPath: '/app/setup'
-      preLoaderRoute: typeof AppSetupRouteImport
-      parentRoute: typeof AppRoute
+    '/god-mode': {
+      id: '/god-mode'
+      path: '/god-mode'
+      fullPath: '/god-mode'
+      preLoaderRoute: typeof GodModeRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/app/shop': {
-      id: '/app/shop'
-      path: '/shop'
-      fullPath: '/app/shop'
-      preLoaderRoute: typeof AppShopRouteImport
-      parentRoute: typeof AppRoute
+    '/design': {
+      id: '/design'
+      path: '/design'
+      fullPath: '/design'
+      preLoaderRoute: typeof DesignRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/checkout/return': {
-      id: '/checkout/return'
-      path: '/checkout/return'
-      fullPath: '/checkout/return'
-      preLoaderRoute: typeof CheckoutReturnRouteImport
+    '/civic': {
+      id: '/civic'
+      path: '/civic'
+      fullPath: '/civic'
+      preLoaderRoute: typeof CivicRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app': {
+      id: '/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AppRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/legal/': {
@@ -657,39 +614,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalIndexRouteImport
       parentRoute: typeof LegalRoute
     }
-    '/legal/fees-tax': {
-      id: '/legal/fees-tax'
-      path: '/fees-tax'
-      fullPath: '/legal/fees-tax'
-      preLoaderRoute: typeof LegalFeesTaxRouteImport
-      parentRoute: typeof LegalRoute
+    '/app/': {
+      id: '/app/'
+      path: '/'
+      fullPath: '/app/'
+      preLoaderRoute: typeof AppIndexRouteImport
+      parentRoute: typeof AppRoute
     }
-    '/legal/kitchen-agreement': {
-      id: '/legal/kitchen-agreement'
-      path: '/kitchen-agreement'
-      fullPath: '/legal/kitchen-agreement'
-      preLoaderRoute: typeof LegalKitchenAgreementRouteImport
-      parentRoute: typeof LegalRoute
-    }
-    '/legal/partner-data': {
-      id: '/legal/partner-data'
-      path: '/partner-data'
-      fullPath: '/legal/partner-data'
-      preLoaderRoute: typeof LegalPartnerDataRouteImport
-      parentRoute: typeof LegalRoute
-    }
-    '/legal/privacy': {
-      id: '/legal/privacy'
-      path: '/privacy'
-      fullPath: '/legal/privacy'
-      preLoaderRoute: typeof LegalPrivacyRouteImport
-      parentRoute: typeof LegalRoute
-    }
-    '/legal/refunds': {
-      id: '/legal/refunds'
-      path: '/refunds'
-      fullPath: '/legal/refunds'
-      preLoaderRoute: typeof LegalRefundsRouteImport
+    '/legal/volunteer-waiver': {
+      id: '/legal/volunteer-waiver'
+      path: '/volunteer-waiver'
+      fullPath: '/legal/volunteer-waiver'
+      preLoaderRoute: typeof LegalVolunteerWaiverRouteImport
       parentRoute: typeof LegalRoute
     }
     '/legal/terms': {
@@ -699,12 +635,96 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LegalTermsRouteImport
       parentRoute: typeof LegalRoute
     }
-    '/legal/volunteer-waiver': {
-      id: '/legal/volunteer-waiver'
-      path: '/volunteer-waiver'
-      fullPath: '/legal/volunteer-waiver'
-      preLoaderRoute: typeof LegalVolunteerWaiverRouteImport
+    '/legal/refunds': {
+      id: '/legal/refunds'
+      path: '/refunds'
+      fullPath: '/legal/refunds'
+      preLoaderRoute: typeof LegalRefundsRouteImport
       parentRoute: typeof LegalRoute
+    }
+    '/legal/privacy': {
+      id: '/legal/privacy'
+      path: '/privacy'
+      fullPath: '/legal/privacy'
+      preLoaderRoute: typeof LegalPrivacyRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/partner-data': {
+      id: '/legal/partner-data'
+      path: '/partner-data'
+      fullPath: '/legal/partner-data'
+      preLoaderRoute: typeof LegalPartnerDataRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/kitchen-agreement': {
+      id: '/legal/kitchen-agreement'
+      path: '/kitchen-agreement'
+      fullPath: '/legal/kitchen-agreement'
+      preLoaderRoute: typeof LegalKitchenAgreementRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/legal/fees-tax': {
+      id: '/legal/fees-tax'
+      path: '/fees-tax'
+      fullPath: '/legal/fees-tax'
+      preLoaderRoute: typeof LegalFeesTaxRouteImport
+      parentRoute: typeof LegalRoute
+    }
+    '/checkout/return': {
+      id: '/checkout/return'
+      path: '/checkout/return'
+      fullPath: '/checkout/return'
+      preLoaderRoute: typeof CheckoutReturnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/app/shop': {
+      id: '/app/shop'
+      path: '/shop'
+      fullPath: '/app/shop'
+      preLoaderRoute: typeof AppShopRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/setup': {
+      id: '/app/setup'
+      path: '/setup'
+      fullPath: '/app/setup'
+      preLoaderRoute: typeof AppSetupRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/plan': {
+      id: '/app/plan'
+      path: '/plan'
+      fullPath: '/app/plan'
+      preLoaderRoute: typeof AppPlanRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/pantry': {
+      id: '/app/pantry'
+      path: '/pantry'
+      fullPath: '/app/pantry'
+      preLoaderRoute: typeof AppPantryRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/kitchen': {
+      id: '/app/kitchen'
+      path: '/kitchen'
+      fullPath: '/app/kitchen'
+      preLoaderRoute: typeof AppKitchenRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/import': {
+      id: '/app/import'
+      path: '/import'
+      fullPath: '/app/import'
+      preLoaderRoute: typeof AppImportRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/cook': {
+      id: '/app/cook'
+      path: '/cook'
+      fullPath: '/app/cook'
+      preLoaderRoute: typeof AppCookRouteImport
+      parentRoute: typeof AppRoute
     }
     '/api/public/payments/webhook': {
       id: '/api/public/payments/webhook'
@@ -766,6 +786,7 @@ const LegalRouteWithChildren = LegalRoute._addFileChildren(LegalRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
   AdminRoute: AdminRoute,
   AppRoute: AppRouteWithChildren,
   AuthRoute: AuthRoute,
