@@ -24,13 +24,13 @@ This is an operating constraint, not merely a copy preference.
 
 ## Role routing
 
-| Role | Primary self-service path |
-| --- | --- |
-| Household | `/help` |
-| Kitchen / restaurant operator | `/kitchen` |
-| Volunteer | `/volunteer` |
-| Community partner | `/partners` |
-| Sponsor / funder | `/impact` |
+| Role                          | Primary self-service path |
+| ----------------------------- | ------------------------- |
+| Household                     | `/help`                   |
+| Kitchen / restaurant operator | `/kitchen`                |
+| Volunteer                     | `/volunteer`              |
+| Community partner             | `/partners`               |
+| Sponsor / funder              | `/impact`                 |
 
 `/trust-method` is the secondary trust/explanation surface when helpful.
 
@@ -104,6 +104,30 @@ Unless the underlying production state changes and is verified, do not claim:
 - `do_not_contact`.
 
 These fields are acquisition state only. They are never substitutes for role authorization, legal acceptance or payout readiness.
+
+## Outreach job interface
+
+An external outreach automation must never hold raw SQL or service-role access:
+that bypasses RLS, exposes household PII, payment and partner data, and allows
+arbitrary destructive writes. It authenticates as a platform admin and uses a
+narrow server interface instead (`src/lib/acquisition.functions.ts`, backed by
+admin-gated `SECURITY DEFINER` functions):
+
+- `listOutreachQueue` — leads with `do_not_contact = false` that are due either
+  an initial contact (`last_contacted_at IS NULL`) or their single follow-up
+  (`followup_count = 0` and the initial contact is at least three business days
+  old). Obvious fake/test/disposable addresses are excluded. Returns only id,
+  email, first name, role, status, `last_contacted_at`, `followup_count` and
+  the stage. Never notes, metadata, postal code or organization.
+- `markInitialOutreachSent` — after a confirmed successful send only: sets
+  `last_contacted_at = now()` and moves `queued_manual_review` to
+  `in_progress`. `followup_count` and `internal_note` are untouched.
+- `markFollowupOutreachSent` — after a confirmed successful send only: sets
+  `followup_count = 1` and `last_contacted_at = now()`. `internal_note` is
+  untouched.
+
+Both mutations require the exact row id and re-check eligibility in the
+database, so a replay cannot double-contact a lead.
 
 ## Owner visibility
 

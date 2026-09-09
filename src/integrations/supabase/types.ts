@@ -437,6 +437,8 @@ export type Database = {
           id: string
           kitchen_id: string
           note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
           role_at_kitchen: string | null
           status: string
           updated_at: string
@@ -447,6 +449,8 @@ export type Database = {
           id?: string
           kitchen_id: string
           note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           role_at_kitchen?: string | null
           status?: string
           updated_at?: string
@@ -457,6 +461,8 @@ export type Database = {
           id?: string
           kitchen_id?: string
           note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
           role_at_kitchen?: string | null
           status?: string
           updated_at?: string
@@ -712,6 +718,54 @@ export type Database = {
           },
         ]
       }
+      operator_authority_verifications: {
+        Row: {
+          claim_id: string | null
+          id: string
+          kitchen_id: string
+          subject_type: string
+          verification_method: string
+          verification_note: string
+          verified_at: string
+          verified_by: string
+        }
+        Insert: {
+          claim_id?: string | null
+          id?: string
+          kitchen_id: string
+          subject_type: string
+          verification_method: string
+          verification_note: string
+          verified_at?: string
+          verified_by: string
+        }
+        Update: {
+          claim_id?: string | null
+          id?: string
+          kitchen_id?: string
+          subject_type?: string
+          verification_method?: string
+          verification_note?: string
+          verified_at?: string
+          verified_by?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "operator_authority_verifications_claim_id_fkey"
+            columns: ["claim_id"]
+            isOneToOne: false
+            referencedRelation: "kitchen_claims"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "operator_authority_verifications_kitchen_id_fkey"
+            columns: ["kitchen_id"]
+            isOneToOne: false
+            referencedRelation: "kitchens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pantry_items: {
         Row: {
           added_at: string
@@ -939,45 +993,66 @@ export type Database = {
       pilot_signups: {
         Row: {
           created_at: string
+          do_not_contact: boolean
           email: string
+          followup_count: number
           full_name: string
           id: string
           interest: string
           internal_note: string | null
+          last_contacted_at: string | null
+          lead_source: string
+          metadata: Json
           note: string | null
+          organization_name: string | null
           postal_code: string | null
+          preferred_contact: string
           resolved_at: string | null
           status: string
           updated_at: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
+          do_not_contact?: boolean
           email: string
+          followup_count?: number
           full_name: string
           id?: string
           interest: string
           internal_note?: string | null
+          last_contacted_at?: string | null
+          lead_source?: string
+          metadata?: Json
           note?: string | null
+          organization_name?: string | null
           postal_code?: string | null
+          preferred_contact?: string
           resolved_at?: string | null
           status?: string
           updated_at?: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
+          do_not_contact?: boolean
           email?: string
+          followup_count?: number
           full_name?: string
           id?: string
           interest?: string
           internal_note?: string | null
+          last_contacted_at?: string | null
+          lead_source?: string
+          metadata?: Json
           note?: string | null
+          organization_name?: string | null
           postal_code?: string | null
+          preferred_contact?: string
           resolved_at?: string | null
           status?: string
           updated_at?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -1551,6 +1626,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      acquisition_outreach_queue: {
+        Args: { _limit?: number }
+        Returns: {
+          email: string
+          first_name: string
+          followup_count: number
+          id: string
+          last_contacted_at: string
+          role: string
+          stage: string
+          status: string
+        }[]
+      }
       advance_delivery_run: {
         Args: { _run_id: string; _status: string }
         Returns: undefined
@@ -1580,6 +1668,8 @@ export type Database = {
         }
         Returns: string
       }
+      assert_acquisition_admin: { Args: never; Returns: undefined }
+      business_days_since: { Args: { _from: string }; Returns: number }
       claim_delivery_run: { Args: { _run_id: string }; Returns: string }
       claim_kitchen: {
         Args: { _kitchen_id: string; _note?: string; _role?: string }
@@ -1598,8 +1688,11 @@ export type Database = {
         }
         Returns: string
       }
+      get_god_mode_snapshot_data: { Args: never; Returns: Json }
       get_my_kitchen_support: { Args: { _kitchen_id: string }; Returns: Json }
       get_my_partner_workspace: { Args: never; Returns: Json }
+      get_public_civic_snapshot: { Args: { _days?: number }; Returns: Json }
+      get_public_impact_snapshot: { Args: never; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -1610,6 +1703,14 @@ export type Database = {
       is_approved_partner_member: {
         Args: { _partner_id: string }
         Returns: boolean
+      }
+      mark_acquisition_followup_sent: {
+        Args: { _signup_id: string }
+        Returns: Json
+      }
+      mark_acquisition_initial_sent: {
+        Args: { _signup_id: string }
+        Returns: Json
       }
       my_volunteer_id: { Args: never; Returns: string }
       operates_approved_kitchen: {
@@ -1622,14 +1723,28 @@ export type Database = {
         Args: { _document_key: string; _document_version: string }
         Returns: undefined
       }
-      review_kitchen_claim: {
-        Args: { _approve: boolean; _claim_id: string }
-        Returns: string
-      }
-      review_kitchen_registration: {
-        Args: { _approve: boolean; _kitchen_id: string }
-        Returns: string
-      }
+      review_kitchen_claim:
+        | { Args: { _approve: boolean; _claim_id: string }; Returns: string }
+        | {
+            Args: {
+              _approve: boolean
+              _claim_id: string
+              _verification_method: string
+              _verification_note: string
+            }
+            Returns: string
+          }
+      review_kitchen_registration:
+        | { Args: { _approve: boolean; _kitchen_id: string }; Returns: string }
+        | {
+            Args: {
+              _approve: boolean
+              _kitchen_id: string
+              _verification_method: string
+              _verification_note: string
+            }
+            Returns: string
+          }
       submit_assistance_request: {
         Args: {
           _area: string
@@ -1644,7 +1759,24 @@ export type Database = {
         }
         Returns: string
       }
+      submit_public_pilot_lead: {
+        Args: {
+          _email: string
+          _full_name: string
+          _interest: string
+          _lead_source: string
+          _metadata?: Json
+          _note: string
+          _organization_name: string
+          _postal_code: string
+        }
+        Returns: Json
+      }
       suggest_kitchen_for_area: { Args: { _area: string }; Returns: string }
+      sync_mealforge_state: {
+        Args: { _household_id: string; _state: Json }
+        Returns: undefined
+      }
       update_partner_referral: {
         Args: {
           _meals?: number
