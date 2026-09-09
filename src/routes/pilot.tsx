@@ -1,36 +1,32 @@
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { CalendarDays, CheckCircle2, ShieldAlert } from "lucide-react";
-import { useState } from "react";
+import { ArrowRight, CalendarDays, CheckCircle2, Mail, ShieldAlert } from "lucide-react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
-import { useAuth } from "@/hooks/useAuth";
-import { useLegalGate } from "@/hooks/useLegalGate";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
-import { BASE_DOCS } from "@/lib/legal/registry";
+import { submitPilotLead } from "@/lib/pilot.functions";
 import {
   PILOT_INTEREST_LABEL,
-  PILOT_LIVE_DATE,
-  listMyPilotSignups,
-  submitPilotSignup,
+  PILOT_NEXT_STEP,
+  PILOT_PHASE_LABEL,
   type PilotInterest,
 } from "@/lib/pilot";
 
 export const Route = createFileRoute("/pilot")({
   head: () => ({
     meta: [
-      { title: "Galveston County Pilot — ProvisionLoop Goes Live Nov 3, 2026" },
+      { title: "Galveston County Founding Pilot — ProvisionLoop" },
       {
         name: "description",
         content:
-          "ProvisionLoop's Galveston County food coordination pilot opens November 3, 2026. Read the eligibility criteria and sign up as a household, kitchen, volunteer, partner or sponsor.",
+          "Join ProvisionLoop's Galveston County founding pilot intake as a household, kitchen, volunteer, partner or sponsor. No account, phone call or meeting is required to raise your hand.",
       },
-      { property: "og:title", content: "Galveston County Pilot — ProvisionLoop" },
+      { property: "og:title", content: "Galveston County Founding Pilot — ProvisionLoop" },
       {
         property: "og:description",
         content:
-          "Live date, eligibility criteria and sign-up for the ProvisionLoop Galveston County pilot.",
+          "A low-friction, email-first way to join ProvisionLoop's Galveston County pilot and continue through role-specific self-service steps.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -40,74 +36,92 @@ export const Route = createFileRoute("/pilot")({
 });
 
 const ELIGIBILITY = [
-  "You live in Galveston County, Texas. Coverage starts in Galveston, Texas City and La Marque and expands as kitchen capacity allows.",
-  "No income documentation is required during the pilot. We do not ask for pay stubs, benefit letters or immigration status.",
-  "Household requests are routed through a verified community partner organization, which applies its own eligibility and safeguarding practices.",
-  "Kitchens must be claimed by their real operator and must complete payment-processor payout onboarding before they can be funded.",
-  "Volunteers must be 18 or older, complete the volunteer waiver, and provide their own transportation for delivery runs.",
-  "Partner organizations must apply and be approved before any identifiable household data is visible to them.",
+  "ProvisionLoop is starting in Galveston County, Texas. Coverage expands only as real kitchen and partner capacity is verified.",
+  "Household interest does not require income documents at this intake stage. Protected assistance requests have their own privacy and eligibility workflow.",
+  "Kitchens must ultimately be claimed by a real operator and independently verified before they can become operational or funding-enabled.",
+  "Volunteers complete the applicable waiver before protected volunteer actions. Delivery volunteers need their own transportation.",
+  "Partner organizations must be approved before identifiable household information can be visible to them.",
+  "Sponsors can review the model and join the pilot conversation without live checkout being enabled.",
 ];
 
 const LIMITS = [
-  "Nights, weekends and rural west-county coverage may be thin at launch.",
-  "Payments remain in the configured test environment until live Stripe credentials, webhooks and payout onboarding are operationally certified.",
-  "Most directory listings are unclaimed local programs and are never fundable.",
-  "Impact numbers appear only after ledger events close; ProvisionLoop does not pad the pilot with projected impact.",
+  "Pilot intake is open; a final public launch date is not being represented as confirmed yet.",
+  "Live payments remain intentionally gated until the payment, legal and operational launch requirements are cleared.",
+  "Most directory listings are mapped from public information and are not affiliated with ProvisionLoop unless the operator is verified.",
+  "Impact numbers appear only after real ledger events close. ProvisionLoop does not pad the pilot with projected impact.",
 ];
 
 const INTERESTS = Object.keys(PILOT_INTEREST_LABEL) as PilotInterest[];
 
 function PilotPage() {
-  const { user } = useAuth();
-  const queryClient = useQueryClient();
-  const legal = useLegalGate({
-    documents: BASE_DOCS,
-    context: "pilot_signup",
-    intro:
-      "Signing up for the pilot requires accepting these two documents at their current version.",
-  });
-
-  const mine = useQuery({
-    queryKey: ["pilot-signups", user?.id],
-    enabled: Boolean(user),
-    queryFn: listMyPilotSignups,
-  });
-
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [postalCode, setPostalCode] = useState("");
   const [interest, setInterest] = useState<PilotInterest>("household");
+  const [organizationName, setOrganizationName] = useState("");
   const [note, setNote] = useState("");
+  const [authoritySelfDeclared, setAuthoritySelfDeclared] = useState(false);
+  const [transportAvailable, setTransportAvailable] = useState(false);
+  const [website, setWebsite] = useState("");
   const [busy, setBusy] = useState(false);
+  const [submittedInterest, setSubmittedInterest] = useState<PilotInterest | null>(null);
+  const [wasDuplicate, setWasDuplicate] = useState(false);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const requested = params.get("role") as PilotInterest | null;
+    if (requested && INTERESTS.includes(requested)) setInterest(requested);
+  }, []);
+
+  const showOrganization =
+    interest === "kitchen_operator" || interest === "partner" || interest === "sponsor";
+  const organizationRequired = interest === "kitchen_operator" || interest === "partner";
 
   async function submit(event: React.FormEvent) {
     event.preventDefault();
-    if (!user) {
-      toast.error("Sign in first so your pilot sign-up and agreement are recorded to your account.");
-      return;
-    }
-    try {
-      await legal.assertAccepted();
-    } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Acceptance required.");
-      return;
-    }
     if (!fullName.trim() || !email.trim()) {
       toast.error("Name and email are required.");
       return;
     }
+    if (organizationRequired && !organizationName.trim()) {
+      toast.error("Add the kitchen or organization name so the intake can be routed correctly.");
+      return;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const source = params.get("utm_source") ?? "website";
+    const medium = params.get("utm_medium");
+    const campaign = params.get("utm_campaign");
+    const leadSource = [source, medium, campaign].filter(Boolean).join("/").slice(0, 100);
+
     setBusy(true);
     try {
-      await submitPilotSignup({ userId: user.id, fullName, email, postalCode, interest, note });
-      toast.success("You're on the pilot list. We'll contact you at the address you gave.");
-      setNote("");
-      await queryClient.invalidateQueries({ queryKey: ["pilot-signups", user.id] });
+      const result = await submitPilotLead({
+        data: {
+          fullName,
+          email,
+          postalCode,
+          interest,
+          organizationName,
+          note,
+          leadSource,
+          referrer: document.referrer,
+          authoritySelfDeclared,
+          transportAvailable,
+          website,
+        },
+      });
+      setWasDuplicate(result.duplicate);
+      setSubmittedInterest(interest);
+      toast.success(result.duplicate ? "Your existing pilot interest was updated." : "You're on the pilot intake list.");
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not submit right now.");
     } finally {
       setBusy(false);
     }
   }
+
+  const next = submittedInterest ? PILOT_NEXT_STEP[submittedInterest] : null;
 
   return (
     <div className="pl-workflow-shell min-h-dvh bg-background text-foreground">
@@ -116,25 +130,25 @@ function PilotPage() {
         <section className="pl-page-intro">
           <div className="site-shell">
             <div className="inline-flex items-center gap-2 font-mono text-[10px] font-black uppercase tracking-[0.18em] text-primary">
-              <CalendarDays className="size-4" /> Public pilot · {PILOT_LIVE_DATE}
+              <CalendarDays className="size-4" /> {PILOT_PHASE_LABEL} · open now
             </div>
             <h1 className="display-title mt-5 max-w-5xl text-6xl md:text-8xl">
-              PROVE IT HERE BEFORE WE SCALE IT ANYWHERE.
+              JOIN THE LOOP WITHOUT JOINING A MEETING.
             </h1>
             <p className="pl-page-deck">
-              Galveston County is ProvisionLoop&apos;s proving ground. The pilot is where households,
-              kitchens, volunteers, partners and sponsors test one operating model together — with
-              privacy boundaries, verification states and public proof built in from day one.
+              Pick your role, leave an email, and continue at your own pace. No phone number. No
+              sales call. No account just to say you&apos;re interested. Identity, agreements and
+              verification appear only when a protected workflow actually needs them.
             </p>
             <div className="pl-stage-strip">
-              <div><span>01 · Join</span><strong>Choose your role</strong></div>
-              <div><span>02 · Verify</span><strong>Clear the right gate</strong></div>
-              <div><span>03 · Operate</span><strong>Use the live workflow</strong></div>
-              <div><span>04 · Learn</span><strong>Improve from real outcomes</strong></div>
+              <div><span>01 · Raise your hand</span><strong>About one minute</strong></div>
+              <div><span>02 · Self-serve</span><strong>Role-specific next step</strong></div>
+              <div><span>03 · Verify</span><strong>Only where required</strong></div>
+              <div><span>04 · Operate</span><strong>No meeting dependency</strong></div>
             </div>
             <div className="mt-8 flex flex-wrap gap-3">
-              <a href="#signup" className="button-primary">Join the pilot list</a>
-              <Link to="/trust-method" className="button-secondary">See exactly how it works</Link>
+              <a href="#signup" className="button-primary">Choose my role</a>
+              <Link to="/trust-method" className="button-secondary">See how the trust model works</Link>
             </div>
           </div>
         </section>
@@ -144,10 +158,11 @@ function PilotPage() {
             <div>
               <p className="kicker text-primary">Who can take part</p>
               <h2 className="mt-3 max-w-[10ch] font-display text-4xl font-black tracking-[-0.055em] md:text-6xl">
-                THE RULES ARE PART OF THE PRODUCT.
+                LOW FRICTION. HIGH TRUST WHERE IT COUNTS.
               </h2>
               <p className="mt-4 max-w-md text-sm leading-7 text-muted-foreground">
-                Different actors carry different risk. The pilot does not flatten those roles into one generic sign-up.
+                Interest is easy. Access to money, private data or operational authority is not.
+                ProvisionLoop separates those two things on purpose.
               </p>
             </div>
             <div className="grid gap-3 md:grid-cols-2">
@@ -165,8 +180,8 @@ function PilotPage() {
           <div className="site-shell grid gap-10 py-16 md:py-20 lg:grid-cols-[.75fr_1.25fr]">
             <div>
               <ShieldAlert className="size-7 text-primary" />
-              <p className="kicker mt-5 text-primary">Known limits at launch</p>
-              <h2 className="mt-3 font-display text-4xl font-black tracking-[-0.05em]">WHAT WE ARE NOT PROMISING.</h2>
+              <p className="kicker mt-5 text-primary">Current boundaries</p>
+              <h2 className="mt-3 font-display text-4xl font-black tracking-[-0.05em]">WHAT WE ARE NOT PRETENDING.</h2>
             </div>
             <div className="grid gap-3">
               {LIMITS.map((limit, index) => (
@@ -181,63 +196,131 @@ function PilotPage() {
         <section id="signup" className="scroll-mt-28 bg-background">
           <div className="site-shell grid gap-10 py-16 md:py-20 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
             <div className="lg:sticky lg:top-28">
-              <p className="kicker text-primary">Get in line</p>
+              <p className="kicker text-primary">Async-first intake</p>
               <h2 className="mt-3 max-w-[10ch] font-display text-5xl font-black tracking-[-0.055em] md:text-6xl">
                 PICK YOUR PLACE IN THE LOOP.
               </h2>
               <p className="mt-5 max-w-md text-sm leading-7 text-muted-foreground">
-                Pilot sign-up is interest and onboarding coordination — not a promise of service,
-                funding, acceptance or coverage. Your role determines the verification steps that come next.
+                This form is an expression of interest, not an application approval, service promise,
+                funding commitment or legal acceptance. Email is the default contact method.
               </p>
-              {mine.data && mine.data.length > 0 && (
-                <div className="mt-7">
-                  <p className="kicker text-primary">Your sign-ups</p>
-                  <ul className="mt-3 grid gap-2 text-sm text-muted-foreground">
-                    {mine.data.map((row) => (
-                      <li key={row.id} className="editorial-card p-4">
-                        <span className="font-semibold text-foreground">
-                          {PILOT_INTEREST_LABEL[row.interest as PilotInterest] ?? row.interest}
-                        </span>{" "}
-                        — {new Date(row.created_at).toLocaleDateString()} · {row.status}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+              <div className="mt-6 flex items-start gap-3 border border-border bg-card p-4 text-sm">
+                <Mail className="mt-0.5 size-5 shrink-0 text-primary" />
+                <p className="leading-6 text-muted-foreground">
+                  <strong className="text-foreground">Built for people who hate calls:</strong> you do
+                  not need to provide a phone number or schedule a meeting to enter or continue the
+                  pilot funnel.
+                </p>
+              </div>
             </div>
 
-            {!user ? (
+            {next ? (
               <div className="editorial-card p-6 md:p-8">
-                <p className="kicker text-primary">Account required</p>
-                <h3 className="mt-2 font-display text-3xl font-black">MAKE THE SIGN-UP ATTRIBUTABLE.</h3>
+                <div className="grid size-12 place-items-center bg-primary text-primary-foreground">
+                  <CheckCircle2 className="size-6" />
+                </div>
+                <p className="kicker mt-6 text-primary">{wasDuplicate ? "Interest updated" : "Interest recorded"}</p>
+                <h3 className="mt-2 font-display text-4xl font-black tracking-[-0.05em]">NO CALL REQUIRED.</h3>
                 <p className="mt-4 text-sm leading-7 text-muted-foreground">
-                  Sign in first. Pilot sign-up records the current Terms and Privacy acceptance to your account, not just this device.
+                  We recorded you as {PILOT_INTEREST_LABEL[submittedInterest!]}. Your default contact
+                  preference is email only. You can stop here or continue immediately through the
+                  next self-service step.
                 </p>
-                <Link to="/auth" search={{ redirect: "/pilot" }} className="button-primary mt-6 inline-flex">
-                  Sign in or create an account
-                </Link>
+                <div className="mt-6 border border-border bg-card p-5">
+                  <p className="font-display text-2xl font-black">{next.title}</p>
+                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{next.description}</p>
+                  <a href={next.href} className="button-primary mt-5 inline-flex">
+                    {next.cta} <ArrowRight className="size-4" />
+                  </a>
+                </div>
+                <button
+                  type="button"
+                  className="button-secondary mt-4"
+                  onClick={() => setSubmittedInterest(null)}
+                >
+                  Add another role
+                </button>
               </div>
             ) : (
               <form onSubmit={submit} className="editorial-card grid gap-5 p-6 md:p-8">
-                <Field label="Full name"><input className="field-control" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" /></Field>
-                <Field label="Email"><input type="email" className="field-control" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" /></Field>
-                <Field label="ZIP code"><input className="field-control" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} inputMode="numeric" placeholder="77550" autoComplete="postal-code" /></Field>
-                <Field label="I'm signing up as">
-                  <select className="field-control" value={interest} onChange={(e) => setInterest(e.target.value as PilotInterest)}>
-                    {INTERESTS.map((key) => <option key={key} value={key}>{PILOT_INTEREST_LABEL[key]}</option>)}
-                  </select>
+                <fieldset>
+                  <legend className="field-label">I&apos;m here as</legend>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2">
+                    {INTERESTS.map((key) => (
+                      <button
+                        key={key}
+                        type="button"
+                        aria-pressed={interest === key}
+                        onClick={() => {
+                          setInterest(key);
+                          setAuthoritySelfDeclared(false);
+                          setTransportAvailable(false);
+                        }}
+                        className={`min-h-14 border p-3 text-left text-sm font-bold transition-colors ${
+                          interest === key
+                            ? "border-primary bg-primary text-primary-foreground"
+                            : "border-border-strong bg-surface hover:border-primary/50"
+                        }`}
+                      >
+                        {PILOT_INTEREST_LABEL[key]}
+                      </button>
+                    ))}
+                  </div>
+                </fieldset>
+
+                <Field label="Full name">
+                  <input className="field-control" value={fullName} onChange={(e) => setFullName(e.target.value)} required autoComplete="name" />
                 </Field>
-                <Field label="Anything we should know (optional)"><textarea className="field-control min-h-28" value={note} onChange={(e) => setNote(e.target.value)} /></Field>
+                <Field label="Email — this is the only contact method we require">
+                  <input type="email" className="field-control" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
+                </Field>
+                <Field label="ZIP code (optional)">
+                  <input className="field-control" value={postalCode} onChange={(e) => setPostalCode(e.target.value)} inputMode="numeric" placeholder="77550" autoComplete="postal-code" />
+                </Field>
 
-                {legal.gate}
+                {showOrganization && (
+                  <Field label={`${interest === "kitchen_operator" ? "Kitchen / restaurant" : "Organization"} name${organizationRequired ? "" : " (optional)"}`}>
+                    <input className="field-control" value={organizationName} onChange={(e) => setOrganizationName(e.target.value)} required={organizationRequired} autoComplete="organization" />
+                  </Field>
+                )}
 
-                <button type="submit" className="button-primary justify-center py-4" disabled={busy || !legal.satisfied}>
-                  {busy ? "Submitting…" : "Join the pilot list"}
+                {interest === "kitchen_operator" && (
+                  <label className="flex items-start gap-3 border border-border bg-card p-4 text-sm">
+                    <input type="checkbox" className="mt-1 size-4" checked={authoritySelfDeclared} onChange={(e) => setAuthoritySelfDeclared(e.target.checked)} />
+                    <span className="leading-6 text-muted-foreground">
+                      I own/manage this kitchen or can connect ProvisionLoop with the person who does.
+                      This is routing information only — it does not count as operator verification.
+                    </span>
+                  </label>
+                )}
+
+                {interest === "volunteer" && (
+                  <label className="flex items-start gap-3 border border-border bg-card p-4 text-sm">
+                    <input type="checkbox" className="mt-1 size-4" checked={transportAvailable} onChange={(e) => setTransportAvailable(e.target.checked)} />
+                    <span className="leading-6 text-muted-foreground">
+                      I have my own transportation if I choose delivery work. Leave this unchecked if
+                      you are interested only in non-delivery volunteer work.
+                    </span>
+                  </label>
+                )}
+
+                <Field label="Anything useful to know (optional)">
+                  <textarea className="field-control min-h-28" maxLength={1000} value={note} onChange={(e) => setNote(e.target.value)} placeholder="A sentence or two is enough." />
+                </Field>
+
+                <label className="absolute -left-[10000px] top-auto size-px overflow-hidden" aria-hidden="true">
+                  Website
+                  <input tabIndex={-1} autoComplete="off" value={website} onChange={(e) => setWebsite(e.target.value)} />
+                </label>
+
+                <button type="submit" className="button-primary justify-center py-4" disabled={busy}>
+                  {busy ? "Submitting…" : "Raise my hand — no meeting"}
                 </button>
                 <p className="text-xs leading-5 text-muted-foreground">
-                  Exact versions:{" "}
-                  <Link to="/legal/terms" className="underline underline-offset-4">Terms of Service v1.0</Link>{" "}
-                  and <Link to="/legal/privacy" className="underline underline-offset-4">Privacy Policy v1.0</Link>.
+                  No account is required for this interest form. If you continue into a protected
+                  workflow, ProvisionLoop will ask you to sign in and accept the applicable current
+                  legal documents before protected data or actions are available. See the{" "}
+                  <Link to="/legal/privacy" className="underline underline-offset-4">Privacy Policy</Link>.
                 </p>
               </form>
             )}
@@ -247,9 +330,9 @@ function PilotPage() {
         <section className="border-t border-border bg-foreground text-background">
           <div className="site-shell grid gap-6 py-12 md:grid-cols-[1fr_auto] md:items-center">
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Questions or corrections</p>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-primary">Prefer plain email?</p>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-[#b8b2a7]">
-                Pilot questions, listing corrections and removal requests go directly to the monitored support address.
+                You can skip every conversation and send a short note to the monitored address. Email-first is a supported path, not a fallback.
               </p>
             </div>
             <a href={SUPPORT_MAILTO} className="button-secondary border-white/30 text-background">{SUPPORT_EMAIL}</a>
