@@ -11,7 +11,7 @@ test("public pilot intake does not require auth or a meeting", async () => {
 
   assert.match(route, /submitPilotLead/);
   assert.match(route, /No phone number/);
-  assert.match(route, /No sales call/);
+  assert.match(route, /No\s+sales call/);
   assert.match(route, /No account just to say/);
   assert.match(route, /Raise my hand — no meeting/);
   assert.doesNotMatch(route, /useLegalGate/);
