@@ -19,20 +19,34 @@ test("public pilot intake does not require auth or a meeting", async () => {
   assert.doesNotMatch(route, /November 3, 2026/);
 });
 
-test("lead intake writes only through a bounded server function", async () => {
+test("lead intake uses a bounded RPC without direct anonymous table writes", async () => {
   const fn = await source("src/lib/pilot.functions.ts");
-  const migration = await source("supabase/migrations/20260908222500_async_acquisition_intake.sql");
+  const schemaMigration = await source(
+    "supabase/migrations/20260908222500_async_acquisition_intake.sql",
+  );
+  const rpcMigration = await source(
+    "supabase/migrations/20260908224500_public_pilot_intake_rpc.sql",
+  );
 
   assert.match(fn, /createServerFn/);
-  assert.match(fn, /supabaseAdmin/);
+  assert.match(fn, /submit_public_pilot_lead/);
   assert.match(fn, /website/);
-  assert.match(fn, /30 \* 86_400_000/);
-  assert.match(fn, /preferred_contact: "email_only"/);
-  assert.match(fn, /user_id: null/);
-  assert.match(migration, /ALTER COLUMN user_id DROP NOT NULL/i);
-  assert.match(migration, /do_not_contact boolean NOT NULL DEFAULT false/i);
-  assert.match(migration, /followup_count integer NOT NULL DEFAULT 0/i);
-  assert.doesNotMatch(migration, /GRANT\s+(?:INSERT|ALL)[\s\S]*\b(?:anon|public)\b/i);
+  assert.doesNotMatch(fn, /supabaseAdmin/);
+  assert.match(schemaMigration, /ALTER COLUMN user_id DROP NOT NULL/i);
+  assert.match(schemaMigration, /do_not_contact boolean NOT NULL DEFAULT false/i);
+  assert.match(schemaMigration, /followup_count integer NOT NULL DEFAULT 0/i);
+  assert.doesNotMatch(
+    schemaMigration,
+    /GRANT\s+(?:INSERT|ALL)[\s\S]*\b(?:anon|public)\b/i,
+  );
+  assert.match(rpcMigration, /SECURITY DEFINER/i);
+  assert.match(rpcMigration, /SET search_path = public/i);
+  assert.match(rpcMigration, /created_at >= now\(\) - interval '30 days'/i);
+  assert.match(rpcMigration, /GRANT EXECUTE[\s\S]*TO anon, authenticated/i);
+  assert.doesNotMatch(
+    rpcMigration,
+    /GRANT\s+(?:INSERT|UPDATE|ALL)\s+ON\s+(?:TABLE\s+)?public\.pilot_signups/i,
+  );
 });
 
 test("every acquisition role has a self-service next step", async () => {
