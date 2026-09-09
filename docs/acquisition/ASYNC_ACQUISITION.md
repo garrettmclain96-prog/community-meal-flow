@@ -24,13 +24,13 @@ This is an operating constraint, not merely a copy preference.
 
 ## Role routing
 
-| Role | Primary self-service path |
-| --- | --- |
-| Household | `/help` |
-| Kitchen / restaurant operator | `/kitchen` |
-| Volunteer | `/volunteer` |
-| Community partner | `/partners` |
-| Sponsor / funder | `/impact` |
+| Role                          | Primary self-service path |
+| ----------------------------- | ------------------------- |
+| Household                     | `/help`                   |
+| Kitchen / restaurant operator | `/kitchen`                |
+| Volunteer                     | `/volunteer`              |
+| Community partner             | `/partners`               |
+| Sponsor / funder              | `/impact`                 |
 
 `/trust-method` is the secondary trust/explanation surface when helpful.
 
