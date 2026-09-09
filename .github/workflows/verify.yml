@@ -85,4 +85,27 @@ jobs:
             gh issue create --title "CI lint failure — ${GITHUB_SHA::7}" --body-file ci-lint-issue.md
 
       - name: Tests
-        run: bun run test
+        id: tests
+        shell: bash
+        run: |
+          set +e
+          bun run test 2>&1 | tee test.log
+          status=${PIPESTATUS[0]}
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit "$status"
+
+      - name: Report test failure
+        if: failure() && steps.tests.outputs.status != '0' && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo "Automated release verification found failing tests on commit $GITHUB_SHA."
+            echo
+            echo '```text'
+            cat test.log
+            echo '```'
+          } > ci-test-issue.md
+          gh issue create --title "CI test failure — ${GITHUB_SHA::7}" --body-file ci-test-issue.md --label "bug" || \
+            gh issue create --title "CI test failure — ${GITHUB_SHA::7}" --body-file ci-test-issue.md
