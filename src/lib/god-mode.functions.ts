@@ -11,6 +11,25 @@ function tally(rows: Array<{ status: string | null }>) {
   }, {});
 }
 
+function tallyValues(values: Array<string | null | undefined>) {
+  return values.reduce<Record<string, number>>((acc, value) => {
+    const key = value || "unknown";
+    acc[key] = (acc[key] ?? 0) + 1;
+    return acc;
+  }, {});
+}
+
+type PilotLeadRow = {
+  status: string | null;
+  interest: string | null;
+  lead_source: string | null;
+  preferred_contact: string | null;
+  created_at: string;
+  last_contacted_at: string | null;
+  followup_count: number | null;
+  do_not_contact: boolean | null;
+};
+
 export const getGodModeSnapshot = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -61,7 +80,11 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
       supabaseAdmin.from("assistance_requests").select("status"),
       supabaseAdmin.from("privacy_requests").select("status"),
       supabaseAdmin.from("refund_requests").select("status"),
-      supabaseAdmin.from("pilot_signups").select("status"),
+      supabaseAdmin
+        .from("pilot_signups")
+        .select(
+          "status, interest, lead_source, preferred_contact, created_at, last_contacted_at, followup_count, do_not_contact",
+        ),
       supabaseAdmin
         .from("impact_events")
         .select("kind, meals, neighborhood, occurred_at")
@@ -102,7 +125,7 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
     const assistance = assistanceResult.data ?? [];
     const privacy = privacyResult.data ?? [];
     const refunds = refundsResult.data ?? [];
-    const pilot = pilotResult.data ?? [];
+    const pilot = (pilotResult.data ?? []) as unknown as PilotLeadRow[];
 
     const confirmedFundingCents = fundedOrders
       .filter((row) => row.paid)
@@ -120,6 +143,7 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
     const webhookSandboxConfigured = Boolean(process.env["PAYMENTS_SANDBOX_WEBHOOK_SECRET"]);
     const webhookLiveConfigured = Boolean(process.env["PAYMENTS_LIVE_WEBHOOK_SECRET"]);
     const lovableGatewayConfigured = Boolean(process.env["LOVABLE_API_KEY"]);
+    const sevenDaysAgo = Date.now() - 7 * 86_400_000;
 
     return {
       authorized: true as const,
@@ -182,6 +206,18 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
         active: partners.filter((row) => row.active).length,
         referralsByStatus: tally(referrals),
         assistanceByStatus: tally(assistance),
+      },
+      acquisition: {
+        total: pilot.length,
+        newLast7Days: pilot.filter((row) => Date.parse(row.created_at) >= sevenDaysAgo).length,
+        uncontacted: pilot.filter(
+          (row) => !row.last_contacted_at && row.do_not_contact !== true,
+        ).length,
+        asyncOnly: pilot.filter((row) => row.preferred_contact === "email_only").length,
+        optedOut: pilot.filter((row) => row.do_not_contact === true).length,
+        followedUp: pilot.filter((row) => (row.followup_count ?? 0) > 0).length,
+        byInterest: tallyValues(pilot.map((row) => row.interest)),
+        bySource: tallyValues(pilot.map((row) => row.lead_source)),
       },
       queues: {
         privacy: tally(privacy),
