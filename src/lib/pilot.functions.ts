@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
+import { supabase } from "@/integrations/supabase/client";
+
 import type { PilotInterest } from "./pilot";
 
 const INTERESTS: PilotInterest[] = [
@@ -69,21 +71,6 @@ export const submitPilotLead = createServerFn({ method: "POST" })
     // Honeypot: silently accept obvious bot submissions without touching production data.
     if (data.website) return { accepted: true, duplicate: false };
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const duplicateCutoff = new Date(Date.now() - 30 * 86_400_000).toISOString();
-
-    const existing = await supabaseAdmin
-      .from("pilot_signups")
-      .select("id")
-      .eq("email", data.email)
-      .eq("interest", data.interest)
-      .gte("created_at", duplicateCutoff)
-      .order("created_at", { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
-    if (existing.error) throw new Error("Pilot intake could not be checked right now.");
-
     const metadata = {
       async_preferred: true,
       referrer: data.referrer || null,
@@ -92,34 +79,26 @@ export const submitPilotLead = createServerFn({ method: "POST" })
       captured_at: new Date().toISOString(),
     };
 
-    const leadPatch = {
-      full_name: data.fullName,
-      email: data.email,
-      postal_code: data.postalCode || null,
-      interest: data.interest,
-      organization_name: data.organizationName || null,
-      note: data.note || null,
-      lead_source: data.leadSource,
-      preferred_contact: "email_only",
-      metadata,
-      do_not_contact: false,
-    };
+    // The browser/server only needs the publishable Supabase key. The narrowly
+    // scoped SECURITY DEFINER RPC owns validation, de-duplication and INSERT.
+    // No anonymous direct INSERT privilege is granted on pilot_signups.
+    const { data: result, error } = await supabase.rpc(
+      "submit_public_pilot_lead" as never,
+      {
+        _full_name: data.fullName,
+        _email: data.email,
+        _postal_code: data.postalCode || "",
+        _interest: data.interest,
+        _organization_name: data.organizationName || "",
+        _note: data.note || "",
+        _lead_source: data.leadSource,
+        _metadata: metadata,
+      } as never,
+    );
 
-    if (existing.data?.id) {
-      const updated = await supabaseAdmin
-        .from("pilot_signups")
-        .update(leadPatch as never)
-        .eq("id", existing.data.id);
-      if (updated.error) throw new Error("Pilot intake could not be updated right now.");
-      return { accepted: true, duplicate: true };
-    }
+    if (error) throw new Error("Pilot intake could not be submitted right now.");
+    const payload = result as unknown as { accepted?: boolean; duplicate?: boolean } | null;
+    if (!payload?.accepted) throw new Error("Pilot intake could not be confirmed right now.");
 
-    const inserted = await supabaseAdmin.from("pilot_signups").insert({
-      ...leadPatch,
-      user_id: null,
-      status: "queued_manual_review",
-    } as never);
-
-    if (inserted.error) throw new Error("Pilot intake could not be submitted right now.");
-    return { accepted: true, duplicate: false };
+    return { accepted: true, duplicate: payload.duplicate === true };
   });
