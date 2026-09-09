@@ -2,7 +2,7 @@
 
 Status: active production operating model
 Owner: Garrett McLain
-Last updated: 2026-09-08
+Last updated: 2026-09-09
 
 ## Objective
 
@@ -18,8 +18,8 @@ This is an operating constraint, not merely a copy preference.
 4. No account, phone number, meeting or legal acceptance is required merely to express interest.
 5. Server-side intake validates, de-duplicates and stores the lead. Anonymous browser clients do not receive direct INSERT access to `pilot_signups`.
 6. The confirmation screen immediately provides the correct self-service next step.
-7. Lead Autopilot sends the role-specific next-step email and at most one unanswered follow-up.
-8. Reply Autopilot handles routine positive questions asynchronously.
+7. The ProvisionLoop backend acquisition worker sends the role-specific next-step email and at most one unanswered follow-up.
+8. Reply Autopilot handles routine positive questions asynchronously and records reply detection for follow-up suppression.
 9. Garrett is escalated only when human judgment, commitment or real-time participation is actually necessary.
 
 ## Role routing
@@ -46,103 +46,70 @@ Accounts, current legal acceptance and independent verification remain required 
 - No phone number is required for intake.
 - Routine acquisition messages must not ask for a call by default.
 - A prospect may continue entirely asynchronously whenever the protected workflow allows it.
-- Automated cold outreach receives at most one unanswered follow-up.
 - Website leads receive an initial next-step email and at most one unanswered follow-up.
+- Follow-up is suppressed whenever a meaningful reply has been detected.
 - Explicit decline, unsubscribe or do-not-contact language stops further outreach. Matching `pilot_signups` records must be marked `do_not_contact=true`.
 - Way West Grill / `waywestcatering@gmail.com` must not receive additional unsolicited automated outreach unless Way West first replies or Garrett explicitly changes this rule.
 
 ## What the Reply Autopilot may handle
 
-It may autonomously answer routine human messages that:
+It may autonomously answer routine human messages that express interest, ask what ProvisionLoop is, ask for more information, ask what the next step is, or can be satisfied by the correct public/self-service link. It must not overstate affiliation, readiness or impact.
 
-- express interest;
-- ask what ProvisionLoop is;
-- ask for more information;
-- ask what the next step is;
-- can be satisfied by the correct public/self-service link.
-
-It must not overstate affiliation, readiness or impact.
+The Reply Autopilot must set `reply_detected_at` (and `reply_status` when useful) on the matching lead when it identifies a meaningful human reply. The backend worker treats any non-null `reply_detected_at` as a hard follow-up suppression signal.
 
 ## What must be escalated to Garrett
 
-Do not autonomously commit ProvisionLoop when a reply involves:
-
-- contracts or legal terms;
-- partner data-sharing terms;
-- grants or procurement;
-- money/payment commitments or pricing negotiations;
-- press interviews, quotes or attributable statements;
-- operator-authority evidence or final provider verification;
-- a specific requested meeting/call time;
-- anything that would bind Garrett or ProvisionLoop to a material obligation.
-
-When escalating, provide the sender, organization, concise summary, exact decision needed and a suggested reply. Do not require Garrett to reconstruct the thread.
+Do not autonomously commit ProvisionLoop when a reply involves contracts or legal terms, partner data-sharing terms, grants or procurement, money/payment commitments or pricing negotiations, press interviews or attributable statements, operator-authority evidence or final provider verification, a specific requested meeting/call time, or anything that would bind Garrett or ProvisionLoop to a material obligation.
 
 ## Claims that acquisition messaging must not make
 
-Unless the underlying production state changes and is verified, do not claim:
-
-- that a directory listing is a ProvisionLoop partner;
-- that live payment processing is enabled;
-- that ProvisionLoop is a nonprofit;
-- that payments are tax-deductible donations;
-- guaranteed household service or coverage;
-- fake, estimated-as-real or sandbox impact;
-- operator verification before independent verification actually occurs.
+Unless the underlying production state changes and is verified, do not claim that a directory listing is a ProvisionLoop partner, that live payment processing is enabled, that ProvisionLoop is a nonprofit, that payments are tax-deductible donations, guaranteed household service or coverage, fake/estimated-as-real impact, or operator verification before independent verification actually occurs.
 
 ## Lead-state fields
 
-`pilot_signups` supports the acquisition pipeline with:
-
-- nullable `user_id` for pre-account interest;
-- `organization_name`;
-- `lead_source`;
-- non-sensitive `metadata` for routing/acquisition context;
-- `preferred_contact`;
-- `followup_count`;
-- `last_contacted_at`;
-- `do_not_contact`.
+`pilot_signups` supports the acquisition pipeline with nullable `user_id`, `organization_name`, `lead_source`, non-sensitive routing `metadata`, `preferred_contact`, `followup_count`, `last_contacted_at`, `do_not_contact`, `reply_detected_at`, `reply_status`, and short-lived worker claim fields.
 
 These fields are acquisition state only. They are never substitutes for role authorization, legal acceptance or payout readiness.
 
-## Outreach job interface
+## Canonical outbound architecture
 
-An external outreach automation must never hold raw SQL or service-role access:
-that bypasses RLS, exposes household PII, payment and partner data, and allows
-arbitrary destructive writes. It authenticates as a platform admin and uses a
-narrow server interface instead (`src/lib/acquisition.functions.ts`, backed by
-admin-gated `SECURITY DEFINER` functions):
+Outbound acquisition is backend-owned. ChatGPT, Gmail connectors and other external agents do **not** read the lead table in order to send routine outbound acquisition mail.
 
-- `listOutreachQueue` — leads with `do_not_contact = false` that are due either
-  an initial contact (`last_contacted_at IS NULL`) or their single follow-up
-  (`followup_count = 0` and the initial contact is at least three business days
-  old). Obvious fake/test/disposable addresses are excluded. Returns only id,
-  email, first name, role, status, `last_contacted_at`, `followup_count` and
-  the stage. Never notes, metadata, postal code or organization.
-- `markInitialOutreachSent` — after a confirmed successful send only: sets
-  `last_contacted_at = now()` and moves `queued_manual_review` to
-  `in_progress`. `followup_count` and `internal_note` are untouched.
-- `markFollowupOutreachSent` — after a confirmed successful send only: sets
-  `followup_count = 1` and `last_contacted_at = now()`. `internal_note` is
-  untouched.
+The production flow is:
 
-Both mutations require the exact row id and re-check eligibility in the
-database, so a replay cannot double-contact a lead.
+`Vercel Cron -> /api/internal/acquisition-worker -> service-role claim RPC -> Resend -> exact-row success/failure RPC`
+
+The worker runs hourly. Vercel authenticates the private cron route with `CRON_SECRET`. The route requires server-only `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, and `PROVISIONLOOP_OUTREACH_FROM`. Missing configuration fails closed and sends nothing.
+
+### Eligibility
+
+The database claim operation is authoritative. It excludes `do_not_contact=true`, malformed/fake/test/disposable addresses, rows that are already claimed by another live worker invocation, and rows with a successful event for the same stage. Initial contact requires `last_contacted_at IS NULL`. Follow-up requires `followup_count=0`, no `reply_detected_at`, and at least three business days since the initial contact.
+
+### Concurrency and idempotency
+
+Claims use `FOR UPDATE SKIP LOCKED` plus a short-lived claim token so concurrent worker runs cannot claim the same row. Each `(lead_id, stage)` has a deterministic provider idempotency key (`provisionloop-acquisition/<stage>/<lead-id>`). Resend receives that key on every attempt. The database also maintains a unique `(lead_id, stage)` outreach event record.
+
+### State transitions
+
+A provider failure clears the claim and records a failed outcome without changing `last_contacted_at`, `followup_count`, `status`, or `internal_note`.
+
+After a provider-confirmed initial send, the database sets `last_contacted_at=now()` and changes `queued_manual_review` to `in_progress`; `followup_count` remains unchanged at zero. After a provider-confirmed follow-up send, it sets `followup_count=1` and `last_contacted_at=now()`. Human `internal_note` is never overwritten by the worker.
+
+### Audit trail
+
+`outreach_events` stores lead id, stage, deterministic idempotency key, provider, provider message id, outcome, error category, attempt count and timestamps. It intentionally avoids duplicating lead email or unrelated PII. RLS is enabled and ordinary users receive no access.
+
+### Dry run
+
+`GET /api/internal/acquisition-worker?dry_run=1` returns only aggregate eligible counts after normal cron-secret authorization and sends nothing.
+
+### Retired external queue
+
+The earlier ChatGPT-facing `acquisition_outreach_queue`, `mark_acquisition_initial_sent` and `mark_acquisition_followup_sent` functions are no longer part of the canonical workflow. Authenticated-user execute access is revoked by the backend-worker migration. Service-role-only compatibility can remain temporarily for migration/diagnostics.
 
 ## Owner visibility
 
-God Mode should summarize acquisition rather than expose raw lead PII on the dashboard:
-
-- total leads;
-- new leads in the last seven days;
-- uncontacted leads;
-- email-only leads;
-- followed-up leads;
-- opted-out leads;
-- lead counts by role;
-- lead counts by source.
-
-Raw lead detail remains in the protected admin workflow when it is actually needed.
+God Mode should summarize acquisition rather than expose raw lead PII on the dashboard: total leads, new leads in the last seven days, uncontacted leads, email-only leads, followed-up leads, opted-out leads, and counts by role/source. Raw lead detail remains in the protected admin workflow when it is actually needed.
 
 ## Success condition
 
