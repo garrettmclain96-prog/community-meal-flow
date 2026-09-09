@@ -19,6 +19,7 @@ export const Route = createFileRoute("/god-mode")({
 type ActionRoute =
   | "/admin"
   | "/design"
+  | "/pilot"
   | "/kitchen"
   | "/partners"
   | "/volunteer"
@@ -82,10 +83,10 @@ function GodModePage() {
 
       <main className="mx-auto max-w-7xl space-y-8 px-4 py-6 sm:px-6 sm:py-8">
         <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-          <Metric label="Confirmed funding" value={funding} note={`${data.funding.fundedMeals.toLocaleString()} meals funded`} />
+          <Metric label="Pilot leads" value={String(data.acquisition.total)} note={`${data.acquisition.newLast7Days} new in 7d · ${data.acquisition.uncontacted} awaiting email`} />
           <Metric label="Delivered meals" value={data.operations.deliveredMeals.toLocaleString()} note={statusLine(data.operations.deliveriesByStatus)} />
           <Metric label="Funding-enabled kitchens" value={String(data.kitchens.fundingEnabled)} note={`${data.kitchens.approved} approved · ${data.kitchens.test} test`} />
-          <Metric label="Paid to kitchens" value={paidOut} note={statusLine(data.funding.payoutsByStatus)} />
+          <Metric label="Confirmed funding" value={funding} note={`${data.funding.fundedMeals.toLocaleString()} meals funded · ${paidOut} paid out`} />
         </section>
 
         {data.partialErrors.length > 0 && (
@@ -95,6 +96,21 @@ function GodModePage() {
         )}
 
         <section className="grid gap-4 lg:grid-cols-2">
+          <Panel icon={<Activity className="size-5" />} title="Acquisition" eyebrow="Async pipeline">
+            <div className="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3">
+              <MiniStat label="Total leads" value={data.acquisition.total} />
+              <MiniStat label="New · 7 days" value={data.acquisition.newLast7Days} />
+              <MiniStat label="Uncontacted" value={data.acquisition.uncontacted} />
+              <MiniStat label="Email-only" value={data.acquisition.asyncOnly} />
+              <MiniStat label="Followed up" value={data.acquisition.followedUp} />
+              <MiniStat label="Opted out" value={data.acquisition.optedOut} />
+            </div>
+            <p className="mt-4 font-mono text-xs uppercase tracking-wider text-zinc-500">Leads by role</p>
+            <StatusRows rows={data.acquisition.byInterest} empty="No pilot leads yet" />
+            <p className="mt-4 font-mono text-xs uppercase tracking-wider text-zinc-500">Lead source</p>
+            <StatusRows rows={data.acquisition.bySource} empty="No acquisition sources yet" />
+          </Panel>
+
           <Panel icon={<WalletCards className="size-5" />} title="Funding integrity" eyebrow="Money movement">
             <StatusRows rows={data.funding.ordersByStatus} empty="No funded orders yet" />
             <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
@@ -138,6 +154,7 @@ function GodModePage() {
             <p className="hidden text-xs text-zinc-500 sm:block">Snapshot {new Date(data.generatedAt).toLocaleTimeString()}</p>
           </div>
           <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <Action to="/pilot" label="Acquisition Funnel" note="Async intake + role routing" />
             <Action to="/admin" label="Operations Queue" note="Privacy, refunds, pilot" />
             <Action to="/design" label="Design Control" note="Requirements + open items" />
             <Action to="/kitchen" label="Kitchen Network" note="Listings + claims" />
@@ -150,7 +167,7 @@ function GodModePage() {
         </section>
 
         <section className="border-t border-zinc-800 pt-5 text-xs text-zinc-500">
-          Stripe: {data.health.stripeConfigured ? data.health.stripeMode.toUpperCase() : "NOT CONFIGURED"} · Webhook {data.health.webhookConfigured ? "READY" : "MISSING"} · OpenAI {data.health.openAiConfigured ? "READY" : "NOT CONFIGURED"}. No secrets or recipient PII are exposed here.
+          Stripe: {data.health.stripeConfigured ? data.health.stripeMode.toUpperCase() : "NOT CONFIGURED"} · Webhook {data.health.webhookConfigured ? "READY" : "MISSING"} · OpenAI {data.health.openAiConfigured ? "READY" : "NOT CONFIGURED"}. Acquisition defaults to email-only and does not require calls. No secrets or recipient PII are exposed here.
         </section>
       </main>
     </div>
