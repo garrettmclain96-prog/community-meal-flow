@@ -25,7 +25,10 @@ test("outreach queue is admin-gated and minimal", async () => {
   assert.match(sql, /do_not_contact = false/);
   assert.match(sql, /last_contacted_at IS NULL/);
   assert.match(sql, /business_days_since\(s\.last_contacted_at\) >= 3/);
-  assert.match(sql, /REVOKE ALL ON FUNCTION public\.acquisition_outreach_queue\(integer\) FROM PUBLIC, anon/);
+  assert.match(
+    sql,
+    /REVOKE ALL ON FUNCTION public\.acquisition_outreach_queue\(integer\) FROM PUBLIC, anon/,
+  );
   // Never returns notes, postal code, organization or metadata.
   assert.doesNotMatch(sql, /s\.note|s\.internal_note|s\.metadata|s\.postal_code/);
 });
