@@ -1,0 +1,54 @@
+name: Production Watchdog
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: provisionloop-production-watchdog
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BASE_URL: https://www.provisionloop.org
+      INCIDENT_TITLE: "[monitor] ProvisionLoop production watchdog failure"
+    steps:
+      - name: Probe production surfaces
+        id: probe
+        shell: bash
+        run: |
+          set +e
+          failures=()
+          check_exact() { local path="$1" expected="$2" code; code=$(curl -L -sS -o /tmp/body -w '%{http_code}' --connect-timeout 10 --max-time 20 "$BASE_URL$path"); [[ "$code" == "$expected" ]] || failures+=("$path expected $expected got $code"); }
+          check_not_5xx() { local path="$1" code; code=$(curl -L -sS -o /tmp/body -w '%{http_code}' --connect-timeout 10 --max-time 20 "$BASE_URL$path"); [[ ! "$code" =~ ^5 ]] || failures+=("$path returned $code"); }
+          check_exact "/" "200"
+          check_exact "/auth" "200"
+          check_exact "/help" "200"
+          check_exact "/impact" "200"
+          check_not_5xx "/api/internal/acquisition-worker?dry_run=1"
+          if (( ${#failures[@]} > 0 )); then printf '%s\n' "${failures[@]}" | tee /tmp/watchdog-failures.txt; exit 1; fi
+      - name: Open or update incident
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          body="Automated production probe failed at $(date -u +'%Y-%m-%dT%H:%M:%SZ'). Run: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          issue_number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$INCIDENT_TITLE in:title" --json number,title --jq '.[] | select(.title == env.INCIDENT_TITLE) | .number' | head -n1)
+          if [[ -n "$issue_number" ]]; then gh issue comment "$issue_number" --repo "$GITHUB_REPOSITORY" --body "$body"; else gh issue create --repo "$GITHUB_REPOSITORY" --title "$INCIDENT_TITLE" --body "$body"; fi
+      - name: Close recovered incident
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          issue_number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$INCIDENT_TITLE in:title" --json number,title --jq '.[] | select(.title == env.INCIDENT_TITLE) | .number' | head -n1)
+          if [[ -n "$issue_number" ]]; then gh issue comment "$issue_number" --repo "$GITHUB_REPOSITORY" --body "Production watchdog recovered. Closing incident automatically."; gh issue close "$issue_number" --repo "$GITHUB_REPOSITORY" --reason completed; fi
