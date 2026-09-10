@@ -12,7 +12,7 @@ const hookRoutePath = "src/routes/api/public/hooks/acquisition-worker.ts";
 
 test("worker enforces contact policy and role CTAs", async () => {
   const worker = await source(workerPath);
-  assert.match(worker, /LOVABLE_CRON_SECRET/);
+  assert.doesNotMatch(worker, /LOVABLE_CRON_SECRET/);
   assert.match(worker, /CRON_SECRET/);
   assert.match(worker, /authenticateCronRequest/);
   assert.match(worker, /SUPABASE_SERVICE_ROLE_KEY/);
