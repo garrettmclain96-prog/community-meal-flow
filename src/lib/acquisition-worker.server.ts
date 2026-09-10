@@ -46,18 +46,9 @@ function getDb() {
   });
 }
 
-// Two accepted callers: the platform-managed scheduler (LOVABLE_CRON_SECRET) and
-// the legacy bearer CRON_SECRET kept for the switchover window.
 async function authorize(request: Request): Promise<boolean> {
-  if (env("LOVABLE_CRON_SECRET")) {
-    const rejection = await authenticateCronRequest(request);
-    if (!rejection) return true;
-  }
-  const legacy = env("CRON_SECRET");
-  if (legacy && request.headers.get("authorization") === `Bearer ${legacy}`) {
-    return true;
-  }
-  return false;
+  const rejection = await authenticateCronRequest(request);
+  return rejection === null;
 }
 
 function emailFor(lead: ClaimedLead) {
@@ -115,7 +106,7 @@ function errorCategory(error: unknown) {
 }
 
 export async function runAcquisitionWorker(request: Request): Promise<Response> {
-  if (!env("LOVABLE_CRON_SECRET") && !env("CRON_SECRET")) {
+  if (!env("CRON_SECRET")) {
     return Response.json({ ok: false, error: "missing_cron_secret" }, { status: 503 });
   }
   if (!(await authorize(request))) {
