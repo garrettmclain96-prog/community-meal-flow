@@ -73,20 +73,16 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
     if (roleError) throw new Error("Unable to verify God Mode access.");
     if (authorized !== true) return { authorized: false as const };
 
-    // A platform-admin-gated SECURITY DEFINER RPC performs the cross-table
-    // aggregation. This keeps the dashboard working with the authenticated
-    // session and does not require a service-role secret in Vercel.
     const { data: rawData, error: snapshotError } = await context.supabase.rpc(
       "get_god_mode_snapshot_data" as never,
     );
     if (snapshotError || !rawData) throw new Error("Unable to load God Mode network state.");
     const data = rawData as unknown as GodModeData;
 
-    const stripeSandboxConfigured = Boolean(process.env["STRIPE_SANDBOX_API_KEY"]);
-    const stripeLiveConfigured = Boolean(process.env["STRIPE_LIVE_API_KEY"]);
+    const stripeSandboxConfigured = Boolean(process.env["STRIPE_TEST_SECRET_KEY"]);
+    const stripeLiveConfigured = Boolean(process.env["STRIPE_LIVE_SECRET_KEY"]);
     const webhookSandboxConfigured = Boolean(process.env["PAYMENTS_SANDBOX_WEBHOOK_SECRET"]);
     const webhookLiveConfigured = Boolean(process.env["PAYMENTS_LIVE_WEBHOOK_SECRET"]);
-    const lovableGatewayConfigured = Boolean(process.env["LOVABLE_API_KEY"]);
 
     return {
       authorized: true as const,
@@ -109,7 +105,9 @@ export const getGodModeSnapshot = createServerFn({ method: "POST" })
         stripeLiveConfigured,
         webhookSandboxConfigured,
         webhookLiveConfigured,
-        lovableGatewayConfigured,
+        directStripe: true,
+        cronConfigured: Boolean(process.env["CRON_SECRET"]),
+        resendConfigured: Boolean(process.env["RESEND_API_KEY"]),
         openAiConfigured: Boolean(process.env["OPENAI_API_KEY"]),
       },
       ...data,
