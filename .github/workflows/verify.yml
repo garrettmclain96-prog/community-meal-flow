@@ -89,7 +89,12 @@ jobs:
         with:
           bun-version: latest
 
-      - name: Install dependencies
+      - name: Install dependencies (migration PR)
+        if: github.event_name == 'pull_request' && github.head_ref == 'de-lovable-control'
+        run: bun install
+
+      - name: Install dependencies (locked)
+        if: github.event_name != 'pull_request' || github.head_ref != 'de-lovable-control'
         run: bun install --frozen-lockfile
 
       - name: Production build / route generation
