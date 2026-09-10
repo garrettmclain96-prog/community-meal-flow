@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable";
 import { useAuth, type AppRole } from "@/hooks/useAuth";
 import {
   EMPTY_ACCEPTANCE,
@@ -52,6 +51,13 @@ const ROLES: Array<{ id: AppRole; label: string; blurb: string }> = [
     blurb: "Neighborhood-level food security signal",
   },
 ];
+
+function oauthReturnUrl(redirect: string) {
+  const safeRedirect = redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "/app";
+  const url = new URL("/auth", window.location.origin);
+  url.searchParams.set("redirect", safeRedirect);
+  return url.toString();
+}
 
 function AuthPage() {
   const navigate = useNavigate();
@@ -108,11 +114,28 @@ function AuthPage() {
       toast.error("Please accept the Terms of Service v1.0 and Privacy Policy v1.0 to continue.");
       return;
     }
+    setBusy(true);
     try {
       if (mode === "signup") queuePendingAcceptance({ keys: BASE_DOCS, context: "account_signup" });
-      await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+
+      // provisionloop.org is hosted on Vercel. Lovable Cloud's managed OAuth helper
+      // redirects to /~oauth/* routes that only exist on Lovable hosting, producing a
+      // production 404. Use the connected Supabase Auth backend directly so OAuth
+      // works on any production host and returns through a real application route.
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: oauthReturnUrl(redirect),
+        },
+      });
+      if (error) throw error;
     } catch (err) {
-      toast.error(err instanceof Error ? err.message : "Google sign-in unavailable");
+      toast.error(
+        err instanceof Error
+          ? err.message
+          : "Google sign-in is not configured for the production auth backend",
+      );
+      setBusy(false);
     }
   }
 
@@ -132,10 +155,10 @@ function AuthPage() {
         <button
           type="button"
           onClick={google}
-          disabled={mode === "signup" && !legalReady}
+          disabled={busy || (mode === "signup" && !legalReady)}
           className="mt-7 w-full rounded-xl border border-border bg-card px-4 py-3 text-sm font-medium text-foreground transition hover:bg-muted disabled:opacity-50"
         >
-          Continue with Google
+          {busy ? "Connecting…" : "Continue with Google"}
         </button>
         {mode === "signup" && !legalReady && (
           <p className="mt-2 text-xs text-muted-foreground">
