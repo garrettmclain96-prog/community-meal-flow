@@ -1,0 +1,104 @@
+name: Production Watchdog
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: provisionloop-production-watchdog
+  cancel-in-progress: false
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      BASE_URL: https://www.provisionloop.org
+      INCIDENT_TITLE: "[monitor] ProvisionLoop production watchdog failure"
+    steps:
+      - name: Probe production surfaces
+        id: probe
+        shell: bash
+        run: |
+          set +e
+          failures=()
+
+          check_exact() {
+            local path="$1"
+            local expected="$2"
+            local code
+            code=$(curl -L -sS -o /tmp/body -w '%{http_code}' --connect-timeout 10 --max-time 20 "$BASE_URL$path")
+            if [[ "$code" != "$expected" ]]; then
+              failures+=("$path expected $expected got $code")
+            fi
+          }
+
+          check_not_5xx() {
+            local path="$1"
+            local code
+            code=$(curl -L -sS -o /tmp/body -w '%{http_code}' --connect-timeout 10 --max-time 20 "$BASE_URL$path")
+            if [[ "$code" =~ ^5 ]]; then
+              failures+=("$path returned $code")
+            fi
+          }
+
+          check_exact "/" "200"
+          check_exact "/auth" "200"
+          check_exact "/help" "200"
+          check_exact "/impact" "200"
+
+          # An unauthenticated worker request should fail closed (typically 401),
+          # but it must not return 5xx/503 due to missing server configuration.
+          check_not_5xx "/api/internal/acquisition-worker?dry_run=1"
+
+          if (( ${#failures[@]} > 0 )); then
+            printf '%s\n' "${failures[@]}" | tee /tmp/watchdog-failures.txt
+            echo "failed=true" >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+
+          echo "failed=false" >> "$GITHUB_OUTPUT"
+
+      - name: Open or update incident
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          body=$(cat <<EOF
+          Automated production probe failed at $(date -u +'%Y-%m-%dT%H:%M:%SZ').
+
+          **Commit:** $GITHUB_SHA
+          **Run:** $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID
+
+          ### Failed checks
+          $(sed 's/^/- /' /tmp/watchdog-failures.txt 2>/dev/null || echo '- Probe step failed before producing details')
+
+          This incident is managed automatically by \`.github/workflows/production-watchdog.yml\`.
+          EOF
+          )
+
+          issue_number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$INCIDENT_TITLE in:title" --json number,title --jq '.[] | select(.title == env.INCIDENT_TITLE) | .number' | head -n1)
+
+          if [[ -n "$issue_number" ]]; then
+            gh issue comment "$issue_number" --repo "$GITHUB_REPOSITORY" --body "$body"
+          else
+            gh issue create --repo "$GITHUB_REPOSITORY" --title "$INCIDENT_TITLE" --body "$body"
+          fi
+
+      - name: Close recovered incident
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          issue_number=$(gh issue list --repo "$GITHUB_REPOSITORY" --state open --search "$INCIDENT_TITLE in:title" --json number,title --jq '.[] | select(.title == env.INCIDENT_TITLE) | .number' | head -n1)
+          if [[ -n "$issue_number" ]]; then
+            gh issue comment "$issue_number" --repo "$GITHUB_REPOSITORY" --body "Production watchdog recovered at $(date -u +'%Y-%m-%dT%H:%M:%SZ'). Closing incident automatically."
+            gh issue close "$issue_number" --repo "$GITHUB_REPOSITORY" --reason completed
+          fi
