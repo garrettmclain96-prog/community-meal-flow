@@ -4,9 +4,9 @@
 
 **Money in. Meals out. Proof attached.**
 
-ProvisionLoop is a community food-infrastructure platform being piloted in Galveston County, Texas. It is designed to connect private household need, usable local kitchen capacity, sponsors, volunteers, community partners, and public aggregate accountability in one governed workflow.
+ProvisionLoop is a community food-infrastructure platform being piloted in Galveston County, Texas. It connects private household need, usable local kitchen capacity, sponsors, volunteers, community partners, and public aggregate accountability in one governed workflow.
 
-ProvisionLoop is **not a nonprofit claim, a tax-deductibility claim, or a promise that every workflow is already production-certified**. The product is in pilot stage and payments remain in test mode until the production gates are cleared.
+ProvisionLoop is **not a nonprofit claim or tax-deductibility claim**. The product remains in pilot stage and payments remain in Stripe test mode until production gates are cleared.
 
 ## Live product
 
@@ -14,64 +14,42 @@ ProvisionLoop is **not a nonprofit claim, a tax-deductibility claim, or a promis
 - **Hosting:** Vercel
 - **Source of truth:** GitHub `main`
 - **Repository:** `garrettmclain96-prog/community-meal-flow`
-- **Current owner-control migration:** PR #24 / `de-lovable-control`
+- **Owner-control cutover:** PR #24 / `de-lovable-control`
 
 GitHub is the canonical codebase. Vercel is the production host. The target architecture has **no Lovable runtime dependency**.
 
-The current production database/auth backend is still the legacy Lovable-managed Supabase environment while an owner-controlled Supabase project is being migrated and verified. Production traffic will not be switched until schema, data, auth, payments, email, scheduled work, and regression checks pass.
-
 ## Why ProvisionLoop exists
 
-Communities often already have people who care, households with real need, local kitchens with unused capacity, organizations that understand the local landscape, and volunteers willing to move resources. The failure is often connective infrastructure: getting those pieces from intention to a completed, auditable outcome.
-
-ProvisionLoop is built around one rule:
+Communities often already have households with real need, local kitchens with usable capacity, organizations that understand the local landscape, sponsors willing to fund outcomes, and volunteers willing to move resources. ProvisionLoop exists to provide the connective infrastructure that turns those pieces into completed, auditable outcomes.
 
 > **If it does not close the loop, it is not done.**
 
-The operating model is:
+Operating model:
 
 **private need → verified local capacity → accountable resources → verified fulfillment → public aggregate proof**
 
 ## Product surfaces
 
 ### Household assistance
-
 Households can find resources and submit assistance requests without turning private need into public content. Recipient-level information is not intended for public reporting.
 
 ### Kitchen network
-
 Restaurants, caterers, churches, community kitchens, and other eligible providers can register or claim listings. Registration does not automatically make a kitchen verified or funding-enabled.
 
 ### Funding
-
 ProvisionLoop is designed to route funding only through eligible, verified, payout-ready providers. The pilot platform fee is currently **$0**. Payments remain in Stripe test mode until the full payment lifecycle is certified.
 
 ### Volunteers and delivery
-
 Volunteer workflows support prep and delivery operations. Governed actions require the current volunteer waiver and applicable authorization checks.
 
 ### Partners
-
 Community organizations can participate in coordination workflows subject to access controls and the current partner data-handling agreement.
 
 ### Civic accountability
-
 Public reporting is aggregate-first. Sandbox/test activity is separated from real pilot totals, and recipient identities are not meant to appear in public civic reporting.
 
 ### MealForge
-
-MealForge is the household food-intelligence workspace inside ProvisionLoop. Its intended end-to-end scope includes:
-
-- custom allergies and foods to avoid
-- household food profiles
-- pantry tracking
-- recipe ingestion
-- meal planning under budget, time, and equipment constraints
-- grocery-list generation
-- cooking workflow
-- leftovers
-- pricing provenance
-- grounded AI assistance when server-side AI credentials are configured
+MealForge is the household food-intelligence workspace inside ProvisionLoop. Its intended end-to-end scope includes custom allergies and foods to avoid, household food profiles, pantry tracking, recipe ingestion, meal planning under budget/time/equipment constraints, grocery-list generation, cooking workflow, leftovers, pricing provenance, and grounded AI assistance when server-side AI credentials are configured.
 
 **Important:** MealForge has substantial implementation in the repository, but it is **not yet certified as fully working end-to-end in production**. Code presence must not be treated as production readiness.
 
@@ -83,84 +61,59 @@ MealForge is the household food-intelligence workspace inside ProvisionLoop. Its
 | Styling | Tailwind CSS + component primitives |
 | Production hosting | Vercel |
 | Source control | GitHub |
-| Database | Supabase Postgres |
+| Database | Owner-controlled Supabase Postgres |
 | Authentication | Native Supabase Auth |
 | Payments | Direct Stripe SDK/API |
 | Email | Resend |
 | CI | GitHub Actions |
 | Package/runtime tooling | Bun |
-| Scheduled work | Owner-controlled cron/scheduler |
+| Scheduled work | Supabase `pg_cron` + `pg_net` / owner-controlled worker path |
 
-### Owner-control rule
-
-A production-critical capability should not depend on a proprietary editor/runtime intermediary when the underlying service can be owned directly.
-
-The target dependency chain is:
+Target dependency chain:
 
 **GitHub → Vercel → owner-controlled Supabase → Stripe / Resend**
 
-Lovable may have been used to generate or edit earlier versions of the project, but it is **not part of the target production architecture**.
+Lovable may have been used to generate or edit earlier versions, but it is **not part of the target production runtime**.
 
-## De-Lovable migration
+## Owner-control cutover status — 2026-09-10
 
-The `de-lovable-control` branch and PR #24 are the controlled severance path. Production remains on `main` until the replacement backend is proven.
+The `de-lovable-control` branch and PR #24 are the controlled severance path.
 
-Completed or proven on the migration branch:
+### Completed and verified
 
-- native TanStack Start / Vite / Nitro build path
-- removal of the Lovable Vite build wrapper
-- native Supabase OAuth path
-- removal of the Lovable cloud-auth package/integration
-- direct Stripe SDK path instead of the Lovable Stripe gateway
-- owner-controlled cron secret path
-- removal of Lovable gateway health dependency
-- successful Vercel preview builds without Lovable build packages
-- owner-controlled Supabase project created and healthy
-- cutover runbook, remediation record, and release gate added
+- native TanStack Start + Vite + Nitro build path
+- Lovable Vite build wrapper removed
+- native Supabase OAuth application path
+- Lovable cloud-auth runtime integration removed
+- direct Stripe SDK path in application code
+- owner-controlled Supabase project created
+- complete application schema migration history replayed into the owner-controlled project
+- `pg_cron` and `pg_net` installed and verified
+- database security-hardening migrations applied
+- migration branch public Supabase configuration points to the owner-controlled ProvisionLoop project
+- owner-controlled acquisition worker/scheduler database support installed
+- successful Vercel preview deployment
+- CI passes production build, typecheck, lint, and all current automated tests
+- cutover runbook, architecture decision, remediation records, and release gate are in the repository
 
-Still required before production cutover:
+### Remaining production gates
 
-- replay and validate the complete database migration history
-- migrate production data safely
-- validate RLS, functions, triggers, and generated types against the new database
-- configure and verify Google OAuth on the owner-controlled Supabase project
-- configure Vercel server-side Supabase credentials securely
-- complete Resend domain verification and rotate the previously exposed API key
-- configure direct Stripe credentials and webhook secrets
-- run payment, webhook, fulfillment, and payout tests in test mode
-- verify the acquisition worker succeeds on schedule
-- regression-test public, household, kitchen, volunteer, partner, admin, and God Mode workflows
-- cut production over only after the release gate passes
+Before production traffic is moved to the owner-controlled runtime, verify these **end-to-end against the cutover environment**:
 
-## Operational status — 2026-09-10
+1. Vercel server-side Supabase/service credentials
+2. Supabase authentication, including configured Google OAuth if enabled
+3. Stripe test checkout, webhook verification, ledger updates, and payout-readiness invariants
+4. Resend outbound-email path and domain authentication
+5. acquisition worker execution from scheduler through persisted outcome
+6. God Mode/platform-admin authorization using a real authorized user
+7. public, household, kitchen, volunteer, partner, admin, and MealForge smoke paths
+8. final lockfile/frozen-install gate and production deployment smoke/security checks
 
-The public production site is serving from Vercel. During the current systems audit, several issues were identified that older README text incorrectly described as healthy:
-
-- Google sign-in was calling a Lovable-only `~oauth` route on Vercel and returning 404; the application code has been patched to use native Supabase Google OAuth, with provider-side configuration still requiring end-to-end validation.
-- The scheduled acquisition worker has returned repeated HTTP 503 responses in production. The current migration is removing the backend/configuration dependency that caused the Vercel-hosted worker to lack the required privileged database configuration.
-- Resend SPF records are verified; DKIM verification is still pending as of this update.
-- Stripe remains in test mode. Live-money operation is **not** certified.
-- The owner-controlled replacement Supabase project exists and is healthy, but schema/data cutover is not complete.
-
-Do not interpret a successful build or the presence of code as proof that a third-party-dependent workflow is operational. External integrations require real end-to-end verification.
+Production must not be declared migrated merely because the code builds. External integrations require real runtime verification.
 
 ## Security and governance controls
 
-The repository includes fail-closed controls intended to support the pilot, including:
-
-- platform-admin checks for privileged operations
-- pending review for new kitchen registrations/claims
-- funding gates tied to verification and payout readiness
-- restrictions on unverified kitchen operations
-- legal-acceptance checks for governed actions
-- partner data-access controls
-- volunteer waiver gates
-- restricted public kitchen fields
-- aggregate-only civic reporting patterns
-- sandbox/test separation in public impact reporting
-- pinned `search_path` patterns for security-definer database functions
-
-These controls must be revalidated after migration to the owner-controlled Supabase project.
+The repository includes fail-closed controls intended to support the pilot, including platform-admin checks for privileged operations, pending review for new kitchen registrations/claims, funding gates tied to verification and payout readiness, restrictions on unverified kitchen operations, legal-acceptance checks, partner data-access controls, volunteer waiver gates, restricted public kitchen fields, aggregate-only civic reporting, sandbox/test separation, and pinned `search_path` patterns for security-definer database functions.
 
 ## Key routes
 
@@ -192,9 +145,7 @@ bun run lint
 bun run test
 ```
 
-PR verification also reports repository-size metrics so line counts are measured from the checked-out commit rather than guessed from GitHub file sizes.
-
-A green CI run means the checked code passed those automated checks. It does **not** by itself certify Google OAuth, Resend delivery, Stripe webhooks, scheduled jobs, or other external services.
+A green CI run means the checked code passed automated checks. It does **not** by itself certify OAuth, email delivery, Stripe webhooks, scheduled jobs, or other external services.
 
 ## Development
 
