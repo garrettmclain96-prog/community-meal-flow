@@ -1,11 +1,5 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "crons": [
-    {
-      "path": "/api/internal/acquisition-worker",
-      "schedule": "0 * * * *"
-    }
-  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -21,39 +15,60 @@
     },
     {
       "source": "/about",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/about>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/about>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/help",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/help>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/help>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/kitchen",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/kitchen>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/kitchen>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/volunteer",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/volunteer>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/volunteer>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/partners",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/partners>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/partners>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/civic",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/civic>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/civic>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/trust-method",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/trust-method>; rel=\"canonical\"" }]
+      "headers": [
+        {
+          "key": "Link",
+          "value": "<https://www.provisionloop.org/trust-method>; rel=\"canonical\""
+        }
+      ]
     },
     {
       "source": "/pilot",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/pilot>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/pilot>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/legal",
-      "headers": [{ "key": "Link", "value": "<https://www.provisionloop.org/legal>; rel=\"canonical\"" }]
+      "headers": [
+        { "key": "Link", "value": "<https://www.provisionloop.org/legal>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/impact",

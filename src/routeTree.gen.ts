@@ -46,6 +46,7 @@ import { Route as AppImportRouteImport } from './routes/app.import'
 import { Route as AppCookRouteImport } from './routes/app.cook'
 import { Route as ApiInternalAcquisitionWorkerRouteImport } from './routes/api/internal/acquisition-worker'
 import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
+import { Route as ApiPublicHooksAcquisitionWorkerRouteImport } from './routes/api/public/hooks/acquisition-worker'
 
 const VolunteerRoute = VolunteerRouteImport.update({
   id: '/volunteer',
@@ -234,6 +235,12 @@ const ApiPublicPaymentsWebhookRoute =
     path: '/api/public/payments/webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksAcquisitionWorkerRoute =
+  ApiPublicHooksAcquisitionWorkerRouteImport.update({
+    id: '/api/public/hooks/acquisition-worker',
+    path: '/api/public/hooks/acquisition-worker',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -272,6 +279,7 @@ export interface FileRoutesByFullPath {
   '/app/': typeof AppIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/api/internal/acquisition-worker': typeof ApiInternalAcquisitionWorkerRoute
+  '/api/public/hooks/acquisition-worker': typeof ApiPublicHooksAcquisitionWorkerRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
@@ -309,6 +317,7 @@ export interface FileRoutesByTo {
   '/app': typeof AppIndexRoute
   '/legal': typeof LegalIndexRoute
   '/api/internal/acquisition-worker': typeof ApiInternalAcquisitionWorkerRoute
+  '/api/public/hooks/acquisition-worker': typeof ApiPublicHooksAcquisitionWorkerRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
@@ -349,6 +358,7 @@ export interface FileRoutesById {
   '/app/': typeof AppIndexRoute
   '/legal/': typeof LegalIndexRoute
   '/api/internal/acquisition-worker': typeof ApiInternalAcquisitionWorkerRoute
+  '/api/public/hooks/acquisition-worker': typeof ApiPublicHooksAcquisitionWorkerRoute
   '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/legal/'
     | '/api/internal/acquisition-worker'
+    | '/api/public/hooks/acquisition-worker'
     | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -427,6 +438,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/legal'
     | '/api/internal/acquisition-worker'
+    | '/api/public/hooks/acquisition-worker'
     | '/api/public/payments/webhook'
   id:
     | '__root__'
@@ -466,6 +478,7 @@ export interface FileRouteTypes {
     | '/app/'
     | '/legal/'
     | '/api/internal/acquisition-worker'
+    | '/api/public/hooks/acquisition-worker'
     | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
@@ -490,6 +503,7 @@ export interface RootRouteChildren {
   VolunteerRoute: typeof VolunteerRoute
   CheckoutReturnRoute: typeof CheckoutReturnRoute
   ApiInternalAcquisitionWorkerRoute: typeof ApiInternalAcquisitionWorkerRoute
+  ApiPublicHooksAcquisitionWorkerRoute: typeof ApiPublicHooksAcquisitionWorkerRoute
   ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
@@ -754,6 +768,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/acquisition-worker': {
+      id: '/api/public/hooks/acquisition-worker'
+      path: '/api/public/hooks/acquisition-worker'
+      fullPath: '/api/public/hooks/acquisition-worker'
+      preLoaderRoute: typeof ApiPublicHooksAcquisitionWorkerRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -826,6 +847,7 @@ const rootRouteChildren: RootRouteChildren = {
   VolunteerRoute: VolunteerRoute,
   CheckoutReturnRoute: CheckoutReturnRoute,
   ApiInternalAcquisitionWorkerRoute: ApiInternalAcquisitionWorkerRoute,
+  ApiPublicHooksAcquisitionWorkerRoute: ApiPublicHooksAcquisitionWorkerRoute,
   ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport

@@ -7,11 +7,14 @@ async function source(path) {
 }
 
 const migrationPath = "supabase/migrations/20260909123000_backend_acquisition_worker.sql";
-const workerPath = "src/routes/api/internal/acquisition-worker.ts";
+const workerPath = "src/lib/acquisition-worker.server.ts";
+const hookRoutePath = "src/routes/api/public/hooks/acquisition-worker.ts";
 
 test("worker enforces contact policy and role CTAs", async () => {
   const worker = await source(workerPath);
+  assert.match(worker, /LOVABLE_CRON_SECRET/);
   assert.match(worker, /CRON_SECRET/);
+  assert.match(worker, /authenticateCronRequest/);
   assert.match(worker, /SUPABASE_SERVICE_ROLE_KEY/);
   assert.match(worker, /RESEND_API_KEY/);
   assert.match(worker, /Idempotency-Key/);
@@ -22,6 +25,10 @@ test("worker enforces contact policy and role CTAs", async () => {
   assert.match(worker, /sponsor: "https:\/\/www\.provisionloop\.org\/impact"/);
   assert.match(worker, /No call or meeting is required/);
   assert.match(worker, /acquisition_outreach_dry_run/);
+
+  const hook = await source(hookRoutePath);
+  assert.match(hook, /api\/public\/hooks\/acquisition-worker/);
+  assert.match(hook, /runAcquisitionWorker/);
 });
 
 test("database claim is concurrency-safe and suppresses unsafe followups", async () => {
@@ -33,15 +40,27 @@ test("database claim is concurrency-safe and suppresses unsafe followups", async
   assert.match(sql, /FOR UPDATE SKIP LOCKED/);
   assert.match(sql, /outreach_claim_token/);
   assert.match(sql, /UNIQUE \(lead_id, stage\)/);
-  assert.match(sql, /REVOKE ALL ON FUNCTION public\.claim_acquisition_outreach\(integer, uuid\) FROM PUBLIC, anon, authenticated/);
+  assert.match(
+    sql,
+    /REVOKE ALL ON FUNCTION public\.claim_acquisition_outreach\(integer, uuid\) FROM PUBLIC, anon, authenticated/,
+  );
 });
 
 test("send state advances only in success RPC and never overwrites internal notes", async () => {
   const sql = await source(migrationPath);
-  const success = sql.slice(sql.indexOf("record_acquisition_outreach_sent"), sql.indexOf("record_acquisition_outreach_failed"));
-  const failure = sql.slice(sql.indexOf("record_acquisition_outreach_failed"), sql.indexOf("acquisition_outreach_dry_run"));
+  const success = sql.slice(
+    sql.indexOf("record_acquisition_outreach_sent"),
+    sql.indexOf("record_acquisition_outreach_failed"),
+  );
+  const failure = sql.slice(
+    sql.indexOf("record_acquisition_outreach_failed"),
+    sql.indexOf("acquisition_outreach_dry_run"),
+  );
   assert.match(success, /last_contacted_at = now\(\)/);
-  assert.match(success, /followup_count = CASE WHEN _stage = 'followup' THEN 1 ELSE followup_count END/);
+  assert.match(
+    success,
+    /followup_count = CASE WHEN _stage = 'followup' THEN 1 ELSE followup_count END/,
+  );
   assert.doesNotMatch(failure, /last_contacted_at = now\(\)/);
   assert.doesNotMatch(sql, /internal_note\s*=/);
 });
