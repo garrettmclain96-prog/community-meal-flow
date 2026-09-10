@@ -766,6 +766,65 @@ export type Database = {
           },
         ]
       }
+      outreach_events: {
+        Row: {
+          attempt_count: number
+          created_at: string
+          error_category: string | null
+          first_claimed_at: string
+          id: string
+          idempotency_key: string
+          last_attempted_at: string
+          lead_id: string
+          outcome: string
+          provider: string
+          provider_message_id: string | null
+          sent_at: string | null
+          stage: string
+          updated_at: string
+        }
+        Insert: {
+          attempt_count?: number
+          created_at?: string
+          error_category?: string | null
+          first_claimed_at?: string
+          id?: string
+          idempotency_key: string
+          last_attempted_at?: string
+          lead_id: string
+          outcome: string
+          provider?: string
+          provider_message_id?: string | null
+          sent_at?: string | null
+          stage: string
+          updated_at?: string
+        }
+        Update: {
+          attempt_count?: number
+          created_at?: string
+          error_category?: string | null
+          first_claimed_at?: string
+          id?: string
+          idempotency_key?: string
+          last_attempted_at?: string
+          lead_id?: string
+          outcome?: string
+          provider?: string
+          provider_message_id?: string | null
+          sent_at?: string | null
+          stage?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "outreach_events_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "pilot_signups"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       pantry_items: {
         Row: {
           added_at: string
@@ -1005,8 +1064,13 @@ export type Database = {
           metadata: Json
           note: string | null
           organization_name: string | null
+          outreach_claim_stage: string | null
+          outreach_claim_token: string | null
+          outreach_claimed_at: string | null
           postal_code: string | null
           preferred_contact: string
+          reply_detected_at: string | null
+          reply_status: string | null
           resolved_at: string | null
           status: string
           updated_at: string
@@ -1026,8 +1090,13 @@ export type Database = {
           metadata?: Json
           note?: string | null
           organization_name?: string | null
+          outreach_claim_stage?: string | null
+          outreach_claim_token?: string | null
+          outreach_claimed_at?: string | null
           postal_code?: string | null
           preferred_contact?: string
+          reply_detected_at?: string | null
+          reply_status?: string | null
           resolved_at?: string | null
           status?: string
           updated_at?: string
@@ -1047,8 +1116,13 @@ export type Database = {
           metadata?: Json
           note?: string | null
           organization_name?: string | null
+          outreach_claim_stage?: string | null
+          outreach_claim_token?: string | null
+          outreach_claimed_at?: string | null
           postal_code?: string | null
           preferred_contact?: string
+          reply_detected_at?: string | null
+          reply_status?: string | null
           resolved_at?: string | null
           status?: string
           updated_at?: string
@@ -1626,6 +1700,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      acquisition_outreach_dry_run: { Args: never; Returns: Json }
       acquisition_outreach_queue: {
         Args: { _limit?: number }
         Returns: {
@@ -1670,6 +1745,21 @@ export type Database = {
       }
       assert_acquisition_admin: { Args: never; Returns: undefined }
       business_days_since: { Args: { _from: string }; Returns: number }
+      claim_acquisition_outreach: {
+        Args: { _claim_token?: string; _limit?: number }
+        Returns: {
+          claim_token: string
+          email: string
+          first_name: string
+          followup_count: number
+          id: string
+          idempotency_key: string
+          last_contacted_at: string
+          role: string
+          stage: string
+          status: string
+        }[]
+      }
       claim_delivery_run: { Args: { _run_id: string }; Returns: string }
       claim_kitchen: {
         Args: { _kitchen_id: string; _note?: string; _role?: string }
@@ -1719,6 +1809,24 @@ export type Database = {
       }
       owns_household: { Args: { _household_id: string }; Returns: boolean }
       owns_kitchen: { Args: { _kitchen_id: string }; Returns: boolean }
+      record_acquisition_outreach_failed: {
+        Args: {
+          _claim_token: string
+          _error_category?: string
+          _signup_id: string
+          _stage: string
+        }
+        Returns: undefined
+      }
+      record_acquisition_outreach_sent: {
+        Args: {
+          _claim_token: string
+          _provider_message_id: string
+          _signup_id: string
+          _stage: string
+        }
+        Returns: Json
+      }
       require_legal_acceptance: {
         Args: { _document_key: string; _document_version: string }
         Returns: undefined
