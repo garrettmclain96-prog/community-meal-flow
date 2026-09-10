@@ -2,101 +2,188 @@
 
 **Private need. Local capacity. Public accountability.**
 
-ProvisionLoop is a community food infrastructure platform for Galveston County, Texas. It connects people who need food, local kitchens with usable capacity, sponsors, volunteers, trusted community partners, and a public aggregate impact ledger in one accountable workflow.
+**Money in. Meals out. Proof attached.**
 
-The project is currently in **pilot stage**. The goal is to prove a reliable local operating model before scaling it further.
+ProvisionLoop is a community food-infrastructure platform being piloted in Galveston County, Texas. It is designed to connect private household need, usable local kitchen capacity, sponsors, volunteers, community partners, and public aggregate accountability in one governed workflow.
 
-## Founder
+ProvisionLoop is **not a nonprofit claim, a tax-deductibility claim, or a promise that every workflow is already production-certified**. The product is in pilot stage and payments remain in test mode until the production gates are cleared.
 
-ProvisionLoop was founded by **Garrett McLain**, a Galveston-area systems builder and operations problem-solver focused on the gap between intention and execution.
+## Live product
 
-The founder thesis behind ProvisionLoop is straightforward: communities often already have people who care, usable local capacity, organizations that understand need, and people willing to help move resources. What is missing is the connective infrastructure that reliably turns those pieces into a completed outcome.
-
-ProvisionLoop is designed around that problem. If a community can see its need, verify its capacity, move resources intelligently, track fulfillment, and publish aggregate proof without exposing recipients, generosity becomes a system instead of a gamble.
-
-**If it does not close the loop, it is not done.**
-
-## Live deployment
-
-- **Production:** https://community-meal-flow.vercel.app
+- **Canonical site:** https://www.provisionloop.org
 - **Hosting:** Vercel
 - **Source of truth:** GitHub `main`
 - **Repository:** `garrettmclain96-prog/community-meal-flow`
+- **Current owner-control migration:** PR #24 / `de-lovable-control`
 
-Lovable remains connected as an optional design/editor workflow, but production deployment is handled through Vercel.
+GitHub is the canonical codebase. Vercel is the production host. The target architecture has **no Lovable runtime dependency**.
 
-## Product experience
+The current production database/auth backend is still the legacy Lovable-managed Supabase environment while an owner-controlled Supabase project is being migrated and verified. Production traffic will not be switched until schema, data, auth, payments, email, scheduled work, and regression checks pass.
 
-ProvisionLoop is intentionally designed as more than a collection of dashboards. The public experience guides each participant through the network as a sequence:
+## Why ProvisionLoop exists
 
-**need enters privately → capacity is verified → money and people move → fulfillment is tracked → aggregate proof closes publicly**
+Communities often already have people who care, households with real need, local kitchens with unused capacity, organizations that understand the local landscape, and volunteers willing to move resources. The failure is often connective infrastructure: getting those pieces from intention to a completed, auditable outcome.
 
-The shared visual system uses the same language, navigation, trust states, forms, actions, and feedback patterns across public workflows so the product feels like one operating system rather than disconnected pages.
+ProvisionLoop is built around one rule:
 
-## What ProvisionLoop does
+> **If it does not close the loop, it is not done.**
 
-### Fund local meals
+The operating model is:
 
-Sponsors can fund meals through verified, funding-enabled kitchens. Funding eligibility is constrained by kitchen verification and payout readiness rather than treating every directory listing as fundable.
+**private need → verified local capacity → accountable resources → verified fulfillment → public aggregate proof**
 
-### Get food help privately
+## Product surfaces
 
-Households can find resources or submit assistance requests without turning personal need into public content. Partner-facing workflows are gated by legal acceptance and access controls.
+### Household assistance
 
-### Activate local kitchens
+Households can find resources and submit assistance requests without turning private need into public content. Recipient-level information is not intended for public reporting.
 
-Restaurants, caterers, churches, community kitchens, and other eligible providers can register or claim a listing. New providers remain pending until reviewed and approved.
+### Kitchen network
 
-### Coordinate volunteers and delivery
+Restaurants, caterers, churches, community kitchens, and other eligible providers can register or claim listings. Registration does not automatically make a kitchen verified or funding-enabled.
 
-Volunteers can participate in prep and delivery workflows. Governed actions require the current volunteer waiver.
+### Funding
 
-### Publish aggregate civic impact
+ProvisionLoop is designed to route funding only through eligible, verified, payout-ready providers. The pilot platform fee is currently **$0**. Payments remain in Stripe test mode until the full payment lifecycle is certified.
 
-ProvisionLoop exposes public outcome data in aggregate while keeping recipient identities private. Sandbox/test activity is separated from real pilot totals.
+### Volunteers and delivery
+
+Volunteer workflows support prep and delivery operations. Governed actions require the current volunteer waiver and applicable authorization checks.
+
+### Partners
+
+Community organizations can participate in coordination workflows subject to access controls and the current partner data-handling agreement.
+
+### Civic accountability
+
+Public reporting is aggregate-first. Sandbox/test activity is separated from real pilot totals, and recipient identities are not meant to appear in public civic reporting.
 
 ### MealForge
 
-MealForge is the household meal-planning workspace inside ProvisionLoop. It supports:
+MealForge is the household food-intelligence workspace inside ProvisionLoop. Its intended end-to-end scope includes:
 
-- Household food profiles
-- Custom allergies and foods to avoid
-- Meal planning under budget/time/equipment constraints
-- Pantry tracking
-- Grocery lists and pricing provenance
-- Cooking completion and leftover handling
-- Recipe text and supported URL import
-- Grounded ChatGPT meal-plan assistance when server AI credentials are configured
+- custom allergies and foods to avoid
+- household food profiles
+- pantry tracking
+- recipe ingestion
+- meal planning under budget, time, and equipment constraints
+- grocery-list generation
+- cooking workflow
+- leftovers
+- pricing provenance
+- grounded AI assistance when server-side AI credentials are configured
 
-## Core architecture
+**Important:** MealForge has substantial implementation in the repository, but it is **not yet certified as fully working end-to-end in production**. Code presence must not be treated as production readiness.
 
-- **Frontend / server framework:** TanStack Start + React + TypeScript
-- **UI:** Tailwind CSS + shadcn/ui-style components
-- **Database / auth:** Supabase
-- **Payments / payouts:** Stripe
-- **Production hosting:** Vercel
-- **CI:** GitHub Actions
-- **Package/runtime tooling:** Bun
+## Architecture
 
-## Security and operational controls
+| Layer | Current / target |
+| --- | --- |
+| Application | TanStack Start + React 19 + TypeScript |
+| Styling | Tailwind CSS + component primitives |
+| Production hosting | Vercel |
+| Source control | GitHub |
+| Database | Supabase Postgres |
+| Authentication | Native Supabase Auth |
+| Payments | Direct Stripe SDK/API |
+| Email | Resend |
+| CI | GitHub Actions |
+| Package/runtime tooling | Bun |
+| Scheduled work | Owner-controlled cron/scheduler |
 
-The current codebase includes several fail-closed safeguards added during the pilot hardening pass:
+### Owner-control rule
 
-- Platform-admin role checks for privileged operations
-- Pending review for kitchen claims and new registrations
-- Kitchen funding requires approval, claimed status, active status, payout readiness, and a payout account
-- Unverified kitchens cannot publish public meal templates or volunteer shifts
-- Server-side legal acceptance checks before payment and payout actions
-- Partner data access gated by the current partner agreement
-- Volunteer delivery actions gated by the current volunteer waiver
-- Public kitchen data restricted to a safe column set
-- Public impact data excludes internal order IDs
-- Civic reporting suppresses small cohorts and excludes sandbox activity from real totals
-- Security-definer database functions use a pinned `search_path`
+A production-critical capability should not depend on a proprietary editor/runtime intermediary when the underlying service can be owned directly.
 
-## Verification
+The target dependency chain is:
 
-The repository runs a release gate on `main` covering:
+**GitHub → Vercel → owner-controlled Supabase → Stripe / Resend**
+
+Lovable may have been used to generate or edit earlier versions of the project, but it is **not part of the target production architecture**.
+
+## De-Lovable migration
+
+The `de-lovable-control` branch and PR #24 are the controlled severance path. Production remains on `main` until the replacement backend is proven.
+
+Completed or proven on the migration branch:
+
+- native TanStack Start / Vite / Nitro build path
+- removal of the Lovable Vite build wrapper
+- native Supabase OAuth path
+- removal of the Lovable cloud-auth package/integration
+- direct Stripe SDK path instead of the Lovable Stripe gateway
+- owner-controlled cron secret path
+- removal of Lovable gateway health dependency
+- successful Vercel preview builds without Lovable build packages
+- owner-controlled Supabase project created and healthy
+- cutover runbook, remediation record, and release gate added
+
+Still required before production cutover:
+
+- replay and validate the complete database migration history
+- migrate production data safely
+- validate RLS, functions, triggers, and generated types against the new database
+- configure and verify Google OAuth on the owner-controlled Supabase project
+- configure Vercel server-side Supabase credentials securely
+- complete Resend domain verification and rotate the previously exposed API key
+- configure direct Stripe credentials and webhook secrets
+- run payment, webhook, fulfillment, and payout tests in test mode
+- verify the acquisition worker succeeds on schedule
+- regression-test public, household, kitchen, volunteer, partner, admin, and God Mode workflows
+- cut production over only after the release gate passes
+
+## Operational status — 2026-09-10
+
+The public production site is serving from Vercel. During the current systems audit, several issues were identified that older README text incorrectly described as healthy:
+
+- Google sign-in was calling a Lovable-only `~oauth` route on Vercel and returning 404; the application code has been patched to use native Supabase Google OAuth, with provider-side configuration still requiring end-to-end validation.
+- The scheduled acquisition worker has returned repeated HTTP 503 responses in production. The current migration is removing the backend/configuration dependency that caused the Vercel-hosted worker to lack the required privileged database configuration.
+- Resend SPF records are verified; DKIM verification is still pending as of this update.
+- Stripe remains in test mode. Live-money operation is **not** certified.
+- The owner-controlled replacement Supabase project exists and is healthy, but schema/data cutover is not complete.
+
+Do not interpret a successful build or the presence of code as proof that a third-party-dependent workflow is operational. External integrations require real end-to-end verification.
+
+## Security and governance controls
+
+The repository includes fail-closed controls intended to support the pilot, including:
+
+- platform-admin checks for privileged operations
+- pending review for new kitchen registrations/claims
+- funding gates tied to verification and payout readiness
+- restrictions on unverified kitchen operations
+- legal-acceptance checks for governed actions
+- partner data-access controls
+- volunteer waiver gates
+- restricted public kitchen fields
+- aggregate-only civic reporting patterns
+- sandbox/test separation in public impact reporting
+- pinned `search_path` patterns for security-definer database functions
+
+These controls must be revalidated after migration to the owner-controlled Supabase project.
+
+## Key routes
+
+| Route | Purpose |
+| --- | --- |
+| `/` | Public ProvisionLoop experience |
+| `/about` | Story and operating thesis |
+| `/impact` | Funding surface |
+| `/help` | Household assistance |
+| `/kitchen` | Kitchen network and provider workflows |
+| `/volunteer` | Volunteer workflows |
+| `/partners` | Community-partner workflows |
+| `/civic` | Public aggregate accountability |
+| `/trust-method` | Verification/reporting methodology |
+| `/pilot` | Galveston County pilot |
+| `/app` | MealForge workspace |
+| `/admin` | Platform administration |
+| `/god-mode` | Platform-admin mission control |
+| `/legal` | Legal center |
+
+## Verification and CI
+
+The repository verification workflow runs:
 
 ```sh
 bun run build
@@ -105,45 +192,11 @@ bun run lint
 bun run test
 ```
 
-The current design/experience release completed production build, TypeScript verification, lint, and tests successfully before deployment through Vercel.
+PR verification also reports repository-size metrics so line counts are measured from the checked-out commit rather than guessed from GitHub file sizes.
 
-## Current production status
-
-The Vercel project is linked directly to this GitHub repository and deploys from `main`.
-
-Current verified production observations:
-
-- Vercel production deployment is `READY`
-- Homepage responds successfully over HTTPS
-- `/about` responds successfully over HTTPS and contains the founder story
-- Current rendered production metadata reflects ProvisionLoop and Garrett McLain rather than legacy project branding
-- Recent Vercel production error/fatal log query returned no matching runtime errors
-- GitHub verification passed production build, TypeScript, lint, and tests for the current experience release
-
-Operational certification still requires real-world external-service testing for any workflow that depends on live credentials or third-party delivery, especially complete Stripe payment → webhook → funded order → fulfillment → payout and outbound email delivery.
-
-## Key routes
-
-| Route | Purpose |
-| --- | --- |
-| `/` | Guided public network experience |
-| `/about` | ProvisionLoop story, operating thesis, and founder |
-| `/impact` | Meal funding |
-| `/help` | Food assistance |
-| `/kitchen` | Kitchen network and provider workflows |
-| `/volunteer` | Volunteer opportunities |
-| `/partners` | Community partner workflows |
-| `/civic` | Public aggregate impact ledger |
-| `/trust-method` | Verification and reporting methodology |
-| `/pilot` | Galveston County pilot |
-| `/app` | MealForge |
-| `/admin` | Platform administration |
-| `/god-mode` | Platform-admin mission control |
-| `/legal` | Legal center |
+A green CI run means the checked code passed those automated checks. It does **not** by itself certify Google OAuth, Resend delivery, Stripe webhooks, scheduled jobs, or other external services.
 
 ## Development
-
-Install dependencies with Bun:
 
 ```sh
 git clone https://github.com/garrettmclain96-prog/community-meal-flow.git
@@ -152,7 +205,7 @@ bun install
 bun run dev
 ```
 
-Run the full verification suite:
+Run the full local verification gate with:
 
 ```sh
 bun run verify
@@ -160,17 +213,26 @@ bun run verify
 
 ## Project documentation
 
+- `PROJECT_CONTEXT.md` — durable project context and current operating assumptions
 - `design.md` — system design and operating model
 - `requirements.md` — testable EARS-form requirements
 - `roadmap.md` — product roadmap
-- `docs/adr/` — architecture decision records
+- `tasks.md` — implementation/open-item tracking
+- `docs/adr/` — architecture decisions
+- `docs/remediation/` — failures and remediation records
+- `docs/runbooks/` — operational/cutover procedures
 - `docs/verification/` — pilot verification procedures
 - `docs/operations/` — operational database checks
+- `docs/acquisition/` — acquisition pipeline design
+
+## Founder
+
+ProvisionLoop was founded by **Garrett McLain** around a systems-first thesis: local generosity is more useful when the infrastructure can reliably convert intent into a completed, observable outcome.
 
 ## Product principle
 
-ProvisionLoop is not intended to be another donation page. The operating model is:
+ProvisionLoop is not intended to be another donation page or a dashboard that mistakes activity for completion.
 
-**private need → local capacity → accountable funding → verified fulfillment → public aggregate proof**
+**Private need. Local capacity. Public accountability.**
 
-The platform should earn trust by closing real local loops before claiming scale.
+**Money in. Meals out. Proof attached.**
