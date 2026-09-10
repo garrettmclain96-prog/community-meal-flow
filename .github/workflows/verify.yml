@@ -21,6 +21,69 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Repository line-count metrics
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          total_lines=0
+          total_files=0
+          maintained_lines=0
+          maintained_files=0
+          app_lines=0
+          app_files=0
+
+          while IFS= read -r -d '' file; do
+            [[ -f "$file" ]] || continue
+            # Skip binary files. Empty files contribute zero lines either way.
+            if [[ -s "$file" ]] && ! grep -Iq . "$file"; then
+              continue
+            fi
+
+            lines=$(wc -l < "$file")
+            total_lines=$((total_lines + lines))
+            total_files=$((total_files + 1))
+
+            case "$file" in
+              package-lock.json|bun.lock|src/routeTree.gen.ts|src/integrations/supabase/types.ts|.lovable/*)
+                ;;
+              *)
+                maintained_lines=$((maintained_lines + lines))
+                maintained_files=$((maintained_files + 1))
+                ;;
+            esac
+
+            case "$file" in
+              src/*.ts|src/*.tsx|src/*.css|src/**/*.ts|src/**/*.tsx|src/**/*.css)
+                case "$file" in
+                  src/routeTree.gen.ts|src/integrations/supabase/types.ts)
+                    ;;
+                  *)
+                    app_lines=$((app_lines + lines))
+                    app_files=$((app_files + 1))
+                    ;;
+                esac
+                ;;
+            esac
+          done < <(git ls-files -z)
+
+          echo "TOTAL_TRACKED_TEXT_FILES=$total_files"
+          echo "TOTAL_TRACKED_TEXT_LINES=$total_lines"
+          echo "MAINTAINED_TEXT_FILES=$maintained_files"
+          echo "MAINTAINED_TEXT_LINES=$maintained_lines"
+          echo "APP_SOURCE_FILES=$app_files"
+          echo "APP_SOURCE_LINES=$app_lines"
+
+          {
+            echo "### Repository line-count metrics"
+            echo
+            echo "| Metric | Files | Lines |"
+            echo "| --- | ---: | ---: |"
+            echo "| All tracked text | $total_files | $total_lines |"
+            echo "| Maintained text (excludes lockfiles, generated Supabase types/route tree, and legacy .lovable plans) | $maintained_files | $maintained_lines |"
+            echo "| App source under src/ (excludes generated route tree/types) | $app_files | $app_lines |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
       - name: Set up Bun
         uses: oven-sh/setup-bun@v2
         with:
