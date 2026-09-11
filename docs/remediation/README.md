@@ -4,13 +4,13 @@ This directory records production failures, owner-control work, and the evidence
 
 ## Current actionable blocker
 
-The Vercel hourly acquisition cron is registered and reaches the protected worker, but production is missing the worker's four downstream environment variables:
+The Vercel hourly acquisition cron is registered and reaches the protected worker. A temporary authenticated production health probe on 2026-09-11 proved cron authentication works and isolated missing downstream runtime configuration.
 
-- `SUPABASE_URL`
+The worker now has safe code defaults for the public Supabase project URL and the verified ProvisionLoop sender address, so only two server secrets remain required in Vercel Production:
+
 - `SUPABASE_SERVICE_ROLE_KEY`
 - `RESEND_API_KEY`
-- `PROVISIONLOOP_OUTREACH_FROM`
 
-A temporary authenticated health probe on 2026-09-11 isolated this exact configuration failure and was removed after diagnosis. `CRON_SECRET` is present and cron authentication succeeds. The missing values must be configured directly in Vercel Production before the acquisition worker can complete successfully.
+`CRON_SECRET` is already present and cron authentication succeeds. The two remaining secrets must be configured directly in Vercel Production before the acquisition worker can complete successfully.
 
-Do not treat absence of Supabase `pg_cron` jobs as a failure: Vercel Cron is the active scheduler.
+Do not put either secret in GitHub, public source files, or chat. Do not treat absence of Supabase `pg_cron` jobs as a failure: Vercel Cron is the active scheduler.
