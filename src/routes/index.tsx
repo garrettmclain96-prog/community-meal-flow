@@ -23,17 +23,17 @@ import { listKitchens, loadImpactTotals } from "@/lib/community";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ProvisionLoop — Local Food Infrastructure for Galveston County" },
+      { title: "ProvisionLoop — Close the Gap Between Help and a Meal" },
       {
         name: "description",
         content:
-          "ProvisionLoop coordinates local meal funding, verified kitchen capacity, private assistance, volunteer delivery and public aggregate proof across Galveston County.",
+          "ProvisionLoop connects local food need, kitchen capacity, funding and delivery into one accountable chain across Galveston County — then shows whether the loop actually closed.",
       },
-      { property: "og:title", content: "ProvisionLoop — Private need. Local capacity. Public proof." },
+      { property: "og:title", content: "ProvisionLoop — Good intentions aren't enough. Execution matters." },
       {
         property: "og:description",
         content:
-          "A closed-loop community food network connecting funding, kitchens, partners, volunteers and public accountability.",
+          "The food exists. The kitchen exists. The help exists. ProvisionLoop closes the gap and makes the outcome accountable.",
       },
       { property: "og:image", content: heroTable },
       { property: "og:type", content: "website" },
@@ -47,33 +47,33 @@ const PATHS = [
     to: "/impact",
     number: "01",
     icon: HandHeart,
-    title: "Fund meals",
-    body: "Put money behind verified local kitchen capacity and track the aggregate outcome.",
-    action: "Open funding",
+    title: "Fund a meal",
+    body: "Put money behind verified local capacity. Follow the outcome instead of losing it at checkout.",
+    action: "Fund the next meal",
   },
   {
     to: "/help",
     number: "02",
     icon: MapPin,
-    title: "Get food help",
-    body: "Find nearby resources or submit a private request routed through trusted partners.",
-    action: "Find support",
+    title: "I need food",
+    body: "Make one private request and enter the local support flow without turning your need into public content.",
+    action: "Request help",
   },
   {
     to: "/kitchen",
     number: "03",
     icon: ChefHat,
-    title: "Activate a kitchen",
-    body: "Restaurants, caterers, churches and community kitchens can convert open capacity into funded meals.",
-    action: "Join the network",
+    title: "I run a kitchen",
+    body: "Turn usable capacity into funded meals. You cook. ProvisionLoop coordinates the rest of the loop.",
+    action: "Activate capacity",
   },
   {
     to: "/volunteer",
     number: "04",
     icon: Users,
-    title: "Move the meals",
-    body: "Claim local prep and delivery work that closes the loop from kitchen to community.",
-    action: "See opportunities",
+    title: "I can deliver",
+    body: "Claim local work that moves a meal from the kitchen to the person waiting on the other end.",
+    action: "Close the loop",
   },
 ] as const;
 
@@ -90,51 +90,52 @@ function HomePage() {
         <section className="pl-hero">
           <div className="site-shell pl-hero-grid">
             <div className="pl-hero-copy">
-              <div className="pl-eyebrow text-primary"><Radio className="size-3" /> Live civic food network</div>
+              <div className="pl-eyebrow text-primary"><Radio className="size-3" /> Galveston County pilot</div>
               <h1 className="pl-hero-title">
-                NEED IN.
-                <br />
-                <span>MEALS OUT.</span>
+                THE FOOD EXISTS.<br />
+                THE KITCHEN EXISTS.<br />
+                THE HELP EXISTS.<br />
+                <span>SO WHY IS SOMEONE STILL HUNGRY?</span>
               </h1>
               <p className="pl-hero-deck">
-                ProvisionLoop connects private food need to verified local kitchens, accountable
-                funding, volunteer delivery and a public aggregate ledger. It is infrastructure for
-                finishing the job — not another donation page.
+                Someone needs dinner. A local kitchen can make it. Someone is willing to pay for it.
+                Someone can deliver it. Those people should not have to find each other by accident.
+                ProvisionLoop closes the gap — and tracks whether the meal actually reached the other end.
               </p>
 
               <div className="pl-hero-actions">
                 <Link to="/impact" className="pl-hero-primary">
-                  Fund local meals <ArrowUpRight className="size-4" />
+                  Fund the next meal <ArrowUpRight className="size-4" />
                 </Link>
-                <Link to="/help" className="pl-hero-secondary">
-                  I need food help <ArrowRight className="size-4" />
+                <Link to="/trust-method" className="pl-hero-secondary">
+                  See how it works <ArrowRight className="size-4" />
                 </Link>
               </div>
 
-              <div className="pl-live-strip" aria-label="Live ProvisionLoop pilot totals">
+              <div className="pl-live-strip" aria-label="Verified ProvisionLoop pilot totals">
                 <LiveStat label="Meals funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
                 <LiveStat label="Meals delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
                 <LiveStat label="Funding-ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
               </div>
 
               <p className="mt-4 max-w-xl font-mono text-[10px] uppercase leading-5 tracking-[0.08em] text-[#777269]">
-                Live pilot totals only. No demo numbers. {totals ? `${totals.providersMapped} providers mapped. ` : ""}
+                Verified pilot totals only. No projections. No demo numbers. {totals ? `${totals.providersMapped} providers mapped. ` : ""}
                 <Link to="/trust-method" className="text-primary underline underline-offset-4">
-                  See verification method
+                  Check the method
                 </Link>
               </p>
             </div>
 
             <div className="pl-hero-visual">
-              <img src={heroTable} alt="Neighbors gathered around a shared table" width={1024} height={1024} />
+              <img src={heroTable} alt="A shared meal at a community table" width={1024} height={1024} />
               <div className="pl-visual-badge">
-                <ShieldCheck className="size-4" /> closed-loop accountability
+                <ShieldCheck className="size-4" /> proof before promotion
               </div>
               <div className="pl-visual-card">
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary">The system</p>
-                <strong>Private need → local capacity → verified fulfillment → public proof.</strong>
+                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary">The rule</p>
+                <strong>Good intentions are not enough. Execution matters.</strong>
               </div>
-              <div className="pl-scroll-cue" aria-hidden="true"><span>enter the loop</span><i /></div>
+              <div className="pl-scroll-cue" aria-hidden="true"><span>follow the loop</span><i /></div>
             </div>
           </div>
         </section>
@@ -142,9 +143,29 @@ function HomePage() {
         <section className="pl-loop-rail" aria-label="How ProvisionLoop closes the loop">
           <div className="site-shell pl-loop-rail-grid">
             <LoopNode number="01" label="Need enters privately" />
-            <LoopNode number="02" label="Capacity is verified" />
+            <LoopNode number="02" label="Capacity gets verified" />
             <LoopNode number="03" label="Money + people move" />
-            <LoopNode number="04" label="Proof closes publicly" />
+            <LoopNode number="04" label="The outcome gets proved" />
+          </div>
+        </section>
+
+        <section className="pl-section pl-why-section">
+          <div className="site-shell grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
+            <div>
+              <p className="pl-section-kicker">Why this exists</p>
+              <h2 className="pl-section-title">CARING ISN&apos;T A DELIVERY SYSTEM.</h2>
+            </div>
+            <div className="lg:justify-self-end">
+              <p className="max-w-xl text-sm leading-7 opacity-70 md:text-base">
+                Kitchens with capacity. Funding ready to move. People willing to help. People still
+                hungry. The failure was not a lack of generosity. It was the silence between all of
+                those pieces — the point where intention was supposed to become dinner.
+              </p>
+              <p className="mt-4 text-lg font-black">Not anymore.</p>
+              <Link to="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
+                Why Garrett built it <ArrowUpRight className="size-4" />
+              </Link>
+            </div>
           </div>
         </section>
 
@@ -152,12 +173,12 @@ function HomePage() {
           <div className="site-shell">
             <div className="grid items-end gap-8 md:grid-cols-[1fr_.72fr]">
               <div>
-                <p className="pl-section-kicker">Choose your lane</p>
-                <h2 className="pl-section-title">ONE NETWORK. FOUR WAYS IN.</h2>
+                <p className="pl-section-kicker">Choose what you can do</p>
+                <h2 className="pl-section-title">FOUR COMMITMENTS. ONE CLOSED LOOP.</h2>
               </div>
               <p className="max-w-lg text-sm leading-7 opacity-65 md:justify-self-end">
-                Start with the outcome you need. ProvisionLoop routes you into the right workflow
-                without forcing everyone through the same dashboard.
+                Do not browse a platform. Pick the part of the job you can finish and move the next
+                meal one step closer to the other end.
               </p>
             </div>
 
@@ -179,37 +200,23 @@ function HomePage() {
           </div>
         </section>
 
-        <section className="pl-section pl-why-section">
-          <div className="site-shell grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
-            <div>
-              <p className="pl-section-kicker">Why ProvisionLoop?</p>
-              <h2 className="pl-section-title">THE GAP ISN&apos;T GENEROSITY. IT&apos;S COORDINATION.</h2>
-            </div>
-            <div className="lg:justify-self-end">
-              <p className="max-w-xl text-sm leading-7 opacity-70 md:text-base">
-                Communities already have people willing to help, kitchens with usable capacity,
-                organizations that understand local need and volunteers willing to move food. The
-                failure point is what happens between those pieces. ProvisionLoop connects them into
-                one accountable loop.
-              </p>
-              <Link to="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
-                Experience the story <ArrowUpRight className="size-4" />
-              </Link>
-            </div>
-          </div>
-        </section>
-
         <section className="pl-section pl-proof-section">
           <div className="site-shell">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.19em] opacity-70">The accountability loop</p>
-            <h2 className="mt-4 max-w-[11ch] font-display text-[clamp(3rem,8vw,7rem)] font-black leading-[0.84] tracking-[-0.075em]">
-              MONEY IN. MEALS OUT. PROOF ATTACHED.
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.19em] opacity-70">Proof, not promises</p>
+            <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(3rem,8vw,7rem)] font-black leading-[0.84] tracking-[-0.075em]">
+              SHOW THE LOOP ACTUALLY CLOSED.
             </h2>
 
+            <div className="pl-live-strip mt-10" aria-label="Current verified outcomes">
+              <LiveStat label="Funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
+              <LiveStat label="Delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
+              <LiveStat label="Ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
+            </div>
+
             <div className="pl-proof-grid">
-              <ProofStep number="01" title="Funding is constrained" body="Only eligible, funding-enabled kitchens can receive meal funding through the platform." />
-              <ProofStep number="02" title="Fulfillment is tracked" body="Orders move through preparation and delivery states instead of disappearing after checkout." />
-              <ProofStep number="03" title="Impact closes publicly" body="Aggregate delivery events feed the public ledger without exposing recipient identities." />
+              <ProofStep number="01" title="No invented impact" body="If a meal has not been funded and fulfilled, it does not count. Pilot numbers come from recorded outcomes, not projections." />
+              <ProofStep number="02" title="Follow the handoff" body="The workflow records the movement from eligible capacity through preparation and delivery instead of stopping at a donation receipt." />
+              <ProofStep number="03" title="Protect the person" body="Public proof is aggregate. The outcome can be accountable without turning somebody asking for food into content." />
             </div>
           </div>
         </section>
@@ -219,15 +226,15 @@ function HomePage() {
             <div className="grid gap-8 md:grid-cols-[1fr_.8fr] md:items-end">
               <div>
                 <p className="pl-section-kicker">Local capacity</p>
-                <h2 className="pl-section-title">THE NETWORK IS VISIBLE.</h2>
+                <h2 className="pl-section-title">THE KITCHENS ARE REAL. THEIR STATUS SHOULD BE TOO.</h2>
               </div>
               <div className="md:justify-self-end">
                 <p className="max-w-lg text-sm leading-7 opacity-65">
-                  Mapped providers are labeled honestly. A directory listing does not automatically
-                  mean affiliation or funding eligibility.
+                  A mapped business is not automatically a partner. ProvisionLoop labels provider
+                  status instead of making a directory look more active than it is.
                 </p>
                 <Link to="/kitchen" className="mt-4 inline-flex items-center gap-2 text-sm font-black text-primary">
-                  Explore kitchen network <ArrowUpRight className="size-4" />
+                  See local capacity <ArrowUpRight className="size-4" />
                 </Link>
               </div>
             </div>
@@ -251,19 +258,21 @@ function HomePage() {
           </div>
         </section>
 
-        <section className="pl-founder-tease">
+        <section className="pl-founder-tease" id="founder">
           <div className="site-shell pl-founder-tease-grid">
             <div className="pl-founder-tease-mark"><Fingerprint className="size-8" /><strong>GM</strong></div>
             <div>
-              <p className="pl-section-kicker">Built from the ground up</p>
-              <h2>MEET THE FOUNDER BEHIND THE LOOP.</h2>
+              <p className="pl-section-kicker">Why Garrett built it</p>
+              <h2>I WON&apos;T LET GOOD INTENTIONS FAIL AT EXECUTION.</h2>
               <p>
-                Garrett McLain built ProvisionLoop around a simple obsession: if the system keeps
-                dropping the outcome between intention and execution, redesign the system.
+                Garrett McLain built ProvisionLoop after seeing the same failure hiding in plain
+                sight: the resources existed, the willingness existed, and the outcome still got
+                dropped somewhere between intention and action. ProvisionLoop is the refusal to
+                accept that gap as normal.
               </p>
-              <a href="/about#founder" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
-                Meet Garrett <ArrowUpRight className="size-4" />
-              </a>
+              <Link to="/about#founder" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
+                Read the story <ArrowUpRight className="size-4" />
+              </Link>
             </div>
           </div>
         </section>
@@ -271,14 +280,14 @@ function HomePage() {
         <section className="pl-final-cta">
           <div className="site-shell pl-final-grid">
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">Start with one closed loop</p>
-              <h2 className="pl-final-title mt-4">MAKE TONIGHT<br /><span>COUNT.</span></h2>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">The movement is simple</p>
+              <h2 className="pl-final-title mt-4">CLOSE THE<br /><span>NEXT LOOP.</span></h2>
             </div>
             <div>
-              <p className="pl-final-copy">Fund where the network can act, or choose a local kitchen already eligible to receive meal funding.</p>
+              <p className="pl-final-copy">Do one concrete thing that moves a meal toward the person waiting for it.</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/impact" className="pl-hero-primary">Fund meals <ArrowUpRight className="size-4" /></Link>
-                <Link to="/civic" className="pl-hero-secondary">View public proof</Link>
+                <Link to="/impact" className="pl-hero-primary">Fund the next meal <ArrowUpRight className="size-4" /></Link>
+                <Link to="/civic" className="pl-hero-secondary">See verified proof</Link>
               </div>
             </div>
           </div>
