@@ -5,7 +5,7 @@ owner: Garrett McLain
 priority: p0
 version: 1.0.0
 date: 2026-09-07
-last_updated: 2026-09-07
+last_updated: 2026-09-11
 ---
 
 # ProvisionLoop — Master Project Context
@@ -13,6 +13,12 @@ last_updated: 2026-09-07
 This file is the durable human/AI handoff for ProvisionLoop. It records the project story, product intent, decisions, constraints, current state, unresolved work, and launch context that can be lost when individual chats or coding sessions end.
 
 **Maintenance rule:** update this file whenever a material product, brand, operating-model, architecture, legal, launch, monetization, or verification decision changes. Do not silently rewrite history; add dated notes to the timeline or change log when the direction changes.
+
+## September 11, 2026 — Galveston Movement visual direction
+
+Garrett selected the third of three homepage concepts as the new public visual direction. The system is named **Galveston Movement**: storm navy, sun-faded paper, high-visibility coral, acid-lime proof accents, documentary Gulf Coast imagery, field-signage typography, map/order-ticket texture, and direct vertical role lanes.
+
+The homepage must feel like credible, locally born civic infrastructure capable of becoming a national movement—not a generic nonprofit template, charity fundraiser, or SaaS dashboard. The primary mobile conversion is now **Choose your lane**: request food, run a kitchen, fund meals/join the pilot, or deliver. The funding lane must continue to state the production gate honestly until live funding is cleared.
 
 ## Source-of-truth hierarchy
 

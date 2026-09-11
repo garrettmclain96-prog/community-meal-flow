@@ -8,6 +8,10 @@ import tsconfigPaths from "vite-tsconfig-paths";
 // ProvisionLoop is built and deployed independently of Lovable.
 // TanStack Start + Nitro is the production path for Vercel.
 export default defineConfig({
+  server: {
+    host: "0.0.0.0",
+    allowedHosts: ["terminal.local"],
+  },
   plugins: [
     tanstackStart({
       server: { entry: "server" },

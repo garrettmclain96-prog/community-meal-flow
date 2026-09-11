@@ -4,19 +4,18 @@ import {
   ArrowRight,
   ArrowUpRight,
   Building2,
-  ChefHat,
-  Fingerprint,
-  HandHeart,
-  MapPin,
+  Home,
   Radio,
-  ShieldCheck,
-  Users,
+  Truck,
+  UtensilsCrossed,
+  WalletCards,
 } from "lucide-react";
 
 import "@/home-refresh.css";
 import "@/home-experience.css";
 import { ProviderStateBadge } from "@/components/ProviderStateBadge";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
+import galvestonMovement from "@/assets/galveston-movement-hero.webp";
 import { listKitchens, loadImpactTotals } from "@/lib/community";
 
 export const Route = createFileRoute("/")({
@@ -28,7 +27,10 @@ export const Route = createFileRoute("/")({
         content:
           "ProvisionLoop connects private food need, verified kitchen capacity, sponsors and delivery into one accountable local network across Galveston County.",
       },
-      { property: "og:title", content: "ProvisionLoop — Hunger doesn't need charity. It needs connection." },
+      {
+        property: "og:title",
+        content: "ProvisionLoop — Hunger doesn't need charity. It needs connection.",
+      },
       {
         property: "og:description",
         content:
@@ -42,36 +44,36 @@ export const Route = createFileRoute("/")({
 
 const PATHS = [
   {
-    to: "/pilot",
-    number: "01",
-    icon: HandHeart,
-    title: "I can sponsor",
-    body: "Help prove the model without pretending the production funding rail is live before it is ready.",
-    action: "Join the founding pilot",
-  },
-  {
     to: "/help",
-    number: "02",
-    icon: MapPin,
+    number: "01",
+    icon: Home,
     title: "I need food",
-    body: "Make one private request and enter the local support flow without turning your need into public content.",
-    action: "Request help",
+    body: "Request a meal. Private by default. No public story attached.",
+    action: "Request food",
   },
   {
     to: "/kitchen",
-    number: "03",
-    icon: ChefHat,
+    number: "02",
+    icon: UtensilsCrossed,
     title: "I run a kitchen",
-    body: "Turn usable capacity into meals. You cook. ProvisionLoop coordinates the rest of the loop.",
+    body: "Turn verified local capacity into meals for neighbors.",
     action: "Activate capacity",
+  },
+  {
+    to: "/pilot",
+    number: "03",
+    icon: WalletCards,
+    title: "I can fund meals",
+    body: "Join the pilot now. Funding stays gated until the rail is ready.",
+    action: "Support the pilot",
   },
   {
     to: "/volunteer",
     number: "04",
-    icon: Users,
+    icon: Truck,
     title: "I can deliver",
-    body: "Claim local work that moves a meal from the kitchen to the person waiting on the other end.",
-    action: "Close the loop",
+    body: "Be the handoff that gets a real meal to the other end.",
+    action: "Move a meal",
   },
 ] as const;
 
@@ -79,7 +81,8 @@ function HomePage() {
   const impact = useQuery({ queryKey: ["impact-totals"], queryFn: loadImpactTotals });
   const kitchens = useQuery({ queryKey: ["public-kitchens"], queryFn: listKitchens });
   const totals = impact.data;
-  const latestDelivery = totals?.recent?.find((event) => event.kind.toLowerCase().includes("deliver")) ?? null;
+  const latestDelivery =
+    totals?.recent?.find((event) => event.kind.toLowerCase().includes("deliver")) ?? null;
 
   return (
     <div className="pl-home min-h-dvh">
@@ -87,68 +90,50 @@ function HomePage() {
 
       <main>
         <section className="pl-hero">
+          <img
+            className="pl-hero-art"
+            src={galvestonMovement}
+            alt="A Galveston community kitchen worker against the seawall and Gulf"
+          />
           <div className="site-shell pl-hero-grid">
             <div className="pl-hero-copy">
-              <div className="pl-eyebrow text-primary"><Radio className="size-3" /> Galveston County founding pilot</div>
+              <div className="pl-eyebrow">
+                <Radio className="size-3" /> Galveston County / founding loop
+              </div>
               <h1 className="pl-hero-title">
-                HUNGER DOESN&apos;T NEED<br />
-                MORE DISCONNECTED HELP.<br />
+                HUNGER DOESN&apos;T NEED CHARITY.
                 <span>IT NEEDS CONNECTION.</span>
               </h1>
               <p className="pl-hero-deck">
-                The food exists. The kitchens exist. The money exists. The help exists. Too often,
-                they are strangers. ProvisionLoop connects private need to verified local capacity,
-                coordinates the handoffs, and tracks whether a real meal actually reached the other end.
+                ProvisionLoop connects private need, verified local kitchens, sponsors, and
+                delivery—then proves whether a real meal reached the other end.
               </p>
-
+              <p className="pl-accountability-line">Money in. Meals out. Proof attached.</p>
               <div className="pl-hero-actions">
-                <Link to="/pilot" className="pl-hero-primary">
-                  Join the founding pilot <ArrowUpRight className="size-4" />
-                </Link>
+                <a href="#choose-your-lane" className="pl-hero-primary">
+                  Choose your lane <ArrowRight className="size-5" />
+                </a>
                 <Link to="/trust-method" className="pl-hero-secondary">
-                  See how the loop works <ArrowRight className="size-4" />
+                  See how it works
                 </Link>
               </div>
-
-              <p className="mt-4 max-w-xl font-mono text-[10px] uppercase leading-5 tracking-[0.08em] text-[#777269]">
-                Founding pilot in Galveston County. Payments remain gated until production checks clear. Verified totals only. No projections. No demo numbers. {totals ? `${totals.providersMapped} providers mapped. ` : ""}
-                <Link to="/trust-method" className="text-primary underline underline-offset-4">
-                  Check the method
-                </Link>
+              <p className="pl-honesty-note">
+                Private. Dignified. Locally powered. Built to scale.{" "}
+                {totals ? `${totals.providersMapped} providers mapped.` : ""}
               </p>
             </div>
-
-            <aside className="pl-dispatch-board" aria-label="ProvisionLoop live dispatch board">
-              <div className="pl-dispatch-head">
-                <div>
-                  <p>DISPATCH / GALVESTON COUNTY</p>
-                  <strong>FOUNDING PILOT</strong>
-                </div>
-                <span><i aria-hidden="true" /> BUILDING</span>
-              </div>
-
-              <div className="pl-dispatch-main">
-                <p className="pl-dispatch-kicker">The operating model</p>
-                <h2>FOUR HANDOFFS.<br /><span>ONE OUTCOME.</span></h2>
-                <div className="pl-dispatch-rows">
-                  <DispatchRow number="01" label="NEED" value="Private by default" state="PROTECTED" />
-                  <DispatchRow number="02" label="CAPACITY" value="Verified kitchens only" state="CHECKED" />
-                  <DispatchRow number="03" label="SUPPORT" value="Moves only when eligible" state="TRACEABLE" />
-                  <DispatchRow number="04" label="DELIVERY" value="Tracked to completion" state="CLOSES LOOP" />
-                </div>
-              </div>
-
-              <div className="pl-dispatch-metrics">
-                <DispatchMetric label="Funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
-                <DispatchMetric label="Delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
-                <DispatchMetric label="Ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
-              </div>
-
-              <div className="pl-dispatch-foot">
-                <ShieldCheck className="size-4" />
-                <span>NO OUTCOME = NO CREDIT</span>
-              </div>
-            </aside>
+            <div className="pl-field-note" aria-hidden="true">
+              <strong>
+                GALVESTON
+                <br />
+                FIRST.
+              </strong>
+              <span>
+                A STRONGER
+                <br />
+                TOMORROW.
+              </span>
+            </div>
           </div>
         </section>
 
@@ -165,7 +150,9 @@ function HomePage() {
           <div className="site-shell grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
             <div>
               <p className="pl-section-kicker">Why this exists</p>
-              <h2 className="pl-section-title">HUNGER ISN&apos;T ONLY A SUPPLY PROBLEM. IT&apos;S A CONNECTION PROBLEM.</h2>
+              <h2 className="pl-section-title">
+                HUNGER ISN&apos;T ONLY A SUPPLY PROBLEM. IT&apos;S A CONNECTION PROBLEM.
+              </h2>
             </div>
             <div className="lg:justify-self-end">
               <p className="max-w-xl text-sm leading-7 opacity-70 md:text-base">
@@ -173,38 +160,42 @@ function HomePage() {
                 Households still waiting. ProvisionLoop exists to make those pieces operate as one
                 accountable local system instead of hoping they find one another by accident.
               </p>
-              <p className="mt-4 text-lg font-black">Private need. Local capacity. Public accountability.</p>
-              <Link to="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
+              <p className="mt-4 text-lg font-black">
+                Private need. Local capacity. Public accountability.
+              </p>
+              <Link
+                to="/about"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary"
+              >
                 Why Garrett built it <ArrowUpRight className="size-4" />
               </Link>
             </div>
           </div>
         </section>
 
-        <section className="pl-section">
+        <section className="pl-section pl-lanes-section" id="choose-your-lane">
           <div className="site-shell">
             <div className="grid items-end gap-8 md:grid-cols-[1fr_.72fr]">
               <div>
-                <p className="pl-section-kicker">There is a lane for you</p>
-                <h2 className="pl-section-title">FOUR COMMITMENTS. ONE CLOSED LOOP.</h2>
+                <p className="pl-section-kicker">The loop needs one thing from you</p>
+                <h2 className="pl-section-title">CHOOSE YOUR LANE.</h2>
               </div>
               <p className="max-w-lg text-sm leading-7 opacity-65 md:justify-self-end">
-                Run a kitchen. Move a meal. Support the pilot. Ask for help. You do not need to solve
-                the whole system — just own one handoff and finish it well.
+                You do not need to solve hunger. Own one handoff and finish it well.
               </p>
             </div>
 
             <div className="pl-lanes">
               {PATHS.map(({ to, number, icon: Icon, title, body, action }) => (
                 <Link key={to} to={to} className="pl-lane group">
-                  <div className="flex items-start justify-between gap-4">
-                    <span className="pl-lane-number">{number}</span>
-                    <Icon className="pl-lane-icon size-7" />
-                  </div>
-                  <h3>{title}</h3>
-                  <p>{body}</p>
-                  <span className="pl-lane-action">
-                    {action} <ArrowUpRight className="size-3.5 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                  <span className="pl-lane-number">{number}</span>
+                  <Icon className="pl-lane-icon size-7" aria-hidden="true" />
+                  <span className="pl-lane-copy">
+                    <h3>{title}</h3>
+                    <p>{body}</p>
+                  </span>
+                  <span className="pl-lane-action" aria-label={action}>
+                    <ArrowRight className="size-6" />
                   </span>
                 </Link>
               ))}
@@ -214,15 +205,23 @@ function HomePage() {
 
         <section className="pl-section pl-proof-section">
           <div className="site-shell">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.19em] opacity-70">Proof, not promises</p>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.19em] opacity-70">
+              Proof, not promises
+            </p>
             <h2 className="mt-4 max-w-[12ch] font-display text-[clamp(3rem,8vw,7rem)] font-black leading-[0.84] tracking-[-0.075em]">
               SHOW THE LOOP ACTUALLY CLOSED.
             </h2>
 
             <div className="pl-live-strip mt-10" aria-label="Current verified outcomes">
               <LiveStat label="Funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
-              <LiveStat label="Delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
-              <LiveStat label="Ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
+              <LiveStat
+                label="Delivered"
+                value={totals ? totals.mealsDelivered.toLocaleString() : "—"}
+              />
+              <LiveStat
+                label="Ready kitchens"
+                value={totals ? String(totals.fundingEnabledKitchens) : "—"}
+              />
             </div>
 
             <div className="pl-first-loop">
@@ -232,27 +231,53 @@ function HomePage() {
               </div>
               {latestDelivery ? (
                 <div className="pl-first-loop-body">
-                  <div><span>MEALS</span><strong>{latestDelivery.meals.toLocaleString()}</strong></div>
-                  <div><span>AREA</span><strong>{latestDelivery.neighborhood || "Private / aggregate only"}</strong></div>
-                  <div><span>DATE</span><strong>{new Date(latestDelivery.occurred_at).toLocaleDateString()}</strong></div>
-                  <div><span>RECORD</span><strong>{latestDelivery.kind.replaceAll("_", " ")}</strong></div>
+                  <div>
+                    <span>MEALS</span>
+                    <strong>{latestDelivery.meals.toLocaleString()}</strong>
+                  </div>
+                  <div>
+                    <span>AREA</span>
+                    <strong>{latestDelivery.neighborhood || "Private / aggregate only"}</strong>
+                  </div>
+                  <div>
+                    <span>DATE</span>
+                    <strong>{new Date(latestDelivery.occurred_at).toLocaleDateString()}</strong>
+                  </div>
+                  <div>
+                    <span>RECORD</span>
+                    <strong>{latestDelivery.kind.replaceAll("_", " ")}</strong>
+                  </div>
                 </div>
               ) : (
                 <div className="pl-first-loop-empty">
                   <strong>THE FIRST DELIVERY IS NOT A MARKETING STORY YET.</strong>
                   <p>
-                    When a real delivery closes and enters the verified aggregate record, its outcome
-                    appears here. Until then, zero stays zero.
+                    When a real delivery closes and enters the verified aggregate record, its
+                    outcome appears here. Until then, zero stays zero.
                   </p>
                 </div>
               )}
-              <Link to="/civic" className="pl-first-loop-link">Inspect public proof <ArrowUpRight className="size-4" /></Link>
+              <Link to="/civic" className="pl-first-loop-link">
+                Inspect public proof <ArrowUpRight className="size-4" />
+              </Link>
             </div>
 
             <div className="pl-proof-grid">
-              <ProofStep number="01" title="No invented impact" body="If a meal has not been funded and fulfilled, it does not count. Pilot numbers come from recorded outcomes, not projections." />
-              <ProofStep number="02" title="Follow the handoff" body="The workflow records the movement from eligible capacity through preparation and delivery instead of stopping at a donation receipt." />
-              <ProofStep number="03" title="Protect the person" body="Public proof is aggregate. The outcome can be accountable without turning somebody asking for food into content." />
+              <ProofStep
+                number="01"
+                title="No invented impact"
+                body="If a meal has not been funded and fulfilled, it does not count. Pilot numbers come from recorded outcomes, not projections."
+              />
+              <ProofStep
+                number="02"
+                title="Follow the handoff"
+                body="The workflow records the movement from eligible capacity through preparation and delivery instead of stopping at a donation receipt."
+              />
+              <ProofStep
+                number="03"
+                title="Protect the person"
+                body="Public proof is aggregate. The outcome can be accountable without turning somebody asking for food into content."
+              />
             </div>
           </div>
         </section>
@@ -262,14 +287,19 @@ function HomePage() {
             <div className="grid gap-8 md:grid-cols-[1fr_.8fr] md:items-end">
               <div>
                 <p className="pl-section-kicker">Local capacity</p>
-                <h2 className="pl-section-title">THE KITCHENS ARE REAL. THEIR STATUS SHOULD BE TOO.</h2>
+                <h2 className="pl-section-title">
+                  THE KITCHENS ARE REAL. THEIR STATUS SHOULD BE TOO.
+                </h2>
               </div>
               <div className="md:justify-self-end">
                 <p className="max-w-lg text-sm leading-7 opacity-65">
                   A mapped business is not automatically a partner. ProvisionLoop labels provider
                   status instead of making a directory look more active than it is.
                 </p>
-                <Link to="/kitchen" className="mt-4 inline-flex items-center gap-2 text-sm font-black text-primary">
+                <Link
+                  to="/kitchen"
+                  className="mt-4 inline-flex items-center gap-2 text-sm font-black text-primary"
+                >
                   See local capacity <ArrowUpRight className="size-4" />
                 </Link>
               </div>
@@ -278,17 +308,25 @@ function HomePage() {
             <div className="pl-network-grid">
               {(kitchens.data ?? []).slice(0, 6).map((kitchen) => (
                 <div key={kitchen.id} className="pl-network-row">
-                  <div className="pl-network-icon"><Building2 className="size-4" /></div>
+                  <div className="pl-network-icon">
+                    <Building2 className="size-4" />
+                  </div>
                   <div className="min-w-0">
                     <p className="pl-network-name">{kitchen.name}</p>
-                    <p className="pl-network-meta">{kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}</p>
+                    <p className="pl-network-meta">
+                      {kitchen.neighborhood || kitchen.city} · {kitchen.kind.replaceAll("_", " ")}
+                    </p>
                   </div>
                   <ProviderStateBadge state={kitchen.providerState} isTest={kitchen.is_test} />
                 </div>
               ))}
-              {kitchens.isLoading && <div className="pl-network-row text-sm opacity-60">Loading mapped providers…</div>}
+              {kitchens.isLoading && (
+                <div className="pl-network-row text-sm opacity-60">Loading mapped providers…</div>
+              )}
               {!kitchens.isLoading && (kitchens.data?.length ?? 0) === 0 && (
-                <div className="pl-network-row text-sm opacity-60">Mapped providers will appear here as the directory grows.</div>
+                <div className="pl-network-row text-sm opacity-60">
+                  Mapped providers will appear here as the directory grows.
+                </div>
               )}
             </div>
           </div>
@@ -296,18 +334,28 @@ function HomePage() {
 
         <section className="pl-founder-tease" id="founder">
           <div className="site-shell pl-founder-tease-grid">
-            <div className="pl-founder-tease-mark"><Fingerprint className="size-8" /><strong>GM</strong></div>
+            <div className="pl-founder-tease-mark">
+              <strong>GM</strong>
+              <span>
+                BUILT IN
+                <br />
+                GALVESTON
+              </span>
+            </div>
             <div>
               <p className="pl-section-kicker">Why Garrett built it</p>
               <h2>BUILD THE CONNECTION. PROVE THE OUTCOME. MAKE THE MODEL REPEATABLE.</h2>
               <p>
                 Garrett McLain built ProvisionLoop around a simple refusal: if the food exists, the
-                kitchen exists, the money exists and the help exists, hunger should not persist because
-                those resources are disconnected. Galveston County is where the model gets proved.
-                The system is being built so another city can eventually run the same loop without
-                reinventing it from scratch.
+                kitchen exists, the money exists and the help exists, hunger should not persist
+                because those resources are disconnected. Galveston County is where the model gets
+                proved. The system is being built so another city can eventually run the same loop
+                without reinventing it from scratch.
               </p>
-              <a href="/about#founder" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
+              <a
+                href="/about#founder"
+                className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary"
+              >
                 Read the story <ArrowUpRight className="size-4" />
               </a>
             </div>
@@ -317,14 +365,26 @@ function HomePage() {
         <section className="pl-final-cta">
           <div className="site-shell pl-final-grid">
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">This is the founding loop</p>
-              <h2 className="pl-final-title mt-4">THERE&apos;S A<br /><span>LANE FOR YOU.</span></h2>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">
+                This is the founding loop
+              </p>
+              <h2 className="pl-final-title mt-4">
+                THERE&apos;S A<br />
+                <span>LANE FOR YOU.</span>
+              </h2>
             </div>
             <div>
-              <p className="pl-final-copy">Help prove a local system where need stays private, capacity becomes useful, and every claimed outcome has evidence behind it.</p>
+              <p className="pl-final-copy">
+                Help prove a local system where need stays private, capacity becomes useful, and
+                every claimed outcome has evidence behind it.
+              </p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/pilot" className="pl-hero-primary">Join the founding pilot <ArrowUpRight className="size-4" /></Link>
-                <Link to="/civic" className="pl-hero-secondary">See verified proof</Link>
+                <Link to="/pilot" className="pl-hero-primary">
+                  Join the founding pilot <ArrowUpRight className="size-4" />
+                </Link>
+                <Link to="/civic" className="pl-hero-secondary">
+                  See verified proof
+                </Link>
               </div>
             </div>
           </div>
@@ -337,28 +397,30 @@ function HomePage() {
 }
 
 function LiveStat({ label, value }: { label: string; value: string }) {
-  return <div className="pl-live-stat"><p className="pl-live-value">{value}</p><p className="pl-live-label">{label}</p></div>;
-}
-
-function LoopNode({ number, label }: { number: string; label: string }) {
-  return <div className="pl-loop-node"><span>{number}</span><i aria-hidden="true" /><strong>{label}</strong></div>;
-}
-
-function DispatchRow({ number, label, value, state }: { number: string; label: string; value: string; state: string }) {
   return (
-    <div className="pl-dispatch-row">
-      <span>{number}</span>
-      <strong>{label}</strong>
-      <p>{value}</p>
-      <em>{state}</em>
+    <div className="pl-live-stat">
+      <p className="pl-live-value">{value}</p>
+      <p className="pl-live-label">{label}</p>
     </div>
   );
 }
 
-function DispatchMetric({ label, value }: { label: string; value: string }) {
-  return <div><span>{label}</span><strong>{value}</strong></div>;
+function LoopNode({ number, label }: { number: string; label: string }) {
+  return (
+    <div className="pl-loop-node">
+      <span>{number}</span>
+      <i aria-hidden="true" />
+      <strong>{label}</strong>
+    </div>
+  );
 }
 
 function ProofStep({ number, title, body }: { number: string; title: string; body: string }) {
-  return <article className="pl-proof-step"><p className="pl-proof-num">{number}</p><h3>{title}</h3><p>{body}</p></article>;
+  return (
+    <article className="pl-proof-step">
+      <p className="pl-proof-num">{number}</p>
+      <h3>{title}</h3>
+      <p>{body}</p>
+    </article>
+  );
 }
