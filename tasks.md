@@ -54,25 +54,32 @@ activation remains separately gated. Evidence: [pilot checks](./docs/verificatio
 11. [ ] **Sending domain and admin email notifications** [FR-402, FR-703].
 12. [ ] **Confirm provisional pilot date and eligibility** [FR-502].
 13. [x] **Verify operator authority before claim approval** [FR-202]: production DB
-       approval now fails closed unless a platform admin supplies a verification method and
-       concrete evidence note. Evidence is stored in an admin-only RLS-protected audit table;
-       kitchen owners cannot change their own trust/approval/test flags.
+        approval now fails closed unless a platform admin supplies a verification method and
+        concrete evidence note. Evidence is stored in an admin-only RLS-protected audit table;
+        kitchen owners cannot change their own trust/approval/test flags.
 14. [ ] **Enforce legal acceptance in server functions/RPCs** [FR-501]: kitchen claim
-       and self-registration now enforce Terms v1.0, Privacy v1.0 and Kitchen Agreement v1.0
-       at the database boundary; partner/referral and volunteer delivery RPCs also enforce
-       their governed agreements. Keep the umbrella item open until every remaining direct-call
-       path, including money activation paths, has negative-bypass verification.
+        and self-registration now enforce Terms v1.0, Privacy v1.0 and Kitchen Agreement v1.0
+        at the database boundary; partner/referral and volunteer delivery RPCs also enforce
+        their governed agreements. Keep the umbrella item open until every remaining direct-call
+        path, including money activation paths, has negative-bypass verification.
 15. [x] **Civic suppression, estimated-dollar labels, sandbox separation** [FR-601]:
-       civic reporting now comes from `get_public_civic_snapshot`; raw impact rows are not
-       anonymously/browser-readable, test kitchens/events/shifts are separated, cohorts under
-       five are suppressed, and sponsor-dollar values remain explicitly estimated.
+        civic reporting now comes from `get_public_civic_snapshot`; raw impact rows are not
+        anonymously/browser-readable, test kitchens/events/shifts are separated, cohorts under
+        five are suppressed, and sponsor-dollar values remain explicitly estimated.
 16. [x] **Show admin query errors separately from empty queues** [FR-701]: verified in
-       the current admin route; query errors render as errors rather than being presented as
-       empty operational queues.
+        the current admin route; query errors render as errors rather than being presented as
+        empty operational queues.
 17. [ ] **Production activation gates** [FR-101, FR-401, FR-502]: verify remaining
-       migrations/source parity, first approved partner, payment configuration, legal entity,
-       authenticated assistance/referral workflow, full MealForge persistence cycle and
-       published mobile QA. Do not switch on live payments in this pass.
+        migrations/source parity, first approved partner, payment configuration, legal entity,
+        authenticated assistance/referral workflow, full MealForge persistence cycle and
+        published mobile QA. Do not switch on live payments in this pass.
+18. [x] **Public MealForge entry point**: add an indexable `/mealforge` product page,
+        prominent homepage spotlight, public navigation path and app CTA without claiming live
+        retailer pricing or completed end-to-end verification.
+19. [ ] **MealForge completion pass**: record onboarding → pantry → recipe import → plan →
+        shopping → cook → leftovers → reload and authenticated cross-device persistence; expose
+        sync failure/retry state instead of silently swallowing cloud errors; expand automated
+        coverage beyond planner invariants and atomic-RPC source checks.
 
 Non-pilot roadmap work (price/recipe depth, broader ingestion and live feeds) stays
 in roadmap.md; MealForge remains noindex until its end-to-end persistence cycle is verified.

@@ -257,6 +257,14 @@ The repository contains MealForge routes and supporting logic, and the README de
 - custom allergy support is a required user expectation and must remain editable and obvious in household setup/profile flows;
 - the next completion pass should test the entire path from onboarding → pantry/import → plan → shopping → cook/complete rather than patching isolated screens.
 
+## Public MealForge positioning — 2026-09-11
+
+- `/mealforge` is the public, indexable introduction to the household product;
+- shared navigation explains MealForge before asking a new visitor to enter `/app`;
+- the ProvisionLoop homepage includes a dedicated MealForge spotlight with direct paths to the public overview and app;
+- `/app` remains noindex until the authenticated persistence cycle and complete household workflow are verified;
+- public copy must distinguish current estimated/observed pricing from any future verified live retailer feed.
+
 ---
 
 # 7. Experience and visual direction

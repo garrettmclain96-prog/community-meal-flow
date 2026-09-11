@@ -4,6 +4,7 @@ import {
   ArrowRight,
   ArrowUpRight,
   Building2,
+  ChefHat,
   Home,
   Radio,
   Truck,
@@ -143,6 +144,48 @@ function HomePage() {
             <LoopNode number="02" label="Capacity gets verified" />
             <LoopNode number="03" label="Money + people move" />
             <LoopNode number="04" label="The outcome gets proved" />
+          </div>
+        </section>
+
+        <section className="pl-mealforge-spotlight" aria-labelledby="mealforge-spotlight-title">
+          <div className="site-shell pl-mealforge-spotlight-grid">
+            <div>
+              <p className="pl-mealforge-label">
+                <ChefHat className="size-4" /> The household engine inside ProvisionLoop
+              </p>
+              <h2 id="mealforge-spotlight-title">STOP GUESSING WHAT DINNER COSTS.</h2>
+              <p>
+                MealForge builds a real week of dinners around your people, allergies, pantry,
+                budget, equipment and time—then turns it into one package-aware shopping list.
+              </p>
+              <div className="pl-mealforge-actions">
+                <Link to="/mealforge" className="pl-mealforge-primary">
+                  Meet MealForge <ArrowRight className="size-5" />
+                </Link>
+                <Link to="/app" className="pl-mealforge-secondary">
+                  Open the app
+                </Link>
+              </div>
+            </div>
+            <div className="pl-mealforge-receipt" aria-label="Example MealForge plan summary">
+              <div>
+                <span>HOUSEHOLD</span>
+                <strong>4 PEOPLE</strong>
+              </div>
+              <div>
+                <span>WEEK</span>
+                <strong>5 DINNERS</strong>
+              </div>
+              <div>
+                <span>BUDGET</span>
+                <strong>$90 MAX</strong>
+              </div>
+              <div>
+                <span>CHECKS</span>
+                <strong>ALLERGIES · PANTRY · TIME</strong>
+              </div>
+              <p>PLAN FIRST. SHOP ONCE. WASTE LESS.</p>
+            </div>
           </div>
         </section>
 

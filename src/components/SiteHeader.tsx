@@ -24,13 +24,22 @@ export function SiteHeader() {
     <>
       <div className="pl-signal-bar">
         <div className="site-shell pl-signal-inner">
-          <span className="pl-signal-live"><i aria-hidden="true" /> Galveston County · founding pilot</span>
-          <span className="hidden sm:inline">Private need · local capacity · public accountability</span>
+          <span className="pl-signal-live">
+            <i aria-hidden="true" /> Galveston County · founding pilot
+          </span>
+          <span className="hidden sm:inline">
+            Private need · local capacity · public accountability
+          </span>
         </div>
       </div>
       <header className="pl-site-header">
         <div className="site-shell pl-header-row flex items-center justify-between gap-4">
-          <Link to="/" className="pl-brand" onClick={() => setOpen(false)} aria-label="ProvisionLoop home">
+          <Link
+            to="/"
+            className="pl-brand"
+            onClick={() => setOpen(false)}
+            aria-label="ProvisionLoop home"
+          >
             <span className="pl-brand-symbol">PL</span>
             <span className="min-w-0">
               <span className="pl-brand-wordmark">
@@ -42,11 +51,20 @@ export function SiteHeader() {
 
           <nav className="hidden items-center lg:flex" aria-label="Primary navigation">
             {NAV.map((item) => (
-              <Link key={item.to} to={item.to} className="pl-nav-link" activeProps={{ className: "pl-nav-link is-active" }}>
+              <Link
+                key={item.to}
+                to={item.to}
+                className="pl-nav-link"
+                activeProps={{ className: "pl-nav-link is-active" }}
+              >
                 {item.label}
               </Link>
             ))}
-            <Link to="/app" className="pl-nav-link" activeProps={{ className: "pl-nav-link is-active" }}>
+            <Link
+              to="/mealforge"
+              className="pl-nav-link"
+              activeProps={{ className: "pl-nav-link is-active" }}
+            >
               MealForge
             </Link>
           </nav>
@@ -87,7 +105,7 @@ export function SiteHeader() {
                   <span>{String(index + 1).padStart(2, "0")} ↗</span>
                 </Link>
               ))}
-              <Link to="/app" className="pl-mobile-link" onClick={() => setOpen(false)}>
+              <Link to="/mealforge" className="pl-mobile-link" onClick={() => setOpen(false)}>
                 MealForge <span>07 ↗</span>
               </Link>
               <Link to="/partners" className="pl-mobile-link" onClick={() => setOpen(false)}>
@@ -128,33 +146,66 @@ export function SiteFooter() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Act</p>
           <div className="mt-5 grid gap-3 text-sm">
-            <Link className="pl-footer-link" to="/pilot">Join the founding pilot</Link>
-            <Link className="pl-footer-link" to="/help">Request food help</Link>
-            <Link className="pl-footer-link" to="/kitchen">Activate kitchen capacity</Link>
-            <Link className="pl-footer-link" to="/volunteer">Claim local work</Link>
+            <Link className="pl-footer-link" to="/pilot">
+              Join the founding pilot
+            </Link>
+            <Link className="pl-footer-link" to="/help">
+              Request food help
+            </Link>
+            <Link className="pl-footer-link" to="/kitchen">
+              Activate kitchen capacity
+            </Link>
+            <Link className="pl-footer-link" to="/volunteer">
+              Claim local work
+            </Link>
+            <Link className="pl-footer-link" to="/mealforge">
+              Explore MealForge
+            </Link>
           </div>
         </div>
 
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Verify</p>
           <div className="mt-5 grid gap-3 text-sm">
-            <Link className="pl-footer-link" to="/impact">Impact</Link>
-            <Link className="pl-footer-link" to="/civic">Public proof</Link>
-            <Link className="pl-footer-link" to="/trust-method">Trust &amp; method</Link>
-            <Link className="pl-footer-link" to="/about">Why this exists</Link>
-            <Link className="pl-footer-link" to="/partners">Partners</Link>
+            <Link className="pl-footer-link" to="/impact">
+              Impact
+            </Link>
+            <Link className="pl-footer-link" to="/civic">
+              Public proof
+            </Link>
+            <Link className="pl-footer-link" to="/trust-method">
+              Trust &amp; method
+            </Link>
+            <Link className="pl-footer-link" to="/about">
+              Why this exists
+            </Link>
+            <Link className="pl-footer-link" to="/partners">
+              Partners
+            </Link>
           </div>
         </div>
       </div>
 
       <div className="border-t border-white/10">
         <div className="site-shell flex flex-wrap gap-x-5 gap-y-2 py-4 text-xs text-[#8e897f]">
-          <a className="pl-footer-link" href={SUPPORT_MAILTO}>{SUPPORT_EMAIL}</a>
-          <Link className="pl-footer-link" to="/legal">Legal Center</Link>
-          <Link className="pl-footer-link" to="/legal/terms">Terms</Link>
-          <Link className="pl-footer-link" to="/legal/privacy">Privacy</Link>
-          <Link className="pl-footer-link" to="/legal/refunds">Refunds</Link>
-          <Link className="pl-footer-link" to="/legal/fees-tax">Fees &amp; tax</Link>
+          <a className="pl-footer-link" href={SUPPORT_MAILTO}>
+            {SUPPORT_EMAIL}
+          </a>
+          <Link className="pl-footer-link" to="/legal">
+            Legal Center
+          </Link>
+          <Link className="pl-footer-link" to="/legal/terms">
+            Terms
+          </Link>
+          <Link className="pl-footer-link" to="/legal/privacy">
+            Privacy
+          </Link>
+          <Link className="pl-footer-link" to="/legal/refunds">
+            Refunds
+          </Link>
+          <Link className="pl-footer-link" to="/legal/fees-tax">
+            Fees &amp; tax
+          </Link>
         </div>
       </div>
 
