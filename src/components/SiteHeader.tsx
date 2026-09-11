@@ -9,7 +9,7 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
 
 const NAV = [
-  { to: "/impact", label: "Fund a meal" },
+  { to: "/impact", label: "Impact" },
   { to: "/help", label: "Need food" },
   { to: "/kitchen", label: "Run a kitchen" },
   { to: "/volunteer", label: "Deliver" },
@@ -24,8 +24,8 @@ export function SiteHeader() {
     <>
       <div className="pl-signal-bar">
         <div className="site-shell pl-signal-inner">
-          <span className="pl-signal-live"><i aria-hidden="true" /> Galveston County · live pilot</span>
-          <span className="hidden sm:inline">Good intentions aren&apos;t enough · execution matters</span>
+          <span className="pl-signal-live"><i aria-hidden="true" /> Galveston County · founding pilot</span>
+          <span className="hidden sm:inline">Private need · local capacity · public accountability</span>
         </div>
       </div>
       <header className="pl-site-header">
@@ -58,8 +58,8 @@ export function SiteHeader() {
             <div className="pl-header-icon hidden sm:block">
               <ThemeToggle />
             </div>
-            <Link to="/impact" className="pl-header-action hidden md:inline-flex">
-              Close a loop <ArrowUpRight className="size-4" />
+            <Link to="/pilot" className="pl-header-action hidden md:inline-flex">
+              Join the pilot <ArrowUpRight className="size-4" />
             </Link>
             <button
               type="button"
@@ -128,7 +128,7 @@ export function SiteFooter() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Act</p>
           <div className="mt-5 grid gap-3 text-sm">
-            <Link className="pl-footer-link" to="/impact">Fund the next meal</Link>
+            <Link className="pl-footer-link" to="/pilot">Join the founding pilot</Link>
             <Link className="pl-footer-link" to="/help">Request food help</Link>
             <Link className="pl-footer-link" to="/kitchen">Activate kitchen capacity</Link>
             <Link className="pl-footer-link" to="/volunteer">Claim local work</Link>
@@ -138,10 +138,10 @@ export function SiteFooter() {
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Verify</p>
           <div className="mt-5 grid gap-3 text-sm">
+            <Link className="pl-footer-link" to="/impact">Impact</Link>
             <Link className="pl-footer-link" to="/civic">Public proof</Link>
             <Link className="pl-footer-link" to="/trust-method">Trust &amp; method</Link>
             <Link className="pl-footer-link" to="/about">Why this exists</Link>
-            <Link className="pl-footer-link" to="/pilot">Pilot status</Link>
             <Link className="pl-footer-link" to="/partners">Partners</Link>
           </div>
         </div>
