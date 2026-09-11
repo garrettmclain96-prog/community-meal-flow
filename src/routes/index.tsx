@@ -307,9 +307,9 @@ function HomePage() {
                 dropped somewhere between intention and action. ProvisionLoop is the refusal to
                 accept that gap as normal.
               </p>
-              <Link to="/about#founder" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
+              <a href="/about#founder" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
                 Read the story <ArrowUpRight className="size-4" />
-              </Link>
+              </a>
             </div>
           </div>
         </section>
