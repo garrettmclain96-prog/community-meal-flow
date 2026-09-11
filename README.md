@@ -26,6 +26,8 @@ Operating sequence:
 
 If the outcome did not happen, ProvisionLoop does not count it as impact.
 
+The durable public voice and visual rules live in [`docs/brand/movement.md`](docs/brand/movement.md).
+
 ## Live product
 
 - **Canonical site:** https://www.provisionloop.org
@@ -189,6 +191,7 @@ bun run verify
 - `requirements.md` — EARS-form behavioral requirements
 - `tasks.md` — pilot execution work and evidence
 - `roadmap.md` — broader roadmap
+- `docs/brand/movement.md` — movement voice, visual direction, and proof rules
 - `docs/adr/` — architecture/product decisions
 - `docs/remediation/` — failures and fixes
 - `docs/runbooks/` — operating procedures
