@@ -2,9 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   ArrowUpRight,
-  HeartHandshake,
   LockKeyhole,
-  Network,
   ReceiptText,
   UtensilsCrossed,
 } from "lucide-react";
@@ -15,17 +13,17 @@ import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About ProvisionLoop — Built to Close the Loop" },
+      { title: "Why ProvisionLoop Exists — Good Intentions Need Execution" },
       {
         name: "description",
         content:
-          "Meet ProvisionLoop, learn why the community food network exists, and meet founder Garrett McLain — the systems builder behind the Galveston County pilot.",
+          "ProvisionLoop exists because food, willing kitchens, funding and volunteers can all exist at the same time while somebody still goes hungry. Garrett McLain built it to close that execution gap.",
       },
-      { property: "og:title", content: "About ProvisionLoop — Built to Close the Loop" },
+      { property: "og:title", content: "ProvisionLoop — Good intentions are not enough. Execution matters." },
       {
         property: "og:description",
         content:
-          "Private need. Local capacity. Public accountability. Meet the system and the founder building it in Galveston County.",
+          "The movement is simple: if help never reaches the other end, the job is not finished.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -36,18 +34,18 @@ export const Route = createFileRoute("/about")({
 const PRINCIPLES = [
   {
     icon: LockKeyhole,
-    title: "Need stays private",
-    body: "People asking for food should not have to become public content. Recipient details stay inside the workflows that actually need them.",
+    title: "Protect the person",
+    body: "Need enters privately. Somebody asking for dinner does not owe the internet their hardship in exchange for help.",
   },
   {
     icon: UtensilsCrossed,
-    title: "Capacity stays local",
-    body: "Restaurants, caterers, churches and community kitchens can turn usable capacity into accountable local meal fulfillment.",
+    title: "Use real capacity",
+    body: "A kitchen counts when its status is known and it can actually fulfill. A directory listing is not the same thing as a partner.",
   },
   {
     icon: ReceiptText,
-    title: "Proof closes the loop",
-    body: "Funding and fulfillment states create aggregate public proof without turning somebody's hardship into marketing material.",
+    title: "Prove the handoff",
+    body: "Funding is not the finish line. The loop closes when the meal reaches the other end and the outcome is recorded honestly.",
   },
 ] as const;
 
@@ -58,21 +56,21 @@ function AboutPage() {
       <main>
         <section className="pl-about-hero">
           <div className="site-shell">
-            <p className="kicker text-primary">About ProvisionLoop</p>
+            <p className="kicker text-primary">Why ProvisionLoop exists</p>
             <h1 className="pl-about-title">
-              FOOD HELP SHOULD BE A <span>LOOP.</span>
+              GOOD INTENTIONS <span>STILL FAIL.</span>
             </h1>
             <p className="pl-about-lead">
-              ProvisionLoop is community food infrastructure: one connected system for private food
-              need, verified local capacity, accountable funding, volunteer movement, trusted partner
-              coordination and public proof that the work actually got finished.
+              The food can exist. The kitchen can exist. The money can exist. The volunteer can exist.
+              And somebody can still go hungry because none of those pieces are responsible for the
+              handoff between them. ProvisionLoop exists to make the handoff the job.
             </p>
 
             <div className="pl-about-sequence" aria-label="ProvisionLoop operating sequence">
-              <div><span>01 · Need</span><strong>Request privately</strong></div>
-              <div><span>02 · Capacity</span><strong>Match locally</strong></div>
-              <div><span>03 · Action</span><strong>Fund + fulfill</strong></div>
-              <div><span>04 · Proof</span><strong>Close publicly</strong></div>
+              <div><span>01 · Need</span><strong>Keep it private</strong></div>
+              <div><span>02 · Capacity</span><strong>Verify it</strong></div>
+              <div><span>03 · Action</span><strong>Move money + people</strong></div>
+              <div><span>04 · Proof</span><strong>Show it closed</strong></div>
             </div>
           </div>
         </section>
@@ -80,25 +78,24 @@ function AboutPage() {
         <section className="py-16 md:py-24">
           <div className="site-shell grid gap-12 lg:grid-cols-[.72fr_1.28fr]">
             <div>
-              <p className="kicker text-primary">Why it exists</p>
+              <p className="kicker text-primary">The failure Garrett refused to accept</p>
               <h2 className="mt-4 max-w-[11ch] font-display text-4xl font-black tracking-[-0.055em] md:text-6xl">
-                THE GAP ISN&apos;T GENEROSITY. IT&apos;S COORDINATION.
+                CARING ISN&apos;T A DELIVERY SYSTEM.
               </h2>
             </div>
             <div className="space-y-6 text-base leading-8 text-muted-foreground md:text-lg">
               <p>
-                Communities already contain people willing to help, kitchens capable of producing
-                meals, organizations that understand local need and volunteers willing to move food.
-                What often fails is the connective tissue between all of them.
+                The frustrating part was not a shortage of people who cared. It was seeing useful
+                things sitting next to each other without becoming an outcome: kitchens with spare
+                capacity, people ready to help, money ready to move and households that still needed food.
               </p>
               <p>
-                ProvisionLoop is being built to make that connective tissue explicit. A request can
-                enter privately. Capacity can be verified. Funding can go only where the network can
-                act. Fulfillment can move through visible states. Aggregate outcomes can close the loop
-                without exposing the people being served.
+                Between those pieces was a gap nobody owned. A message waited. A handoff died. A list
+                went stale. A donation became a receipt instead of dinner. Everybody could mean well
+                and the system could still fail.
               </p>
               <p className="font-semibold text-foreground">
-                The goal is less leakage between good intentions and a meal actually reaching somebody.
+                ProvisionLoop was built around one refusal: good intentions do not get credit for an outcome they never completed.
               </p>
             </div>
           </div>
@@ -106,10 +103,14 @@ function AboutPage() {
 
         <section className="border-y border-border bg-foreground py-16 text-background md:py-24">
           <div className="site-shell">
-            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">The operating idea</p>
+            <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">The movement</p>
             <h2 className="mt-5 max-w-5xl font-display text-5xl font-black leading-[0.86] tracking-[-0.065em] md:text-8xl">
-              PRIVATE NEED. LOCAL CAPACITY. PUBLIC ACCOUNTABILITY.
+              IF HELP NEVER REACHES THE OTHER END, THE JOB IS NOT FINISHED.
             </h2>
+            <p className="mt-8 max-w-3xl text-base leading-8 text-[#b8b2a7] md:text-lg">
+              ProvisionLoop is the system underneath that belief. The movement is bigger and simpler:
+              stop celebrating intent before the handoff is complete. Count what actually closed.
+            </p>
             <div className="mt-12 grid gap-px bg-white/20 md:grid-cols-3">
               {PRINCIPLES.map(({ icon: Icon, title, body }) => (
                 <article key={title} className="bg-foreground p-6 md:p-8">
@@ -122,22 +123,6 @@ function AboutPage() {
           </div>
         </section>
 
-        <section className="py-16 md:py-24">
-          <div className="site-shell grid gap-10 lg:grid-cols-2 lg:items-start">
-            <div>
-              <p className="kicker text-primary">What it is — and isn&apos;t</p>
-              <h2 className="mt-4 max-w-[10ch] font-display text-4xl font-black tracking-[-0.055em] md:text-6xl">
-                NOT ANOTHER DONATION PAGE.
-              </h2>
-            </div>
-            <div className="grid gap-4">
-              <AboutRow icon={Network} title="A coordination layer" body="Funding, kitchens, partners, volunteers and fulfillment are connected instead of treated as unrelated programs." />
-              <AboutRow icon={HeartHandshake} title="Built around dignity" body="Public accountability does not require publishing recipient identities or turning hardship into marketing." />
-              <AboutRow icon={ReceiptText} title="Designed for traceable outcomes" body="Mapped providers, verified operators, funding eligibility and completed fulfillment are different states — and the product treats them that way." />
-            </div>
-          </div>
-        </section>
-
         <section id="founder" className="pl-founder scroll-mt-32">
           <div className="site-shell px-0 sm:px-6 lg:px-8">
             <div className="pl-founder-grid">
@@ -146,32 +131,56 @@ function AboutPage() {
               </div>
               <div className="pl-founder-copy">
                 <p className="font-mono text-[10px] font-black uppercase tracking-[0.22em] text-primary">Founder · Garrett McLain</p>
-                <h2 className="pl-founder-quote">BUILT BY SOMEBODY WHO CAN&apos;T LEAVE A BROKEN SYSTEM ALONE.</h2>
+                <h2 className="pl-founder-quote">I WON&apos;T LET GOOD INTENTIONS FAIL AT EXECUTION.</h2>
                 <div className="pl-founder-body space-y-5">
                   <p>
-                    ProvisionLoop was founded by Garrett McLain, a Galveston-area systems builder and
-                    operations problem-solver whose work lives where software, logistics and real-world
-                    execution collide.
+                    Garrett built ProvisionLoop because the part that bothered him was never the lack
+                    of ideas. It was watching good ideas die in the last mile between somebody saying
+                    they would help and somebody actually receiving help.
                   </p>
                   <p>
-                    The idea came from the kind of problem Garrett keeps returning to: plenty of people
-                    care, plenty of resources already exist, and yet the outcome still breaks somewhere
-                    between intention and execution. ProvisionLoop is the answer to that gap — not as a
-                    campaign, but as infrastructure.
+                    His instinct is operational: find the point where the handoff breaks, make that
+                    point visible, assign responsibility to it and keep following the work until the
+                    outcome is real. ProvisionLoop applies that obsession to local food coordination.
                   </p>
                   <p className="font-semibold text-white">
-                    The founder thesis is simple: if a community can see its need, verify its capacity,
-                    move resources intelligently and prove fulfillment, generosity becomes a system
-                    instead of a gamble.
+                    The standard is deliberately unforgiving: no fake reach, no projected impact passed
+                    off as proof, no claiming a loop closed because money moved. A completed outcome is
+                    the unit that counts.
                   </p>
                 </div>
                 <div className="pl-founder-meta">
-                  <span className="pl-founder-chip">Founder</span>
-                  <span className="pl-founder-chip">Systems builder</span>
-                  <span className="pl-founder-chip">Operations-first</span>
+                  <span className="pl-founder-chip">Execution first</span>
+                  <span className="pl-founder-chip">Proof over theater</span>
                   <span className="pl-founder-chip">Galveston County</span>
+                  <span className="pl-founder-chip">Built in public</span>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-16 md:py-24">
+          <div className="site-shell grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
+            <div>
+              <p className="kicker text-primary">Movement vs. system</p>
+              <h2 className="mt-4 max-w-[11ch] font-display text-4xl font-black tracking-[-0.055em] md:text-6xl">
+                THE BELIEF IS SIMPLE. THE MACHINERY IS NOT.
+              </h2>
+            </div>
+            <div className="space-y-5 text-sm leading-7 text-muted-foreground md:text-base">
+              <p>
+                The movement says the outcome matters more than the announcement. The system handles
+                the ugly details required to make that true: status, eligibility, privacy, funding,
+                kitchen operations, delivery state and public aggregate proof.
+              </p>
+              <p>
+                That machinery should stay visible enough to audit and quiet enough that a person who
+                needs food does not have to understand it before asking for help.
+              </p>
+              <Link to="/trust-method" className="inline-flex items-center gap-2 font-black text-primary">
+                Inspect the method <ArrowUpRight className="size-4" />
+              </Link>
             </div>
           </div>
         </section>
@@ -180,20 +189,20 @@ function AboutPage() {
           <div className="site-shell grid gap-10 lg:grid-cols-[1.2fr_.8fr] lg:items-end">
             <div>
               <p className="font-mono text-[10px] font-black uppercase tracking-[0.22em] opacity-70">The standard</p>
-              <h2 className="mt-4">IF IT DOESN&apos;T CLOSE THE LOOP, IT&apos;S NOT DONE.</h2>
+              <h2 className="mt-4">NO OUTCOME. NO CREDIT.</h2>
             </div>
             <div>
               <p>
-                ProvisionLoop is still in pilot. That is a feature, not a weakness. The model should
-                earn trust locally, prove its operating assumptions and become stronger through actual
-                closed loops before pretending reach is the same thing as impact.
+                ProvisionLoop is still a pilot. That means the public numbers stay small until the
+                work earns bigger ones. Every closed loop should be real, attributable to recorded
+                activity and explainable without inventing a success story.
               </p>
               <div className="mt-7 flex flex-wrap gap-3">
-                <Link to="/pilot" className="button-secondary border-current">
-                  Explore the pilot <ArrowUpRight className="size-4" />
+                <Link to="/impact" className="button-secondary border-current">
+                  Fund the next loop <ArrowUpRight className="size-4" />
                 </Link>
-                <Link to="/trust-method" className="button-secondary border-current">
-                  See the verification method <ArrowRight className="size-4" />
+                <Link to="/civic" className="button-secondary border-current">
+                  See the proof <ArrowRight className="size-4" />
                 </Link>
               </div>
             </div>
@@ -202,19 +211,5 @@ function AboutPage() {
       </main>
       <SiteFooter />
     </div>
-  );
-}
-
-function AboutRow({ icon: Icon, title, body }: { icon: typeof Network; title: string; body: string }) {
-  return (
-    <article className="editorial-card flex gap-4 p-5 transition-transform duration-200 hover:-translate-y-1 md:p-6">
-      <div className="shrink-0 border-2 border-foreground p-3">
-        <Icon className="size-5" />
-      </div>
-      <div>
-        <h3 className="font-display text-xl font-black">{title}</h3>
-        <p className="mt-2 text-sm leading-6 text-muted-foreground">{body}</p>
-      </div>
-    </article>
   );
 }
