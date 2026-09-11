@@ -5,10 +5,6 @@
     {
       "path": "/api/public/hooks/acquisition-worker",
       "schedule": "0 * * * *"
-    },
-    {
-      "path": "/api/public/hooks/acquisition-worker-health",
-      "schedule": "* * * * *"
     }
   ],
   "headers": [
@@ -72,12 +68,14 @@
     {
       "source": "/pilot",
       "headers": [
-        { "key": "Link", "value": "<https://www.provisionloop.org/pilot>; rel=\"canonical\"" }]
+        { "key": "Link", "value": "<https://www.provisionloop.org/pilot>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/legal",
       "headers": [
-        { "key": "Link", "value": "<https://www.provisionloop.org/legal>; rel=\"canonical\"" }]
+        { "key": "Link", "value": "<https://www.provisionloop.org/legal>; rel=\"canonical\"" }
+      ]
     },
     {
       "source": "/impact",
