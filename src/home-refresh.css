@@ -469,12 +469,12 @@
 /* Galveston Movement — selected September 2026 */
 @layer components {
   .pl-home {
-    --pl-ink: #082337;
-    --pl-paper: #f4efe3;
-    --pl-paper-2: #e5dcc9;
-    --pl-line: #082337;
-    --pl-coral: #f04f32;
-    --pl-lime: #b8f13c;
+    --pl-ink: #0b293b;
+    --pl-paper: #f3efe3;
+    --pl-paper-2: #ded5c3;
+    --pl-line: #0b293b;
+    --pl-coral: #ff5638;
+    --pl-lime: #b8ff3c;
     background: var(--pl-paper);
     color: var(--pl-ink);
   }
@@ -550,10 +550,11 @@
     display: block;
     width: fit-content;
     margin-top: 0.08em;
-    background: var(--pl-coral);
-    color: var(--pl-paper);
-    padding: 0.04em 0.08em 0.1em;
-    transform: rotate(-1deg);
+    background: transparent;
+    color: var(--pl-coral);
+    padding: 0;
+    border-bottom: 0.1em solid var(--pl-lime);
+    transform: none;
   }
 
   .pl-hero-deck {
@@ -616,25 +617,34 @@
     right: 0;
     bottom: 2rem;
     display: none;
-    align-items: flex-end;
-    gap: 1rem;
-    color: var(--pl-paper);
-    text-align: right;
+    width: 11rem;
+    min-height: 8rem;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+    background: var(--pl-lime);
+    color: #061c2a;
+    border: 2px solid #061c2a;
+    padding: 1rem;
+    text-align: left;
+    transform: rotate(2deg);
+    box-shadow: 0.45rem 0.45rem 0 #ff5638;
   }
 
   .pl-field-note strong {
     font-family: var(--font-display);
-    font-size: 2.2rem;
+    font-size: 1.8rem;
     line-height: 0.85;
   }
 
   .pl-field-note span {
-    border-left: 0.55rem solid var(--pl-lime);
-    padding-left: 0.75rem;
+    border-top: 2px solid #061c2a;
+    width: 100%;
+    padding-top: 0.6rem;
     font-family: var(--font-mono);
-    font-size: 0.65rem;
+    font-size: 0.58rem;
     font-weight: 800;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
   }
 
   .pl-loop-rail {
@@ -656,8 +666,20 @@
   }
 
   .pl-lanes-section {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
     background: var(--pl-ink);
     color: var(--pl-paper);
+  }
+
+  .pl-lanes-section::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: url("./assets/galveston-movement-hero.webp") 83% 73% / 82rem auto no-repeat;
+    opacity: 0.07;
+    content: "";
   }
 
   .pl-lanes-section .pl-section-kicker {
@@ -776,30 +798,22 @@
     }
 
     .pl-hero-art {
-      opacity: 0.32;
-      object-position: 64% center;
+      opacity: 1;
+      object-position: 55% top;
     }
 
     .dark .pl-hero-art {
-      opacity: 0.24;
-    }
-
-    .pl-hero::before {
-      position: absolute;
-      z-index: -1;
-      inset: 0;
-      background: color-mix(in srgb, var(--pl-paper) 38%, transparent);
-      content: "";
+      opacity: 0.72;
     }
 
     .pl-hero-copy {
       justify-content: flex-end;
-      padding-top: 9rem;
+      padding-top: 7rem;
       padding-bottom: 3.25rem;
     }
 
     .pl-hero-title {
-      font-size: clamp(3.7rem, 17vw, 5.1rem);
+      font-size: clamp(3.25rem, 15vw, 4.75rem);
     }
 
     .pl-hero-actions {
