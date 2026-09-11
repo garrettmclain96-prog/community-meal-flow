@@ -174,106 +174,41 @@ export async function loadCloudState(userId: string, fallback: Household): Promi
   };
 }
 
+/**
+ * Supabase snapshot writes are serialized so a slower, older request cannot
+ * finish after a newer request and overwrite it. Each database write is itself
+ * atomic through sync_mealforge_snapshot(), so a network failure cannot leave
+ * the child collections half-deleted.
+ */
+let syncQueue: Promise<void> = Promise.resolve();
+
 /** Mirrors the household-owned document. Public catalog rows are never copied into household data. */
-export async function pushCloudState(householdId: string, state: MealForgeState) {
-  const h = state.household;
-
-  const householdResult = await supabase
-    .from("households")
-    .update({
-      name: h.name,
-      weekly_budget: h.weeklyBudget,
-      dinners_per_week: h.dinnersPerWeek,
-      max_cook_minutes: h.maxCookMinutes,
-      store_ids: h.storeIds,
-      equipment: h.equipment,
-      dietary_preferences: h.dietaryPreferences,
-      avoid_tags: h.avoidTags,
-      allergies: h.allergies,
-      onboarded: state.onboarded,
-    })
-    .eq("id", householdId);
-  assertOk(householdResult.error, "Sync household");
-
-  const deleteMembers = await supabase.from("household_members").delete().eq("household_id", householdId);
-  assertOk(deleteMembers.error, "Reset household members");
-  if (h.members.length > 0) {
-    const insertMembers = await supabase.from("household_members").insert(
-      h.members.map((m) => ({
-        household_id: householdId,
-        name: m.name,
-        age_group: m.ageGroup,
-        appetite: m.appetite,
-      })),
-    );
-    assertOk(insertMembers.error, "Sync household members");
-  }
-
-  const deletePantry = await supabase.from("pantry_items").delete().eq("household_id", householdId);
-  assertOk(deletePantry.error, "Reset pantry");
-  if (state.pantry.length > 0) {
-    const insertPantry = await supabase.from("pantry_items").insert(
-      state.pantry.map((p) => ({
-        household_id: householdId,
-        ingredient_id: p.ingredientId,
-        amount: p.quantity.amount,
-        unit: p.quantity.unit,
-        origin: p.origin,
-        expires_at: p.expiresAt ?? null,
-      })),
-    );
-    assertOk(insertPantry.error, "Sync pantry");
-  }
-
+export function pushCloudState(householdId: string, state: MealForgeState): Promise<void> {
   const imported = state.recipes.filter((r) => !SEED_RECIPES.some((s) => s.id === r.id));
-  const deleteRecipes = await supabase.from("recipes").delete().eq("household_id", householdId);
-  assertOk(deleteRecipes.error, "Reset imported recipes");
-  if (imported.length > 0) {
-    const insertRecipes = await supabase.from("recipes").insert(
-      imported.map((r) => ({
-        household_id: householdId,
-        slug: r.id,
-        title: r.title,
-        servings: r.servings,
-        total_time_minutes: r.totalTimeMinutes,
-        steps: r.steps,
-        ingredients: r.ingredients as unknown as never,
-        tags: r.tags,
-        equipment: r.equipment,
-        source: r.source as unknown as never,
-      })),
-    );
-    assertOk(insertRecipes.error, "Sync imported recipes");
-  }
-
   const householdObservations = state.observations.filter((o) => o.scope !== "catalog");
-  const deleteObservations = await supabase
-    .from("price_observations")
-    .delete()
-    .eq("household_id", householdId);
-  assertOk(deleteObservations.error, "Reset price observations");
-  if (householdObservations.length > 0) {
-    const insertObservations = await supabase.from("price_observations").insert(
-      householdObservations.map((o) => ({
-        household_id: householdId,
-        ingredient_id: o.ingredientId,
-        store_id: o.storeId,
-        package_label: o.packageLabel,
-        price: o.price,
-        observed_at: o.observedAt,
-      })),
-    );
-    assertOk(insertObservations.error, "Sync price observations");
-  }
+  const snapshot = {
+    onboarded: state.onboarded,
+    household: state.household,
+    pantry: state.pantry,
+    recipes: imported,
+    observations: householdObservations,
+    plan: state.plan,
+    checked: state.checked,
+  };
 
-  const deletePlans = await supabase.from("meal_plans").delete().eq("household_id", householdId);
-  assertOk(deletePlans.error, "Reset meal plan");
-  if (state.plan) {
-    const insertPlan = await supabase.from("meal_plans").insert({
-      household_id: householdId,
-      plan: state.plan as unknown as never,
-      checked: state.checked,
+  syncQueue = syncQueue
+    .catch(() => {
+      // A failed earlier write must not permanently poison later retries.
+    })
+    .then(async () => {
+      // The generated database types on main lag this additive RPC until this
+      // branch lands; runtime argument shape is enforced by Postgres.
+      const { error } = await supabase.rpc(
+        "sync_mealforge_snapshot" as never,
+        { _household_id: householdId, _snapshot: snapshot } as never,
+      );
+      assertOk(error, "Sync MealForge snapshot");
     });
-    assertOk(insertPlan.error, "Sync meal plan");
-  }
+
+  return syncQueue;
 }
