@@ -15,7 +15,6 @@ import {
 
 import "@/home-refresh.css";
 import "@/home-experience.css";
-import heroTable from "@/assets/hero-table.jpg";
 import { ProviderStateBadge } from "@/components/ProviderStateBadge";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
 import { listKitchens, loadImpactTotals } from "@/lib/community";
@@ -35,7 +34,6 @@ export const Route = createFileRoute("/")({
         content:
           "The food exists. The kitchen exists. The help exists. ProvisionLoop closes the gap and makes the outcome accountable.",
       },
-      { property: "og:image", content: heroTable },
       { property: "og:type", content: "website" },
     ],
   }),
@@ -81,6 +79,7 @@ function HomePage() {
   const impact = useQuery({ queryKey: ["impact-totals"], queryFn: loadImpactTotals });
   const kitchens = useQuery({ queryKey: ["public-kitchens"], queryFn: listKitchens });
   const totals = impact.data;
+  const latestDelivery = totals?.recent?.find((event) => event.kind.toLowerCase().includes("deliver")) ?? null;
 
   return (
     <div className="pl-home min-h-dvh">
@@ -112,12 +111,6 @@ function HomePage() {
                 </Link>
               </div>
 
-              <div className="pl-live-strip" aria-label="Verified ProvisionLoop pilot totals">
-                <LiveStat label="Meals funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
-                <LiveStat label="Meals delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
-                <LiveStat label="Funding-ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
-              </div>
-
               <p className="mt-4 max-w-xl font-mono text-[10px] uppercase leading-5 tracking-[0.08em] text-[#777269]">
                 Verified pilot totals only. No projections. No demo numbers. {totals ? `${totals.providersMapped} providers mapped. ` : ""}
                 <Link to="/trust-method" className="text-primary underline underline-offset-4">
@@ -126,17 +119,37 @@ function HomePage() {
               </p>
             </div>
 
-            <div className="pl-hero-visual">
-              <img src={heroTable} alt="A shared meal at a community table" width={1024} height={1024} />
-              <div className="pl-visual-badge">
-                <ShieldCheck className="size-4" /> proof before promotion
+            <aside className="pl-dispatch-board" aria-label="ProvisionLoop live dispatch board">
+              <div className="pl-dispatch-head">
+                <div>
+                  <p>DISPATCH / GALVESTON COUNTY</p>
+                  <strong>LIVE PILOT</strong>
+                </div>
+                <span><i aria-hidden="true" /> ACTIVE</span>
               </div>
-              <div className="pl-visual-card">
-                <p className="font-mono text-[9px] uppercase tracking-[0.2em] text-primary">The rule</p>
-                <strong>Good intentions are not enough. Execution matters.</strong>
+
+              <div className="pl-dispatch-main">
+                <p className="pl-dispatch-kicker">The next loop</p>
+                <h2>FOUR HANDOFFS.<br /><span>ONE OUTCOME.</span></h2>
+                <div className="pl-dispatch-rows">
+                  <DispatchRow number="01" label="NEED" value="Private by default" state="PROTECTED" />
+                  <DispatchRow number="02" label="CAPACITY" value="Verified kitchens only" state="CHECKED" />
+                  <DispatchRow number="03" label="FUNDING" value="Eligible capacity only" state="TRACEABLE" />
+                  <DispatchRow number="04" label="DELIVERY" value="Tracked to completion" state="CLOSES LOOP" />
+                </div>
               </div>
-              <div className="pl-scroll-cue" aria-hidden="true"><span>follow the loop</span><i /></div>
-            </div>
+
+              <div className="pl-dispatch-metrics">
+                <DispatchMetric label="Funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
+                <DispatchMetric label="Delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
+                <DispatchMetric label="Ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
+              </div>
+
+              <div className="pl-dispatch-foot">
+                <ShieldCheck className="size-4" />
+                <span>NO OUTCOME = NO CREDIT</span>
+              </div>
+            </aside>
           </div>
         </section>
 
@@ -211,6 +224,30 @@ function HomePage() {
               <LiveStat label="Funded" value={totals ? totals.mealsFunded.toLocaleString() : "—"} />
               <LiveStat label="Delivered" value={totals ? totals.mealsDelivered.toLocaleString() : "—"} />
               <LiveStat label="Ready kitchens" value={totals ? String(totals.fundingEnabledKitchens) : "—"} />
+            </div>
+
+            <div className="pl-first-loop">
+              <div className="pl-first-loop-head">
+                <p>VERIFIED LOOP / LATEST DELIVERY</p>
+                <span>{latestDelivery ? "RECORDED" : "AWAITING FIRST VERIFIED DELIVERY"}</span>
+              </div>
+              {latestDelivery ? (
+                <div className="pl-first-loop-body">
+                  <div><span>MEALS</span><strong>{latestDelivery.meals.toLocaleString()}</strong></div>
+                  <div><span>AREA</span><strong>{latestDelivery.neighborhood || "Private / aggregate only"}</strong></div>
+                  <div><span>DATE</span><strong>{new Date(latestDelivery.occurred_at).toLocaleDateString()}</strong></div>
+                  <div><span>RECORD</span><strong>{latestDelivery.kind.replaceAll("_", " ")}</strong></div>
+                </div>
+              ) : (
+                <div className="pl-first-loop-empty">
+                  <strong>THE FIRST DELIVERY IS NOT A MARKETING STORY YET.</strong>
+                  <p>
+                    When a real delivery closes and enters the verified aggregate record, its outcome
+                    appears here. Until then, zero stays zero.
+                  </p>
+                </div>
+              )}
+              <Link to="/civic" className="pl-first-loop-link">Inspect public proof <ArrowUpRight className="size-4" /></Link>
             </div>
 
             <div className="pl-proof-grid">
@@ -305,6 +342,21 @@ function LiveStat({ label, value }: { label: string; value: string }) {
 
 function LoopNode({ number, label }: { number: string; label: string }) {
   return <div className="pl-loop-node"><span>{number}</span><i aria-hidden="true" /><strong>{label}</strong></div>;
+}
+
+function DispatchRow({ number, label, value, state }: { number: string; label: string; value: string; state: string }) {
+  return (
+    <div className="pl-dispatch-row">
+      <span>{number}</span>
+      <strong>{label}</strong>
+      <p>{value}</p>
+      <em>{state}</em>
+    </div>
+  );
+}
+
+function DispatchMetric({ label, value }: { label: string; value: string }) {
+  return <div><span>{label}</span><strong>{value}</strong></div>;
 }
 
 function ProofStep({ number, title, body }: { number: string; title: string; body: string }) {
