@@ -22,17 +22,17 @@ import { listKitchens, loadImpactTotals } from "@/lib/community";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "ProvisionLoop — Close the Gap Between Help and a Meal" },
+      { title: "ProvisionLoop — Hunger Needs Connection" },
       {
         name: "description",
         content:
-          "ProvisionLoop connects local food need, kitchen capacity, funding and delivery into one accountable chain across Galveston County — then shows whether the loop actually closed.",
+          "ProvisionLoop connects private food need, verified kitchen capacity, sponsors and delivery into one accountable local network across Galveston County.",
       },
-      { property: "og:title", content: "ProvisionLoop — Good intentions aren't enough. Execution matters." },
+      { property: "og:title", content: "ProvisionLoop — Hunger doesn't need charity. It needs connection." },
       {
         property: "og:description",
         content:
-          "The food exists. The kitchen exists. The help exists. ProvisionLoop closes the gap and makes the outcome accountable.",
+          "The food exists. The kitchens exist. The money exists. The help exists. ProvisionLoop connects the pieces and proves whether the loop actually closed.",
       },
       { property: "og:type", content: "website" },
     ],
@@ -42,12 +42,12 @@ export const Route = createFileRoute("/")({
 
 const PATHS = [
   {
-    to: "/impact",
+    to: "/pilot",
     number: "01",
     icon: HandHeart,
-    title: "Fund a meal",
-    body: "Put money behind verified local capacity. Follow the outcome instead of losing it at checkout.",
-    action: "Fund the next meal",
+    title: "I can sponsor",
+    body: "Help prove the model without pretending the production funding rail is live before it is ready.",
+    action: "Join the founding pilot",
   },
   {
     to: "/help",
@@ -62,7 +62,7 @@ const PATHS = [
     number: "03",
     icon: ChefHat,
     title: "I run a kitchen",
-    body: "Turn usable capacity into funded meals. You cook. ProvisionLoop coordinates the rest of the loop.",
+    body: "Turn usable capacity into meals. You cook. ProvisionLoop coordinates the rest of the loop.",
     action: "Activate capacity",
   },
   {
@@ -89,30 +89,29 @@ function HomePage() {
         <section className="pl-hero">
           <div className="site-shell pl-hero-grid">
             <div className="pl-hero-copy">
-              <div className="pl-eyebrow text-primary"><Radio className="size-3" /> Galveston County pilot</div>
+              <div className="pl-eyebrow text-primary"><Radio className="size-3" /> Galveston County founding pilot</div>
               <h1 className="pl-hero-title">
-                THE FOOD EXISTS.<br />
-                THE KITCHEN EXISTS.<br />
-                THE HELP EXISTS.<br />
-                <span>SO WHY IS SOMEONE STILL HUNGRY?</span>
+                HUNGER DOESN&apos;T NEED<br />
+                MORE DISCONNECTED HELP.<br />
+                <span>IT NEEDS CONNECTION.</span>
               </h1>
               <p className="pl-hero-deck">
-                Someone needs dinner. A local kitchen can make it. Someone is willing to pay for it.
-                Someone can deliver it. Those people should not have to find each other by accident.
-                ProvisionLoop closes the gap — and tracks whether the meal actually reached the other end.
+                The food exists. The kitchens exist. The money exists. The help exists. Too often,
+                they are strangers. ProvisionLoop connects private need to verified local capacity,
+                coordinates the handoffs, and tracks whether a real meal actually reached the other end.
               </p>
 
               <div className="pl-hero-actions">
-                <Link to="/impact" className="pl-hero-primary">
-                  Fund the next meal <ArrowUpRight className="size-4" />
+                <Link to="/pilot" className="pl-hero-primary">
+                  Join the founding pilot <ArrowUpRight className="size-4" />
                 </Link>
                 <Link to="/trust-method" className="pl-hero-secondary">
-                  See how it works <ArrowRight className="size-4" />
+                  See how the loop works <ArrowRight className="size-4" />
                 </Link>
               </div>
 
               <p className="mt-4 max-w-xl font-mono text-[10px] uppercase leading-5 tracking-[0.08em] text-[#777269]">
-                Verified pilot totals only. No projections. No demo numbers. {totals ? `${totals.providersMapped} providers mapped. ` : ""}
+                Founding pilot in Galveston County. Payments remain gated until production checks clear. Verified totals only. No projections. No demo numbers. {totals ? `${totals.providersMapped} providers mapped. ` : ""}
                 <Link to="/trust-method" className="text-primary underline underline-offset-4">
                   Check the method
                 </Link>
@@ -123,18 +122,18 @@ function HomePage() {
               <div className="pl-dispatch-head">
                 <div>
                   <p>DISPATCH / GALVESTON COUNTY</p>
-                  <strong>LIVE PILOT</strong>
+                  <strong>FOUNDING PILOT</strong>
                 </div>
-                <span><i aria-hidden="true" /> ACTIVE</span>
+                <span><i aria-hidden="true" /> BUILDING</span>
               </div>
 
               <div className="pl-dispatch-main">
-                <p className="pl-dispatch-kicker">The next loop</p>
+                <p className="pl-dispatch-kicker">The operating model</p>
                 <h2>FOUR HANDOFFS.<br /><span>ONE OUTCOME.</span></h2>
                 <div className="pl-dispatch-rows">
                   <DispatchRow number="01" label="NEED" value="Private by default" state="PROTECTED" />
                   <DispatchRow number="02" label="CAPACITY" value="Verified kitchens only" state="CHECKED" />
-                  <DispatchRow number="03" label="FUNDING" value="Eligible capacity only" state="TRACEABLE" />
+                  <DispatchRow number="03" label="SUPPORT" value="Moves only when eligible" state="TRACEABLE" />
                   <DispatchRow number="04" label="DELIVERY" value="Tracked to completion" state="CLOSES LOOP" />
                 </div>
               </div>
@@ -166,15 +165,15 @@ function HomePage() {
           <div className="site-shell grid gap-10 lg:grid-cols-[1.1fr_.9fr] lg:items-end">
             <div>
               <p className="pl-section-kicker">Why this exists</p>
-              <h2 className="pl-section-title">CARING ISN&apos;T A DELIVERY SYSTEM.</h2>
+              <h2 className="pl-section-title">HUNGER ISN&apos;T ONLY A SUPPLY PROBLEM. IT&apos;S A CONNECTION PROBLEM.</h2>
             </div>
             <div className="lg:justify-self-end">
               <p className="max-w-xl text-sm leading-7 opacity-70 md:text-base">
-                Kitchens with capacity. Funding ready to move. People willing to help. People still
-                hungry. The failure was not a lack of generosity. It was the silence between all of
-                those pieces — the point where intention was supposed to become dinner.
+                Kitchens with capacity. Sponsors willing to help. Volunteers ready to move meals.
+                Households still waiting. ProvisionLoop exists to make those pieces operate as one
+                accountable local system instead of hoping they find one another by accident.
               </p>
-              <p className="mt-4 text-lg font-black">Not anymore.</p>
+              <p className="mt-4 text-lg font-black">Private need. Local capacity. Public accountability.</p>
               <Link to="/about" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
                 Why Garrett built it <ArrowUpRight className="size-4" />
               </Link>
@@ -186,12 +185,12 @@ function HomePage() {
           <div className="site-shell">
             <div className="grid items-end gap-8 md:grid-cols-[1fr_.72fr]">
               <div>
-                <p className="pl-section-kicker">Choose what you can do</p>
+                <p className="pl-section-kicker">There is a lane for you</p>
                 <h2 className="pl-section-title">FOUR COMMITMENTS. ONE CLOSED LOOP.</h2>
               </div>
               <p className="max-w-lg text-sm leading-7 opacity-65 md:justify-self-end">
-                Do not browse a platform. Pick the part of the job you can finish and move the next
-                meal one step closer to the other end.
+                Run a kitchen. Move a meal. Support the pilot. Ask for help. You do not need to solve
+                the whole system — just own one handoff and finish it well.
               </p>
             </div>
 
@@ -300,12 +299,13 @@ function HomePage() {
             <div className="pl-founder-tease-mark"><Fingerprint className="size-8" /><strong>GM</strong></div>
             <div>
               <p className="pl-section-kicker">Why Garrett built it</p>
-              <h2>I WON&apos;T LET GOOD INTENTIONS FAIL AT EXECUTION.</h2>
+              <h2>BUILD THE CONNECTION. PROVE THE OUTCOME. MAKE THE MODEL REPEATABLE.</h2>
               <p>
-                Garrett McLain built ProvisionLoop after seeing the same failure hiding in plain
-                sight: the resources existed, the willingness existed, and the outcome still got
-                dropped somewhere between intention and action. ProvisionLoop is the refusal to
-                accept that gap as normal.
+                Garrett McLain built ProvisionLoop around a simple refusal: if the food exists, the
+                kitchen exists, the money exists and the help exists, hunger should not persist because
+                those resources are disconnected. Galveston County is where the model gets proved.
+                The system is being built so another city can eventually run the same loop without
+                reinventing it from scratch.
               </p>
               <a href="/about#founder" className="mt-5 inline-flex items-center gap-2 text-sm font-black text-primary">
                 Read the story <ArrowUpRight className="size-4" />
@@ -317,13 +317,13 @@ function HomePage() {
         <section className="pl-final-cta">
           <div className="site-shell pl-final-grid">
             <div>
-              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">The movement is simple</p>
-              <h2 className="pl-final-title mt-4">CLOSE THE<br /><span>NEXT LOOP.</span></h2>
+              <p className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-primary">This is the founding loop</p>
+              <h2 className="pl-final-title mt-4">THERE&apos;S A<br /><span>LANE FOR YOU.</span></h2>
             </div>
             <div>
-              <p className="pl-final-copy">Do one concrete thing that moves a meal toward the person waiting for it.</p>
+              <p className="pl-final-copy">Help prove a local system where need stays private, capacity becomes useful, and every claimed outcome has evidence behind it.</p>
               <div className="mt-6 flex flex-wrap gap-3">
-                <Link to="/impact" className="pl-hero-primary">Fund the next meal <ArrowUpRight className="size-4" /></Link>
+                <Link to="/pilot" className="pl-hero-primary">Join the founding pilot <ArrowUpRight className="size-4" /></Link>
                 <Link to="/civic" className="pl-hero-secondary">See verified proof</Link>
               </div>
             </div>
