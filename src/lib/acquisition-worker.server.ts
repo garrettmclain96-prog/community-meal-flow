@@ -17,6 +17,9 @@ const ROLE_LABEL = {
   sponsor: "sponsor",
 } as const;
 
+const DEFAULT_SUPABASE_URL = "https://myfgnukugylhqvmcjceu.supabase.co";
+const DEFAULT_OUTREACH_FROM = "ProvisionLoop <outreach@provisionloop.org>";
+
 type LeadRole = keyof typeof CTA_BY_ROLE;
 type OutreachStage = "initial" | "followup";
 
@@ -38,9 +41,9 @@ function env(name: string) {
 }
 
 function getDb() {
-  const url = env("SUPABASE_URL");
+  const url = env("SUPABASE_URL") || env("VITE_SUPABASE_URL") || DEFAULT_SUPABASE_URL;
   const key = env("SUPABASE_SERVICE_ROLE_KEY");
-  if (!url || !key) throw new Error("missing_supabase_server_config");
+  if (!key) throw new Error("missing_supabase_service_role_key");
   return createClient(url, key, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
@@ -69,8 +72,8 @@ function emailFor(lead: ClaimedLead) {
 
 async function sendWithResend(lead: ClaimedLead) {
   const apiKey = env("RESEND_API_KEY");
-  const from = env("PROVISIONLOOP_OUTREACH_FROM");
-  if (!apiKey || !from) throw new Error("missing_email_provider_config");
+  const from = env("PROVISIONLOOP_OUTREACH_FROM") || DEFAULT_OUTREACH_FROM;
+  if (!apiKey) throw new Error("missing_resend_api_key");
 
   const message = emailFor(lead);
   const response = await fetch("https://api.resend.com/emails", {
@@ -131,8 +134,8 @@ export async function runAcquisitionWorker(request: Request): Promise<Response> 
     return Response.json({ ok: true, dry_run: true, eligible: data });
   }
 
-  if (!env("RESEND_API_KEY") || !env("PROVISIONLOOP_OUTREACH_FROM")) {
-    return Response.json({ ok: false, error: "missing_email_provider_config" }, { status: 503 });
+  if (!env("RESEND_API_KEY")) {
+    return Response.json({ ok: false, error: "missing_resend_api_key" }, { status: 503 });
   }
 
   const claimToken = crypto.randomUUID();
