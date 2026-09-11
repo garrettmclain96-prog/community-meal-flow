@@ -9,12 +9,12 @@ import { ThemeToggle } from "@/components/ThemeToggle";
 import { SUPPORT_EMAIL, SUPPORT_MAILTO } from "@/lib/contact";
 
 const NAV = [
-  { to: "/impact", label: "Funding" },
-  { to: "/help", label: "Get help" },
-  { to: "/kitchen", label: "Kitchens" },
-  { to: "/volunteer", label: "Volunteer" },
-  { to: "/partners", label: "Partners" },
-  { to: "/about", label: "About" },
+  { to: "/impact", label: "Fund a meal" },
+  { to: "/help", label: "Need food" },
+  { to: "/kitchen", label: "Run a kitchen" },
+  { to: "/volunteer", label: "Deliver" },
+  { to: "/civic", label: "Proof" },
+  { to: "/about", label: "Story" },
 ] as const;
 
 export function SiteHeader() {
@@ -24,8 +24,8 @@ export function SiteHeader() {
     <>
       <div className="pl-signal-bar">
         <div className="site-shell pl-signal-inner">
-          <span className="pl-signal-live"><i aria-hidden="true" /> Galveston County · pilot network</span>
-          <span className="hidden sm:inline">Private need · local capacity · public accountability</span>
+          <span className="pl-signal-live"><i aria-hidden="true" /> Galveston County · live pilot</span>
+          <span className="hidden sm:inline">Good intentions aren&apos;t enough · execution matters</span>
         </div>
       </div>
       <header className="pl-site-header">
@@ -36,7 +36,7 @@ export function SiteHeader() {
               <span className="pl-brand-wordmark">
                 PROVISION<strong>LOOP</strong>
               </span>
-              <span className="pl-brand-sub">community food infrastructure</span>
+              <span className="pl-brand-sub">close the loop</span>
             </span>
           </Link>
 
@@ -46,9 +46,6 @@ export function SiteHeader() {
                 {item.label}
               </Link>
             ))}
-            <Link to="/civic" className="pl-nav-link" activeProps={{ className: "pl-nav-link is-active" }}>
-              Ledger
-            </Link>
             <Link to="/app" className="pl-nav-link" activeProps={{ className: "pl-nav-link is-active" }}>
               MealForge
             </Link>
@@ -61,8 +58,8 @@ export function SiteHeader() {
             <div className="pl-header-icon hidden sm:block">
               <ThemeToggle />
             </div>
-            <Link to="/pilot" className="pl-header-action hidden md:inline-flex">
-              Join the pilot <ArrowUpRight className="size-4" />
+            <Link to="/impact" className="pl-header-action hidden md:inline-flex">
+              Close a loop <ArrowUpRight className="size-4" />
             </Link>
             <button
               type="button"
@@ -90,11 +87,11 @@ export function SiteHeader() {
                   <span>{String(index + 1).padStart(2, "0")} ↗</span>
                 </Link>
               ))}
-              <Link to="/civic" className="pl-mobile-link" onClick={() => setOpen(false)}>
-                Public ledger <span>07 ↗</span>
-              </Link>
               <Link to="/app" className="pl-mobile-link" onClick={() => setOpen(false)}>
-                MealForge <span>08 ↗</span>
+                MealForge <span>07 ↗</span>
+              </Link>
+              <Link to="/partners" className="pl-mobile-link" onClick={() => setOpen(false)}>
+                Partners <span>08 ↗</span>
               </Link>
               <div className="flex flex-wrap items-center gap-3 py-4 xl:hidden">
                 <AccountButton />
@@ -117,34 +114,35 @@ export function SiteFooter() {
             ProvisionLoop · Galveston County
           </p>
           <div className="pl-footer-wordmark mt-4">
-            FOOD THAT
+            NO OUTCOME.
             <br />
-            <span>FINISHES THE LOOP.</span>
+            <span>NO CREDIT.</span>
           </div>
           <p className="mt-6 max-w-xl text-sm leading-7 text-[#b8b2a7]">
-            ProvisionLoop is building a verified local loop from private need to kitchen capacity,
-            accountable fulfillment and aggregate public proof. Recipient identities stay private.
+            ProvisionLoop exists to close the last-mile gap between somebody needing food and the
+            local people, kitchens and funding already willing to help. Need stays private. Outcomes
+            get counted only when the loop actually closes.
           </p>
         </div>
 
         <div>
           <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Act</p>
           <div className="mt-5 grid gap-3 text-sm">
-            <Link className="pl-footer-link" to="/pilot">Join the pilot</Link>
-            <Link className="pl-footer-link" to="/help">Find food help</Link>
-            <Link className="pl-footer-link" to="/volunteer">Volunteer nearby</Link>
-            <Link className="pl-footer-link" to="/impact">See the funding model</Link>
+            <Link className="pl-footer-link" to="/impact">Fund the next meal</Link>
+            <Link className="pl-footer-link" to="/help">Request food help</Link>
+            <Link className="pl-footer-link" to="/kitchen">Activate kitchen capacity</Link>
+            <Link className="pl-footer-link" to="/volunteer">Claim local work</Link>
           </div>
         </div>
 
         <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Explore</p>
+          <p className="font-mono text-[10px] uppercase tracking-[0.22em] text-primary">Verify</p>
           <div className="mt-5 grid gap-3 text-sm">
-            <Link className="pl-footer-link" to="/about">About + founder</Link>
-            <Link className="pl-footer-link" to="/kitchen">Kitchen network</Link>
-            <Link className="pl-footer-link" to="/partners">Community partners</Link>
-            <Link className="pl-footer-link" to="/civic">Public ledger</Link>
+            <Link className="pl-footer-link" to="/civic">Public proof</Link>
             <Link className="pl-footer-link" to="/trust-method">Trust &amp; method</Link>
+            <Link className="pl-footer-link" to="/about">Why this exists</Link>
+            <Link className="pl-footer-link" to="/pilot">Pilot status</Link>
+            <Link className="pl-footer-link" to="/partners">Partners</Link>
           </div>
         </div>
       </div>
@@ -163,7 +161,7 @@ export function SiteFooter() {
       <div className="border-t border-white/10">
         <div className="site-shell flex flex-wrap justify-between gap-3 py-5 text-xs text-[#6f6a61]">
           <span>© 2026 ProvisionLoop</span>
-          <span>Founded by Garrett McLain · Built to close the loop.</span>
+          <span>Founded by Garrett McLain · Good intentions need execution.</span>
         </div>
       </div>
     </footer>
