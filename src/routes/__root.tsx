@@ -71,27 +71,27 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
-      { title: "ProvisionLoop — Community Food Infrastructure" },
+      { title: "ProvisionLoop — Good Intentions Need Execution" },
       {
         name: "description",
         content:
-          "ProvisionLoop connects private food need, verified local kitchen capacity, accountable funding, volunteers and aggregate public proof across Galveston County.",
+          "ProvisionLoop closes the gap between local food need and an actual delivered meal by connecting private requests, verified kitchen capacity, funding and delivery — then proving what finished.",
       },
       { name: "author", content: "ProvisionLoop · Founded by Garrett McLain" },
       { name: "theme-color", content: "#121210" },
-      { property: "og:title", content: "ProvisionLoop — Community Food Infrastructure" },
+      { property: "og:title", content: "ProvisionLoop — Good Intentions Need Execution" },
       {
         property: "og:description",
         content:
-          "Private need. Local capacity. Public accountability. ProvisionLoop is building a closed-loop local food network in Galveston County.",
+          "If help never reaches the other end, the job is not finished. ProvisionLoop is building the accountable local food loop in Galveston County.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:title", content: "ProvisionLoop — Community Food Infrastructure" },
+      { name: "twitter:title", content: "ProvisionLoop — Good Intentions Need Execution" },
       {
         name: "twitter:description",
         content:
-          "Private need. Local capacity. Public accountability. A closed-loop food network built to finish the job.",
+          "No outcome. No credit. ProvisionLoop connects local need to real capacity and follows the work until the loop closes.",
       },
     ],
     links: [
