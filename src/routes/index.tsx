@@ -124,14 +124,14 @@ function HomePage() {
             </div>
             <div className="pl-field-note" aria-hidden="true">
               <strong>
-                GALVESTON
+                PROOF
                 <br />
-                FIRST.
+                PENDING.
               </strong>
               <span>
-                A STRONGER
+                NO OUTCOME
                 <br />
-                TOMORROW.
+                NO CREDIT
               </span>
             </div>
           </div>

@@ -326,9 +326,9 @@
 /* Galveston Movement global chrome */
 @layer components {
   .pl-signal-bar {
-    background: #b8f13c;
-    color: #082337;
-    border-bottom-color: #082337;
+    background: #0b293b;
+    color: #f3efe3;
+    border-bottom-color: #ff5638;
   }
 
   .pl-signal-bar::after {
@@ -336,9 +336,9 @@
   }
 
   .pl-site-header {
-    background: #f4efe3;
-    color: #082337;
-    border-bottom: 2px solid #082337;
+    background: #0b293b;
+    color: #f3efe3;
+    border-bottom: 2px solid #ff5638;
     box-shadow: none;
     backdrop-filter: none;
     -webkit-backdrop-filter: none;
@@ -349,48 +349,56 @@
   }
 
   .pl-brand-symbol {
-    background: #f04f32;
-    color: #f4efe3;
-    border-color: #082337;
-    box-shadow: 3px 3px 0 #082337;
+    background: #ff5638;
+    color: #f3efe3;
+    border-color: #f3efe3;
+    box-shadow: 3px 3px 0 #061c2a;
+  }
+
+  .pl-brand-wordmark {
+    color: #f3efe3;
+  }
+
+  .pl-brand-wordmark strong {
+    color: #ff5638;
   }
 
   .pl-brand-sub,
   .pl-nav-link {
-    color: #385162;
+    color: #c2cbd0;
   }
 
   .pl-nav-link:hover,
   .pl-nav-link.is-active {
-    color: #082337;
+    color: #f3efe3;
   }
 
   .pl-header-action {
-    background: #f04f32;
-    border-color: #082337;
-    color: #f4efe3;
-    box-shadow: 3px 3px 0 #082337;
+    background: #ff5638;
+    border-color: #f3efe3;
+    color: #f3efe3;
+    box-shadow: 3px 3px 0 #061c2a;
     text-transform: uppercase;
   }
 
   .pl-header-action:hover {
-    box-shadow: 5px 5px 0 #082337;
+    box-shadow: 5px 5px 0 #061c2a;
   }
 
   .pl-header-icon {
-    border-color: #082337 !important;
-    background: #f4efe3 !important;
-    color: #082337 !important;
+    border-color: #f3efe3 !important;
+    background: #0b293b !important;
+    color: #f3efe3 !important;
   }
 
   .pl-mobile-nav {
-    background: #082337;
-    color: #f4efe3;
-    border-top-color: #f4efe3;
+    background: #0b293b;
+    color: #f3efe3;
+    border-top-color: #ff5638;
   }
 
   .pl-footer {
-    background: #061925;
-    border-top-color: #b8f13c;
+    background: #061c2a;
+    border-top-color: #ff5638;
   }
 }

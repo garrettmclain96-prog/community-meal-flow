@@ -56,4 +56,15 @@ No actionable P0, P1, or P2 visual differences remained in the responsive deskto
 - P3: collect original Galveston photography after the pilot begins so the generated documentary subject can eventually be replaced with real ProvisionLoop field imagery.
 - P3: validate the final font rendering and safe-area spacing on Garrett's current iPhone after production deployment.
 
+## Palette fidelity iteration
+
+- P1: the first live implementation used a bright lime utility bar and cream navigation, while the selected mockup opened in storm navy.
+- Fix: moved global chrome to storm navy, retained coral for the wordmark/action, and eliminated the lime banner.
+- P1: “It needs connection” rendered as a clean white-on-coral block rather than the mockup's coral poster type on weathered paper.
+- Fix: restored coral display type on paper and reserved lime for the physical underline/proof marker.
+- P2: the role section was visually flat.
+- Fix: added a low-opacity crop of the actual generated collage asset as physical texture and converted the hero field note into a proof-pending ticket.
+- P2: mobile hero art was faded to 32%, weakening the documentary subject.
+- Fix: restored the generated asset at full opacity and tuned its crop/scale for the paper-left, portrait-right composition.
+
 final result: passed

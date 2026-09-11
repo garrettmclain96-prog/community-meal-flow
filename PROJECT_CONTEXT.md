@@ -20,6 +20,10 @@ Garrett selected the third of three homepage concepts as the new public visual d
 
 The homepage must feel like credible, locally born civic infrastructure capable of becoming a national movement—not a generic nonprofit template, charity fundraiser, or SaaS dashboard. The primary mobile conversion is now **Choose your lane**: request food, run a kitchen, fund meals/join the pilot, or deliver. The funding lane must continue to state the production gate honestly until live funding is cleared.
 
+### September 11 palette fidelity pass
+
+Garrett approved the overall direction but rejected the first implementation's color balance as too clean and too far from the selected concept. The corrected hierarchy uses storm navy for the entire global chrome and role section, weathered warm paper for editorial fields, vivid red-coral for movement copy/actions, and acid lime only as a scarce proof-marker color. The lime utility banner is retired. “It needs connection” is coral type on paper with a lime underline, matching the selected poster rather than appearing as a white-on-coral web block.
+
 ## Source-of-truth hierarchy
 
 Use the repository documents together rather than forcing one file to do every job:
