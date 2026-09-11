@@ -2,7 +2,7 @@
 
 Status: active production operating model
 Owner: Garrett McLain
-Last updated: 2026-09-09
+Last updated: 2026-09-11
 
 ## Objective
 
@@ -24,13 +24,13 @@ This is an operating constraint, not merely a copy preference.
 
 ## Role routing
 
-| Role                          | Primary self-service path |
-| ----------------------------- | ------------------------- |
-| Household                     | `/help`                   |
-| Kitchen / restaurant operator | `/kitchen`                |
-| Volunteer                     | `/volunteer`              |
-| Community partner             | `/partners`               |
-| Sponsor / funder              | `/impact`                 |
+| Role | Primary self-service path |
+| --- | --- |
+| Household | `/help` |
+| Kitchen / restaurant operator | `/kitchen` |
+| Volunteer | `/volunteer` |
+| Community partner | `/partners` |
+| Sponsor / funder | `/impact` |
 
 `/trust-method` is the secondary trust/explanation surface when helpful.
 
@@ -61,7 +61,7 @@ The Reply Autopilot must set `reply_detected_at` (and `reply_status` when useful
 
 Do not autonomously commit ProvisionLoop when a reply involves contracts or legal terms, partner data-sharing terms, grants or procurement, money/payment commitments or pricing negotiations, press interviews or attributable statements, operator-authority evidence or final provider verification, a specific requested meeting/call time, or anything that would bind Garrett or ProvisionLoop to a material obligation.
 
-## Claims that acquisition messaging must not make
+## Claims acquisition messaging must not make
 
 Unless the underlying production state changes and is verified, do not claim that a directory listing is a ProvisionLoop partner, that live payment processing is enabled, that ProvisionLoop is a nonprofit, that payments are tax-deductible donations, guaranteed household service or coverage, fake/estimated-as-real impact, or operator verification before independent verification actually occurs.
 
@@ -77,9 +77,23 @@ Outbound acquisition is backend-owned. ChatGPT, Gmail connectors and other exter
 
 The production flow is:
 
-`Vercel Cron -> /api/internal/acquisition-worker -> service-role claim RPC -> Resend -> exact-row success/failure RPC`
+`Vercel Cron -> /api/public/hooks/acquisition-worker -> service-role claim RPC -> Resend -> exact-row success/failure RPC`
 
-The worker runs hourly. Vercel authenticates the private cron route with `CRON_SECRET`. The route requires server-only `SUPABASE_SERVICE_ROLE_KEY`, `RESEND_API_KEY`, and `PROVISIONLOOP_OUTREACH_FROM`. Missing configuration fails closed and sends nothing.
+Vercel Cron runs the worker hourly and supplies the bearer token derived from `CRON_SECRET`. The worker fails closed when authentication or required server secrets are unavailable.
+
+### Runtime configuration
+
+Required Vercel Production secrets:
+
+- `CRON_SECRET`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `RESEND_API_KEY`
+
+The worker has safe code defaults for the public owner-controlled Supabase project URL and for `ProvisionLoop <outreach@provisionloop.org>`, because `provisionloop.org` is the verified sending domain. These may still be overridden with `SUPABASE_URL` and `PROVISIONLOOP_OUTREACH_FROM` when needed.
+
+`PROVISIONLOOP_REPLY_TO` is optional.
+
+Never commit the service-role key, Resend API key, or cron secret to source control.
 
 ### Eligibility
 
@@ -101,7 +115,11 @@ After a provider-confirmed initial send, the database sets `last_contacted_at=no
 
 ### Dry run
 
-`GET /api/internal/acquisition-worker?dry_run=1` returns only aggregate eligible counts after normal cron-secret authorization and sends nothing.
+`GET /api/public/hooks/acquisition-worker?dry_run=1` returns only aggregate eligible counts after normal cron-secret authorization and sends nothing.
+
+### Scheduler ownership
+
+Vercel Cron is the active production scheduler. Supabase `pg_cron` / `pg_net` may remain available for other database work, but absence of a database acquisition cron is not an acquisition failure under the current architecture. Do not configure both schedulers for the same worker unless intentionally migrating and preventing double execution.
 
 ### Retired external queue
 
