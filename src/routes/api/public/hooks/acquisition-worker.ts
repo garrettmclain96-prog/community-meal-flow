@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
-// Scheduled hourly from the database (pg_cron + pg_net). Every caller must present
-// a valid cron bearer token; see src/lib/acquisition-worker.server.ts.
+// Scheduled hourly by Vercel Cron. Every caller must present a valid cron bearer
+// token; see src/lib/acquisition-worker.server.ts.
 async function handle(request: Request) {
   const { runAcquisitionWorker } = await import("@/lib/acquisition-worker.server");
   return runAcquisitionWorker(request);
