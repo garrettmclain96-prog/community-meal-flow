@@ -91,11 +91,13 @@ function HomePage() {
 
       <main>
         <section className="pl-hero">
-          <img
-            className="pl-hero-art"
-            src={galvestonMovement}
-            alt="A Galveston community kitchen worker against the seawall and Gulf"
-          />
+          <div className="pl-hero-media">
+            <img
+              className="pl-hero-art"
+              src={galvestonMovement}
+              alt="A Galveston community kitchen worker against the seawall and Gulf"
+            />
+          </div>
           <div className="site-shell pl-hero-grid">
             <div className="pl-hero-copy">
               <div className="pl-eyebrow">
