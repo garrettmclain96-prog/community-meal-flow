@@ -245,3 +245,60 @@ button, a { touch-action: manipulation; }
     main button[aria-pressed] { transition: none; }
   }
 }
+
+/* Mobile homepage: keep the documentary image and the message separate.
+   The previous full-bleed treatment put dark type directly across the portrait. */
+@media (max-width: 767px) {
+  @layer components {
+    .pl-home .pl-hero {
+      min-height: 0;
+      background: var(--pl-paper);
+    }
+
+    .pl-home .pl-hero-art {
+      position: relative;
+      z-index: 0;
+      inset: auto;
+      display: block;
+      width: 100%;
+      height: clamp(18rem, 57vw, 25rem);
+      opacity: 1;
+      object-fit: cover;
+      object-position: 60% 24%;
+      border-bottom: .35rem solid var(--pl-coral);
+    }
+
+    .pl-home .pl-hero-grid {
+      min-height: 0;
+      background: var(--pl-paper);
+    }
+
+    .pl-home .pl-hero-copy {
+      justify-content: flex-start;
+      padding-top: 1.6rem;
+      padding-bottom: 2.5rem;
+    }
+
+    .pl-home .pl-hero-copy::before {
+      display: none;
+    }
+
+    .pl-home .pl-hero-title,
+    .pl-home .pl-hero-deck,
+    .pl-home .pl-accountability-line,
+    .pl-home .pl-honesty-note {
+      position: relative;
+      z-index: 1;
+    }
+
+    .pl-home .pl-hero-deck {
+      max-width: 32rem;
+      color: var(--pl-ink);
+      opacity: 1;
+    }
+
+    .pl-home .pl-hero-actions {
+      margin-top: 1.35rem;
+    }
+  }
+}
