@@ -57,7 +57,7 @@ const STEPS = ["Household", "Food needs", "Budget", "Kitchen"];
 const label = (value: string) => value.replace(/_/g, " ");
 
 function SetupPage() {
-  const { state, ready, setHousehold, update, regeneratePlan } = useMealForge();
+  const { state, ready, saveHouseholdAndPlan } = useMealForge();
   const navigate = useNavigate();
   const [form, setForm] = useState(state.household);
   const [step, setStep] = useState(0);
@@ -85,9 +85,7 @@ function SetupPage() {
     items.includes(value) ? items.filter((item) => item !== value) : [...items, value];
 
   const persist = (goToPlan: boolean) => {
-    setHousehold(form);
-    update({ onboarded: true });
-    setTimeout(() => regeneratePlan(), 0);
+    saveHouseholdAndPlan(form);
     if (goToPlan) void navigate({ to: "/app/plan" });
   };
 
@@ -234,10 +232,10 @@ function SetupPage() {
             />
 
             <div className="border-l-4 border-primary bg-primary/10 p-4 text-sm leading-6">
-              <strong>Important allergy note:</strong> MealForge filters the ingredients and metadata
-              listed in its recipes, but it cannot verify manufacturer labels, hidden ingredients,
-              substitutions, or cross-contact/cross-contamination. Always check packaging and use
-              your normal allergy-safety practices.
+              <strong>Important allergy note:</strong> MealForge filters the ingredients and
+              metadata listed in its recipes, but it cannot verify manufacturer labels, hidden
+              ingredients, substitutions, or cross-contact/cross-contamination. Always check
+              packaging and use your normal allergy-safety practices.
             </div>
 
             {state.onboarded && (
@@ -431,7 +429,8 @@ function CustomTagField({
 
     const next = [...values];
     for (const addition of additions) {
-      if (!next.some((value) => value.toLowerCase() === addition.toLowerCase())) next.push(addition);
+      if (!next.some((value) => value.toLowerCase() === addition.toLowerCase()))
+        next.push(addition);
     }
     onChange(next);
     setDraft("");
@@ -489,7 +488,9 @@ function CustomTagField({
           <Plus className="size-4" /> <span className="hidden sm:inline">Add</span>
         </button>
       </div>
-      <p className="mt-2 text-xs text-muted-foreground">Press Enter or comma to add multiple items.</p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Press Enter or comma to add multiple items.
+      </p>
     </fieldset>
   );
 }

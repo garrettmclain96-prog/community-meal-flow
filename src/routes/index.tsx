@@ -184,7 +184,7 @@ function HomePage() {
                 <span>CHECKS</span>
                 <strong>ALLERGIES · PANTRY · TIME</strong>
               </div>
-              <p>PLAN FIRST. SHOP ONCE. WASTE LESS.</p>
+              <p>ILLUSTRATIVE HOUSEHOLD · BUILD YOUR OWN PLAN</p>
             </div>
           </div>
         </section>

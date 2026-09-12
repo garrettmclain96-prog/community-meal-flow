@@ -1,11 +1,20 @@
 @layer components {
   .mf-public {
-    background: #f3efe3;
-    color: #0b293b;
+    --foreground: var(--movement-navy);
+    background: var(--movement-paper);
+    color: var(--movement-navy);
+  }
+  .mf-public .pl-site-header {
+    --foreground: var(--movement-paper);
+    --muted-foreground: var(--movement-paper);
+    --muted: var(--movement-navy);
+  }
+  .mf-public .pl-header-icon {
+    --foreground: var(--movement-navy);
   }
   .mf-public-hero {
     overflow: hidden;
-    border-bottom: 1px solid #cfc7b9;
+    border-bottom: 1px solid var(--movement-border);
     padding-block: clamp(4rem, 9vw, 7rem);
   }
   .mf-public-hero-grid {
@@ -17,7 +26,7 @@
     display: flex;
     align-items: center;
     gap: 0.55rem;
-    color: #ff5638;
+    color: var(--movement-coral);
     font-family: var(--font-mono);
     font-size: 0.65rem;
     font-weight: 900;
@@ -33,8 +42,71 @@
   }
   .mf-public h1 {
     margin-top: 1rem;
-    max-width: 8ch;
-    font-size: clamp(4rem, 10vw, 8.5rem);
+    max-width: 10ch;
+    font-size: clamp(4rem, 8vw, 7rem);
+  }
+  .mf-public h1 em {
+    color: var(--movement-coral);
+    font-style: normal;
+  }
+  .mf-public-photo {
+    position: relative;
+    min-height: 38rem;
+    background: var(--movement-navy);
+    transform: rotate(1deg);
+  }
+  .mf-public-photo img {
+    width: 100%;
+    height: 38rem;
+    object-fit: cover;
+    filter: saturate(0.45);
+    opacity: 0.8;
+  }
+  .mf-public-photo figcaption {
+    position: absolute;
+    inset: 2rem 1.5rem auto;
+    color: var(--movement-paper);
+  }
+  .mf-public-photo figcaption span,
+  .mf-public-ticket > span {
+    font: 700 0.6rem var(--font-mono);
+    letter-spacing: 0.1em;
+  }
+  .mf-public-photo figcaption strong {
+    display: block;
+    margin-top: 0.7rem;
+    font: 900 clamp(1.8rem, 3vw, 3rem)/0.95 var(--font-display);
+    letter-spacing: -0.06em;
+  }
+  .mf-public-ticket {
+    position: absolute;
+    left: -1.5rem;
+    bottom: -1.5rem;
+    max-width: 19rem;
+    padding: 1.5rem;
+    background: var(--movement-paper);
+    color: var(--movement-navy);
+    border-top: 8px solid var(--movement-coral);
+    box-shadow: 8px 8px 0 var(--movement-navy);
+    transform: rotate(-4deg);
+  }
+  .mf-public-ticket strong {
+    display: block;
+    margin-top: 1rem;
+    font: 900 1.9rem/0.98 var(--font-display);
+    letter-spacing: -0.05em;
+  }
+  @media (max-width: 640px) {
+    .mf-public-photo,
+    .mf-public-photo img {
+      min-height: 28rem;
+      height: 28rem;
+    }
+    .mf-public-ticket {
+      left: 0.5rem;
+      bottom: -1rem;
+      max-width: 16rem;
+    }
   }
   .mf-public h2 {
     margin-top: 0.8rem;
@@ -50,7 +122,7 @@
   .mf-public-line {
     display: inline-block;
     margin-top: 1.25rem;
-    background: #b8ff3c;
+    background: var(--movement-lime);
     padding: 0.45rem 0.6rem;
     font-weight: 900;
   }
@@ -67,89 +139,43 @@
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    border: 1px solid #0b293b;
+    border: 1px solid var(--movement-navy);
     padding-inline: 1.1rem;
     font-size: 0.8rem;
     font-weight: 900;
   }
   .mf-public-primary {
-    background: #ff5638;
-    border-color: #ff5638;
-    color: #0b293b;
+    background: var(--movement-coral);
+    border-color: var(--movement-coral);
+    color: var(--movement-navy);
   }
   .mf-public-hero small {
     display: block;
     margin-top: 1rem;
     max-width: 38rem;
-    color: #68665f;
+    color: var(--movement-muted);
     font-size: 0.72rem;
     line-height: 1.5;
   }
-  .mf-public-plan {
-    border: 1px solid #0b293b;
-    background: #0b293b;
-    color: #f3efe3;
-    box-shadow: 16px 16px 0 #ff5638;
-    transform: rotate(1deg);
-  }
-  .mf-public-plan-head {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-    border-bottom: 1px solid #49606b;
-    padding: 1rem;
-    font-family: var(--font-mono);
-    font-size: 0.68rem;
-    letter-spacing: 0.1em;
-  }
-  .mf-public-plan-row {
-    display: grid;
-    grid-template-columns: 3.5rem 1fr;
-    border-bottom: 1px solid #28495a;
-  }
-  .mf-public-plan-row > strong {
-    padding: 1rem;
-    color: #b8ff3c;
-    font-family: var(--font-mono);
-    font-size: 0.7rem;
-  }
-  .mf-public-plan-row > span {
-    border-left: 1px solid #28495a;
-    padding: 0.9rem 1rem;
-    font-weight: 800;
-  }
-  .mf-public-plan-row small {
-    margin-top: 0.2rem;
-    color: #9cabb1;
-    font-family: var(--font-mono);
-    font-size: 0.58rem;
-    letter-spacing: 0.08em;
-  }
-  .mf-public-plan-proof {
-    margin: 1rem;
-    background: #b8ff3c;
-    color: #0b293b;
-    padding: 0.7rem;
-    text-align: center;
-    font-size: 0.7rem;
-    font-weight: 900;
-  }
   .mf-public-section {
-    border-bottom: 1px solid #cfc7b9;
+    background: var(--movement-navy);
+    color: var(--movement-paper);
+    border-bottom: 1px solid var(--movement-border);
     padding-block: clamp(4rem, 9vw, 7rem);
   }
   .mf-public-capabilities {
     display: grid;
     gap: 1px;
     margin-top: 2.5rem;
-    border: 1px solid #cfc7b9;
-    background: #cfc7b9;
+    border: 1px solid var(--movement-border);
+    background: var(--movement-border);
   }
   .mf-public-capabilities article {
+    color: var(--movement-navy);
     display: flex;
     min-height: 17rem;
     flex-direction: column;
-    background: #f3efe3;
+    background: var(--movement-paper);
     padding: 1.3rem;
   }
   .mf-public-capabilities article > span {
@@ -158,7 +184,7 @@
   }
   .mf-public-capabilities svg {
     margin-left: auto;
-    color: #ff5638;
+    color: var(--movement-coral);
   }
   .mf-public-capabilities h3 {
     margin-top: auto;
@@ -169,13 +195,13 @@
   }
   .mf-public-capabilities article p {
     margin-top: 0.7rem;
-    color: #68665f;
+    color: var(--movement-muted);
     font-size: 0.84rem;
     line-height: 1.6;
   }
   .mf-public-loop {
-    background: #ff5638;
-    color: #0b293b;
+    background: var(--movement-coral);
+    color: var(--movement-navy);
     padding-block: clamp(4rem, 9vw, 7rem);
   }
   .mf-public-loop-grid {
@@ -184,7 +210,7 @@
     align-items: end;
   }
   .mf-public-loop .mf-public-kicker {
-    color: #0b293b;
+    color: var(--movement-navy);
   }
   .mf-public-loop-grid > div:last-child p {
     max-width: 38rem;
@@ -195,7 +221,7 @@
     align-items: center;
     gap: 0.5rem;
     margin-top: 1.5rem;
-    border-bottom: 3px solid #0b293b;
+    border-bottom: 3px solid var(--movement-navy);
     padding-bottom: 0.35rem;
     font-weight: 900;
   }
@@ -220,7 +246,7 @@
       padding-top: 3rem;
     }
     .mf-public-plan {
-      box-shadow: 8px 8px 0 #ff5638;
+      box-shadow: 8px 8px 0 var(--movement-coral);
     }
   }
 }

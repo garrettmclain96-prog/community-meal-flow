@@ -27,14 +27,8 @@ export const Route = createFileRoute("/app/shop")({
 });
 
 function ShopPage() {
-  const {
-    state,
-    ready,
-    groceryList,
-    stockRemainders,
-    toggleChecked,
-    addPriceObservation,
-  } = useMealForge();
+  const { state, ready, groceryList, stockRemainders, toggleChecked, addPriceObservation } =
+    useMealForge();
   const [editingId, setEditingId] = useState<string | null>(null);
   const [priceDraft, setPriceDraft] = useState("");
 
@@ -58,7 +52,9 @@ function ShopPage() {
   }
 
   const list = groceryList;
-  const checkedCount = list.lines.filter((line) => state.checked.includes(line.ingredientId)).length;
+  const checkedCount = list.lines.filter((line) =>
+    state.checked.includes(line.ingredientId),
+  ).length;
   const bankPrefix = planRemainderPrefix(state.plan.generatedAt);
   const leftoversBanked = state.pantry.some((item) => item.id.startsWith(bankPrefix));
 
@@ -86,7 +82,8 @@ function ShopPage() {
       <header>
         <h1 className="font-display text-3xl font-bold tracking-tight">Grocery list</h1>
         <p className="mt-1 text-sm text-muted-foreground">
-          {STORE_BY_ID[list.storeId]?.name} · {list.lines.length} items · total ${list.total.toFixed(2)}
+          {STORE_BY_ID[list.storeId]?.name} · {list.lines.length} items · total $
+          {list.total.toFixed(2)}
         </p>
         <p className="mt-2 text-xs font-medium text-muted-foreground">
           {checkedCount} of {list.lines.length} picked up
@@ -125,7 +122,8 @@ function ShopPage() {
                         {line.packages} × {line.packageLabel} {line.name}
                       </p>
                       <p className="mt-1 text-xs leading-5 text-muted-foreground">
-                        ${line.cost.toFixed(2)} · {PROVENANCE_LABEL[line.provenance]} · for {line.usedIn.join(", ")}
+                        ${line.cost.toFixed(2)} · {PROVENANCE_LABEL[line.provenance]} · for{" "}
+                        {line.usedIn.join(", ")}
                         {line.remainderBase > 0.01 &&
                           ` · ${line.remainderBase.toFixed(1)} ${line.unit} left over`}
                       </p>
@@ -151,7 +149,8 @@ function ShopPage() {
                               value={priceDraft}
                               onChange={(e) => setPriceDraft(e.target.value)}
                               onKeyDown={(e) => {
-                                if (e.key === "Enter") savePrice(line.ingredientId, line.packageLabel);
+                                if (e.key === "Enter")
+                                  savePrice(line.ingredientId, line.packageLabel);
                                 if (e.key === "Escape") setEditingId(null);
                               }}
                               className="min-w-0 flex-1 bg-transparent py-2 text-sm outline-none"
@@ -193,11 +192,18 @@ function ShopPage() {
         </p>
         <button
           onClick={stockRemainders}
-          disabled={leftoversBanked || list.remainderValue <= 0}
+          disabled={
+            leftoversBanked || list.remainderValue <= 0 || checkedCount !== list.lines.length
+          }
           className="mt-3 rounded-sm border border-border px-4 py-2 text-sm font-semibold hover:border-ember/50 disabled:cursor-default disabled:opacity-50"
         >
           {leftoversBanked ? "Leftovers banked for next plan" : "Bank leftovers for next plan"}
         </button>
+        {checkedCount !== list.lines.length && (
+          <p className="mt-2 text-sm text-muted-foreground">
+            Check off every purchased item before banking package leftovers.
+          </p>
+        )}
       </div>
     </div>
   );

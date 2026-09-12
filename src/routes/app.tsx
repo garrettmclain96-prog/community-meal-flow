@@ -3,7 +3,7 @@ import { BookOpen, CalendarRange, CookingPot, Home, ShoppingBasket } from "lucid
 
 import "@/mealforge-experience.css";
 import { AccountButton } from "@/components/AccountButton";
-import { MealForgeProvider } from "@/lib/food/store";
+import { MealForgeProvider, useMealForge } from "@/lib/food/store";
 
 export const Route = createFileRoute("/app")({
   head: () => ({
@@ -53,12 +53,13 @@ function MealForgeShell() {
               <Link to="/" className="mf-context-link">
                 ProvisionLoop ↗
               </Link>
-              <AccountButton />
+              <AccountButton redirectTo="/app" />
             </div>
           </div>
         </header>
 
         <main className="mf-content mx-auto max-w-3xl px-5 pb-28 pt-7">
+          <SaveStatus />
           <Outlet />
         </main>
 
@@ -80,5 +81,14 @@ function MealForgeShell() {
         </nav>
       </div>
     </MealForgeProvider>
+  );
+}
+
+function SaveStatus() {
+  const { ready, saveStatus } = useMealForge();
+  return (
+    <p role="status" className="mb-5 font-mono text-xs text-muted-foreground">
+      {ready ? saveStatus : "Opening your household…"}
+    </p>
   );
 }

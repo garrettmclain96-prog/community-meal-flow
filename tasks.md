@@ -10,6 +10,8 @@ last_updated: 2026-09-08
 
 # Pilot completion tasks
 
+September 12 MealForge pass: source fixes and local browser checks cover atomic setup-to-plan creation, visible save status, purchase-gated leftovers, and reload persistence. The public page shares the movement palette and is in the sitemap. Signed-in cloud persistence and mobile-device verification remain open.
+
 Derived from design.md Risks & Open Questions and roadmap.md open items.
 Checked means the stated source/production condition was verified; live-money
 activation remains separately gated. Evidence: [pilot checks](./docs/verification/pilot-checks.md).

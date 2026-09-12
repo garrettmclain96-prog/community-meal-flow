@@ -46,6 +46,12 @@
 
 /* ---------- LIGHT (frosted aurora) ---------- */
 :root {
+  --movement-navy: #0b293b;
+  --movement-paper: #f3efe3;
+  --movement-coral: #ff5638;
+  --movement-lime: #b8ff3c;
+  --movement-border: #cfc7b9;
+  --movement-muted: #68665f;
   --radius: 0.25rem;
   --background: oklch(0.965 0.018 83);
   --foreground: oklch(0.19 0.018 62);

@@ -13,7 +13,7 @@ const ROLE_LABEL: Record<string, string> = {
 };
 
 /** Session-aware sign-in affordance. Shown in every product surface header. */
-export function AccountButton() {
+export function AccountButton({ redirectTo = "/" }: { redirectTo?: string }) {
   const { user, roles, loading, signOut } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -24,7 +24,7 @@ export function AccountButton() {
     return (
       <Link
         to="/auth"
-        search={{ redirect: "/" }}
+        search={{ redirect: redirectTo }}
         className="rounded-full border border-border px-3 py-1.5 text-xs font-medium text-foreground transition hover:bg-muted"
       >
         Sign in

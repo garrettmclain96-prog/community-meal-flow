@@ -25,6 +25,12 @@ The homepage must feel like credible, locally born civic infrastructure capable 
 Garrett approved the overall direction but rejected the first implementation's color balance as too clean and too far from the selected concept. The corrected hierarchy uses storm navy for the entire global chrome and role section, weathered warm paper for editorial fields, vivid red-coral for movement copy/actions, and acid lime only as a scarce proof-marker color. The lime utility banner is retired. “It needs connection” is coral type on paper with a lime underline, matching the selected poster rather than appearing as a white-on-coral web block.
 
 ## Source-of-truth hierarchy
+### September 12, 2026 — MealForge visual and workflow completion pass
+
+MealForge shares the approved navy/paper/coral/lime palette, uses existing shared-table photography with a household ticket, and removes the unlabelled fictional weekly prices. Its public page is in the sitemap. The app shows device-save/cloud-sync status, opens without waiting for the price catalog, preserves its sign-in return path, and creates a plan in the same state update as household setup. Package leftovers cannot enter the pantry until every grocery item is marked purchased.
+
+Local production build, typecheck, lint, and 29 existing tests passed. Browser setup generated the requested three-dinner plan; banking was disabled before purchases, enabled after checking all groceries, and remained banked after reload. Signed-in cloud persistence and mobile-device testing remain unverified. This is not evidence that every MealForge feature is production-ready.
+
 
 Use the repository documents together rather than forcing one file to do every job:
 

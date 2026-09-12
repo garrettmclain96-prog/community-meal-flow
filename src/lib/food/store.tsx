@@ -17,12 +17,7 @@ import {
   remaindersToPantry,
   type GroceryList,
 } from "./grocery";
-import {
-  buildMealPlan,
-  normalizeToPackageUnit,
-  packageUnit,
-  type MealPlan,
-} from "./planner";
+import { buildMealPlan, normalizeToPackageUnit, packageUnit, type MealPlan } from "./planner";
 import type { PriceObservation } from "./pricing";
 import { SEED_RECIPES } from "./recipes";
 import type { Household, PantryItem, Recipe } from "./types";
@@ -140,7 +135,9 @@ interface Ctx {
   addRecipe: (recipe: Recipe) => void;
   addPriceObservation: (observation: PriceObservation) => void;
   markMealCooked: (slot: number) => void;
-  regeneratePlan: () => MealPlan;
+  regeneratePlan: () => void;
+  saveHouseholdAndPlan: (household: Household) => void;
+  saveStatus: string;
   groceryList: GroceryList | null;
   stockRemainders: () => void;
   toggleChecked: (id: string) => void;
@@ -156,10 +153,14 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   const userId = user?.id ?? null;
   const [cloudId, setCloudId] = useState<string | null>(null);
   const hydrating = useRef(false);
+  const [hydrationComplete, setHydrationComplete] = useState(false);
+  const [localSaved, setLocalSaved] = useState(true);
+  const [syncStatus, setSyncStatus] = useState("Not synced");
   const pushTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     setState(load());
+    setReady(true);
 
     let cancelled = false;
     void loadCatalogPrices()
@@ -172,9 +173,6 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
       })
       .catch(() => {
         /* baseline estimates remain available if public catalog loading fails */
-      })
-      .finally(() => {
-        if (!cancelled) setReady(true);
       });
 
     return () => {
@@ -190,8 +188,9 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
         observations: state.observations.filter((o) => o.scope !== "catalog"),
       };
       window.localStorage.setItem(KEY, JSON.stringify(householdOwnedState));
+      setLocalSaved(true);
     } catch {
-      /* storage full or unavailable — the session still works in memory */
+      setLocalSaved(false);
     }
   }, [state, ready]);
 
@@ -201,10 +200,14 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     if (!ready) return;
     if (!userId) {
       setCloudId(null);
+      setHydrationComplete(false);
       return;
     }
     let cancelled = false;
     hydrating.current = true;
+    setCloudId(null);
+    setHydrationComplete(false);
+    setSyncStatus("Loading cloud household…");
     loadCloudState(userId, DEFAULT_HOUSEHOLD)
       .then(({ householdId, state: remote }) => {
         if (cancelled) return;
@@ -225,7 +228,8 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
             observations: [...householdObservations, ...catalog],
           } as MealForgeState;
 
-          const cloudPlan = merged.plan as (PersistedMealPlan & { requestedDinners?: number }) | null;
+          const cloudPlan = merged.plan as
+            (PersistedMealPlan & { requestedDinners?: number }) | null;
           if (
             merged.onboarded &&
             (!cloudPlan || cloudPlan.requestedDinners !== merged.household.dinnersPerWeek)
@@ -236,10 +240,13 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
         });
       })
       .catch(() => {
-        /* offline or blocked — the local copy keeps working */
+        if (!cancelled) setSyncStatus("Cloud unavailable — changes not synced");
       })
       .finally(() => {
-        hydrating.current = false;
+        if (!cancelled) {
+          hydrating.current = false;
+          setHydrationComplete(true);
+        }
       });
     return () => {
       cancelled = true;
@@ -248,17 +255,24 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
 
   // Mirror every change back to the household's own rows.
   useEffect(() => {
-    if (!ready || !cloudId || hydrating.current) return;
+    if (!ready || !cloudId || !userId || !hydrationComplete || hydrating.current) return;
+    let cancelled = false;
+    setSyncStatus("Syncing…");
     if (pushTimer.current) clearTimeout(pushTimer.current);
     pushTimer.current = setTimeout(() => {
-      void pushCloudState(cloudId, state).catch(() => {
-        /* local-first state remains available; a later change retries sync */
-      });
+      void pushCloudState(cloudId, state)
+        .then(() => {
+          if (!cancelled) setSyncStatus("Synced to your account");
+        })
+        .catch(() => {
+          if (!cancelled) setSyncStatus("Sync failed — changes saved only on this device");
+        });
     }, 800);
     return () => {
+      cancelled = true;
       if (pushTimer.current) clearTimeout(pushTimer.current);
     };
-  }, [state, ready, cloudId]);
+  }, [state, ready, cloudId, userId, hydrationComplete]);
 
   const update = useCallback((patch: Partial<MealForgeState>) => {
     setState((s) => ({ ...s, ...patch }));
@@ -320,7 +334,8 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
 
         for (const item of pantry) {
           if (remaining <= 0) break;
-          if (item.ingredientId !== line.ingredientId || item.id.startsWith(protectedPrefix)) continue;
+          if (item.ingredientId !== line.ingredientId || item.id.startsWith(protectedPrefix))
+            continue;
           const have = normalizeToPackageUnit(
             item.quantity.amount,
             item.quantity.unit,
@@ -336,10 +351,10 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
         }
       }
 
-      const nextHistory = [meal.recipe.id, ...s.history.filter((id) => id !== meal.recipe.id)].slice(
-        0,
-        60,
-      );
+      const nextHistory = [
+        meal.recipe.id,
+        ...s.history.filter((id) => id !== meal.recipe.id),
+      ].slice(0, 60);
       const nextPlan = {
         ...plan,
         completedMealSlots: [...completed, slot].sort((a, b) => a - b),
@@ -356,13 +371,17 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const regeneratePlan = useCallback(() => {
-    let next: MealPlan | null = null;
     setState((s) => {
       const plan = buildCurrentPlan(s);
-      next = plan;
       return { ...s, plan, checked: [] };
     });
-    return next as unknown as MealPlan;
+  }, []);
+
+  const saveHouseholdAndPlan = useCallback((household: Household) => {
+    setState((s) => {
+      const next = { ...s, household, onboarded: true };
+      return { ...next, plan: buildCurrentPlan(next), checked: [] };
+    });
   }, []);
 
   const groceryList = useMemo(
@@ -374,6 +393,7 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     setState((s) => {
       if (!s.plan) return s;
       const list = buildGroceryList(s.plan, s.pantry, s.observations);
+      if (!list.lines.every((line) => s.checked.includes(line.ingredientId))) return s;
       const remainders = remaindersToPantry(list, s.plan.generatedAt);
       const replacementIds = new Set(remainders.map((item) => item.id));
       return {
@@ -396,6 +416,12 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     () => ({
       state,
       ready,
+      saveStatus: !localSaved
+        ? "Device storage unavailable — keep this tab open"
+        : userId
+          ? syncStatus
+          : "Saved on this device",
+      saveHouseholdAndPlan,
       update,
       setHousehold,
       addPantryItem,
@@ -412,6 +438,10 @@ export function MealForgeProvider({ children }: { children: React.ReactNode }) {
     [
       state,
       ready,
+      localSaved,
+      userId,
+      syncStatus,
+      saveHouseholdAndPlan,
       update,
       setHousehold,
       addPantryItem,
