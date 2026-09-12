@@ -12,6 +12,7 @@ import {
 import "@/home-refresh.css";
 import "@/mealforge-public.css";
 import { SiteFooter, SiteHeader } from "@/components/SiteHeader";
+import dinnerImage from "@/assets/hero-table.jpg";
 
 export const Route = createFileRoute("/mealforge")({
   head: () => ({
@@ -69,7 +70,11 @@ function MealForgePublicPage() {
               <p className="mf-public-kicker">
                 <ChefHat className="size-4" /> Household food intelligence
               </p>
-              <h1>DINNER SHOULD FIT YOUR LIFE.</h1>
+              <h1>
+                REAL LIFE.
+                <br />
+                <em>REAL DINNER.</em>
+              </h1>
               <p className="mf-public-deck">
                 MealForge turns your household, pantry, allergies, budget and time into a week you
                 can actually cook and afford.
@@ -88,18 +93,32 @@ function MealForgePublicPage() {
                 devices.
               </small>
             </div>
-            <div className="mf-public-plan" aria-label="Example MealForge weekly plan">
-              <div className="mf-public-plan-head">
-                <span>MF / WEEK 01</span>
-                <strong>$78.42 / $90</strong>
+            <figure className="mf-public-photo">
+              <img
+                src={dinnerImage}
+                alt="An evening meal around a shared table"
+                fetchPriority="high"
+              />
+              <figcaption>
+                <span>THE HOUSEHOLD SIDE OF PROVISIONLOOP</span>
+                <strong>
+                  LESS GUESSWORK.
+                  <br />
+                  MORE AT THE TABLE.
+                </strong>
+              </figcaption>
+              <div className="mf-public-ticket">
+                <span>YOUR WEEK STARTS HERE</span>
+                <strong>
+                  YOUR PEOPLE.
+                  <br />
+                  YOUR PANTRY.
+                  <br />
+                  YOUR BUDGET.
+                </strong>
+                <small>Grocery costs are estimates. Confirm prices when you shop.</small>
               </div>
-              <PlanRow day="MON" meal="Sheet-pan chicken" note="42 MIN · OVEN" />
-              <PlanRow day="TUE" meal="Black bean tacos" note="28 MIN · SKILLET" />
-              <PlanRow day="WED" meal="Lemon pasta" note="25 MIN · POT" />
-              <PlanRow day="THU" meal="Leftover remix" note="12 MIN · $0 ADDED" />
-              <PlanRow day="FRI" meal="Rice bowl night" note="35 MIN · SKILLET" />
-              <p className="mf-public-plan-proof">5 DINNERS · PANTRY OFFSET · UNDER BUDGET</p>
-            </div>
+            </figure>
           </div>
         </section>
 
@@ -142,18 +161,6 @@ function MealForgePublicPage() {
         </section>
       </main>
       <SiteFooter />
-    </div>
-  );
-}
-
-function PlanRow({ day, meal, note }: { day: string; meal: string; note: string }) {
-  return (
-    <div className="mf-public-plan-row">
-      <strong>{day}</strong>
-      <span>
-        {meal}
-        <small>{note}</small>
-      </span>
     </div>
   );
 }

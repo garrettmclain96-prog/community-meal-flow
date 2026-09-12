@@ -1,16 +1,22 @@
 @layer components {
   .mf-shell {
-    --mf-ink: #11110f;
-    --mf-paper: #f7f2e8;
+    --mf-ink: var(--movement-navy);
+    --mf-paper: var(--movement-paper);
+    --background: var(--movement-paper);
+    --foreground: var(--movement-navy);
+    --primary: var(--movement-coral);
+    --primary-foreground: var(--movement-navy);
+    --ember: var(--movement-coral);
+    --surface: var(--movement-paper);
+    --border: var(--movement-border);
+    --muted-foreground: var(--movement-muted);
     position: relative;
     isolation: isolate;
-    background:
-      radial-gradient(circle at 10% 5%, color-mix(in oklab, var(--primary) 8%, transparent), transparent 22rem),
-      var(--background);
+    background: var(--background);
   }
 
   .mf-shell::before {
-    content: "";
+    content: none;
     position: fixed;
     z-index: -1;
     right: -10rem;
@@ -26,9 +32,12 @@
     position: sticky;
     top: 0;
     z-index: 40;
-    border-bottom: 1px solid rgba(255,255,255,.12);
-    background: color-mix(in oklab, #11110f 94%, transparent);
-    color: #f7f2e8;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--movement-navy);
+    color: var(--movement-paper);
+    --foreground: var(--movement-paper);
+    --muted-foreground: var(--movement-paper);
+    --muted: var(--movement-navy);
     backdrop-filter: blur(20px) saturate(1.15);
     -webkit-backdrop-filter: blur(20px) saturate(1.15);
   }
@@ -36,11 +45,11 @@
   .mf-brand {
     display: inline-flex;
     align-items: center;
-    gap: .7rem;
+    gap: 0.7rem;
     font-family: var(--font-display);
     font-size: 1.12rem;
     font-weight: 900;
-    letter-spacing: -.055em;
+    letter-spacing: -0.055em;
   }
 
   .mf-brand-mark {
@@ -51,24 +60,24 @@
     background: var(--primary);
     color: var(--primary-foreground);
     font-family: var(--font-mono);
-    font-size: .58rem;
-    letter-spacing: .08em;
-    box-shadow: 3px 3px 0 rgba(255,255,255,.12);
+    font-size: 0.58rem;
+    letter-spacing: 0.08em;
+    box-shadow: 3px 3px 0 rgba(255, 255, 255, 0.12);
   }
 
   .mf-brand small {
     display: block;
-    margin-top: .12rem;
+    margin-top: 0.12rem;
     font-family: var(--font-mono);
-    font-size: .48rem;
+    font-size: 0.48rem;
     font-weight: 700;
-    letter-spacing: .12em;
+    letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: rgba(247,242,232,.5);
+    color: rgba(247, 242, 232, 0.5);
   }
 
   .mf-content {
-    animation: mf-enter 340ms cubic-bezier(.16,1,.3,1) both;
+    animation: mf-enter 340ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
   .mf-bottom-nav {
@@ -76,13 +85,13 @@
     inset-inline: 0;
     bottom: 0;
     z-index: 40;
-    border-top: 1px solid rgba(255,255,255,.12);
-    background: color-mix(in oklab, #11110f 96%, transparent);
-    color: #f7f2e8;
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    background: var(--movement-navy);
+    color: var(--movement-paper);
     backdrop-filter: blur(20px) saturate(1.1);
     -webkit-backdrop-filter: blur(20px) saturate(1.1);
     padding-bottom: env(safe-area-inset-bottom);
-    box-shadow: 0 -18px 40px rgba(0,0,0,.12);
+    box-shadow: 0 -18px 40px rgba(0, 0, 0, 0.12);
   }
 
   .mf-tab {
@@ -92,14 +101,17 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: .28rem;
-    color: rgba(247,242,232,.54);
+    gap: 0.28rem;
+    color: rgba(247, 242, 232, 0.54);
     font-family: var(--font-mono);
-    font-size: .56rem;
+    font-size: 0.56rem;
     font-weight: 800;
-    letter-spacing: .04em;
+    letter-spacing: 0.04em;
     text-transform: uppercase;
-    transition: color 150ms ease, background 150ms ease, transform 150ms ease;
+    transition:
+      color 150ms ease,
+      background 150ms ease,
+      transform 150ms ease;
   }
 
   .mf-tab::before {
@@ -114,32 +126,55 @@
     transition: width 180ms ease;
   }
 
-  .mf-tab:hover { color: #f7f2e8; background: rgba(255,255,255,.025); }
-  .mf-tab.is-active { color: var(--primary); }
-  .mf-tab.is-active::before { width: 44%; }
-  .mf-tab.is-active svg { transform: translateY(-1px); }
+  .mf-tab:hover {
+    color: #f7f2e8;
+    background: rgba(255, 255, 255, 0.025);
+  }
+  .mf-tab.is-active {
+    color: var(--primary);
+  }
+  .mf-tab.is-active::before {
+    width: 44%;
+  }
+  .mf-tab.is-active svg {
+    transform: translateY(-1px);
+  }
 
   .mf-context-link {
-    color: rgba(247,242,232,.58);
+    color: rgba(247, 242, 232, 0.58);
     font-family: var(--font-mono);
-    font-size: .56rem;
+    font-size: 0.56rem;
     font-weight: 800;
-    letter-spacing: .06em;
+    letter-spacing: 0.06em;
     text-transform: uppercase;
     transition: color 150ms ease;
   }
 
-  .mf-context-link:hover { color: var(--primary); }
+  .mf-context-link:hover {
+    color: var(--primary);
+  }
 }
 
 @keyframes mf-enter {
-  from { opacity: 0; transform: translateY(6px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   @layer components {
-    .mf-content { animation: none; }
-    .mf-tab, .mf-tab::before, .mf-context-link { transition: none; }
+    .mf-content {
+      animation: none;
+    }
+    .mf-tab,
+    .mf-tab::before,
+    .mf-context-link {
+      transition: none;
+    }
   }
 }
