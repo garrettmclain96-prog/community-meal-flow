@@ -19,6 +19,9 @@ const ROLE_LABEL = {
 
 const DEFAULT_SUPABASE_URL = "https://myfgnukugylhqvmcjceu.supabase.co";
 const DEFAULT_OUTREACH_FROM = "ProvisionLoop <outreach@provisionloop.org>";
+const HEALTH_HEADERS = {
+  "Cache-Control": "public, max-age=0, s-maxage=60, stale-while-revalidate=120",
+};
 
 type LeadRole = keyof typeof CTA_BY_ROLE;
 type OutreachStage = "initial" | "followup";
@@ -52,6 +55,40 @@ function getDb() {
 async function authorize(request: Request): Promise<boolean> {
   const rejection = await authenticateCronRequest(request);
   return rejection === null;
+}
+
+/**
+ * Public, non-sensitive readiness probe for the production watchdog.
+ *
+ * This intentionally returns only a boolean. It verifies that the secrets the
+ * hourly worker requires are present and that the service-role credential can
+ * execute the worker's read-only dry-run RPC. It never returns credentials,
+ * eligible-lead counts, or configuration names to the caller.
+ */
+async function readinessResponse(): Promise<Response> {
+  const missing = ["CRON_SECRET", "SUPABASE_SERVICE_ROLE_KEY", "RESEND_API_KEY"].filter(
+    (name) => !env(name),
+  );
+  if (missing.length > 0) {
+    console.error("acquisition readiness missing runtime configuration", { missing });
+    return Response.json({ ok: false }, { status: 503, headers: HEALTH_HEADERS });
+  }
+
+  try {
+    const db = getDb();
+    const { error } = await db.rpc("acquisition_outreach_dry_run");
+    if (error) {
+      console.error("acquisition readiness database check failed", { code: error.code });
+      return Response.json({ ok: false }, { status: 503, headers: HEALTH_HEADERS });
+    }
+  } catch (error) {
+    console.error("acquisition readiness failed", {
+      category: errorCategory(error),
+    });
+    return Response.json({ ok: false }, { status: 503, headers: HEALTH_HEADERS });
+  }
+
+  return Response.json({ ok: true }, { status: 200, headers: HEALTH_HEADERS });
 }
 
 function emailFor(lead: ClaimedLead) {
@@ -109,6 +146,11 @@ function errorCategory(error: unknown) {
 }
 
 export async function runAcquisitionWorker(request: Request): Promise<Response> {
+  const url = new URL(request.url);
+  if (url.searchParams.get("health") === "1") {
+    return readinessResponse();
+  }
+
   if (!env("CRON_SECRET")) {
     return Response.json({ ok: false, error: "missing_cron_secret" }, { status: 503 });
   }
@@ -123,7 +165,6 @@ export async function runAcquisitionWorker(request: Request): Promise<Response> 
     return Response.json({ ok: false, error: errorCategory(error) }, { status: 503 });
   }
 
-  const url = new URL(request.url);
   const dryRun = url.searchParams.get("dry_run") === "1";
   if (dryRun) {
     const { data, error } = await db.rpc("acquisition_outreach_dry_run");

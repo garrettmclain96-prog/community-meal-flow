@@ -9,6 +9,7 @@ async function source(path) {
 const migrationPath = "supabase/migrations/20260909123000_backend_acquisition_worker.sql";
 const workerPath = "src/lib/acquisition-worker.server.ts";
 const hookRoutePath = "src/routes/api/public/hooks/acquisition-worker.ts";
+const watchdogPath = ".github/workflows/production-watchdog.yml";
 
 test("worker enforces contact policy and role CTAs", async () => {
   const worker = await source(workerPath);
@@ -29,6 +30,21 @@ test("worker enforces contact policy and role CTAs", async () => {
   const hook = await source(hookRoutePath);
   assert.match(hook, /api\/public\/hooks\/acquisition-worker/);
   assert.match(hook, /runAcquisitionWorker/);
+});
+
+test("public readiness probe validates worker dependencies without exposing configuration", async () => {
+  const worker = await source(workerPath);
+  assert.match(worker, /searchParams\.get\("health"\) === "1"/);
+  assert.match(worker, /readinessResponse/);
+  assert.match(worker, /\["CRON_SECRET", "SUPABASE_SERVICE_ROLE_KEY", "RESEND_API_KEY"\]/);
+  assert.match(worker, /db\.rpc\("acquisition_outreach_dry_run"\)/);
+  assert.match(worker, /Response\.json\(\{ ok: true \}/);
+  assert.doesNotMatch(worker, /Response\.json\(\{ ok: false, missing/);
+
+  const watchdog = await source(watchdogPath);
+  assert.match(watchdog, /acquisition-worker\?health=1/);
+  assert.match(watchdog, /acquisition-worker\?dry_run=1/);
+  assert.doesNotMatch(watchdog, /api\/internal\/acquisition-worker/);
 });
 
 test("database claim is concurrency-safe and suppresses unsafe followups", async () => {
