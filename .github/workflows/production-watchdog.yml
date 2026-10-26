@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     env:
-      BASE_URL: https://www.provisionloop.org
+      BASE_URL: https://community-meal-flow.vercel.app
       INCIDENT_TITLE: "[monitor] ProvisionLoop production watchdog failure"
     steps:
       - name: Probe production surfaces
